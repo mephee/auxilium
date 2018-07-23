@@ -1,0 +1,30 @@
+<div class="table-responsive">
+  <table class="table table-sm">
+    <thead>
+    <tr>
+      <th scope="col">Jahr</th>
+      <th class="text-center" *ngFor="let inoutcome of container.inoutcomes" scope="col">{{inoutcome.year}}</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+      <td scope="row">Ertrag</td>
+      <td *ngFor="let inoutcome of container.inoutcomes">
+        <input class="text-right" [(ngModel)]="inoutcome.income" placeholder="Ertrag">
+      </td>
+    </tr>
+    <tr>
+      <td scope="row">Aufwand</td>
+      <td *ngFor="let inoutcome of container.inoutcomes">
+        <input class="text-right" [(ngModel)]="inoutcome.outcome" placeholder="Aufwand">
+      </td>
+    </tr>
+
+    <tr class="table-warning">
+      <th scope="row">Ueberschuss / Fehlbetrag aus laufender Rechnung</th>
+      <td class="text-right" *ngFor="let inoutcome of container.inoutcomes">{{calc(inoutcome)}}</td>
+    </tr>
+
+    </tbody>
+  </table>
+</div>
