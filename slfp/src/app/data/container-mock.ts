@@ -8,6 +8,12 @@ export const MOCK: Container = {
     { year: 2021, income: 12900, outcome: 12500 },
     { year: 2022, income: 12100, outcome: 12400 },
     { year: 2023, income: 12000, outcome: 11400 },
-    { year: 2024, income: 11900, outcome: 12600 }
+    { year: 2024, income: 11900, outcome: 12600 },
+    { year: 2025, income: 11900, outcome: 12600 },
+    { year: 2026, income: 11900, outcome: 12600 },
+    { year: 2027, income: 11900, outcome: 12600 },
+    { year: 2028, income: 11900, outcome: 12600 },
+    { year: 2029, income: 11900, outcome: 12600 },
+    { year: 2030, income: 11900, outcome: 12600 }
   ]
 };

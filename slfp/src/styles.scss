@@ -1,0 +1,24 @@
+/* You can add global styles to this file, and also import other style files */
+//@import 'bootstrap';
+
+// Global
+$spacer: 0.4rem;
+$enable-shadows: true;
+$enable-rounded: false;
+
+// Font
+$font-size-base: 0.8rem;
+$font-family-sans-serif: 'Calibri', sans-serif;
+
+// Table
+$table-cell-padding:          .5rem !default;
+$table-cell-padding-sm:       .15rem !default;
+
+// Focus
+input:focus {
+  border-color: rgba(88, 121, 225, 0.18);
+  box-shadow: none;
+}
+
+@import "../node_modules/bootstrap/scss/bootstrap";
+
