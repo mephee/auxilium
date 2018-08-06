@@ -15,5 +15,15 @@ export const MOCK: Container = {
     { year: 2028, income: 11900, outcome: 12600 },
     { year: 2029, income: 11900, outcome: 12600 },
     { year: 2030, income: 11900, outcome: 12600 }
+  ],
+  categories: [
+    { name: 'Hydranten', rate: 1.25 },
+    { name: 'Kanalisationen', rate: 1.25 },
+    { name: 'Hochbauten', rate: 2.5 },
+    { name: 'Hochbauten', rate: 3 },
+    { name: 'Hochbauten', rate: 4 },
+    { name: 'Tiefbauten', rate: 5 },
+    { name: 'Mobilien', rate: 10 },
+    { name: 'Informatik', rate: 20 }
   ]
 };

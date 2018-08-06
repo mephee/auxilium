@@ -10,13 +10,13 @@
     <tr>
       <td scope="row">Ertrag</td>
       <td *ngFor="let inoutcome of container.inoutcomes">
-        <input class="text-right" [(ngModel)]="inoutcome.income" placeholder="Ertrag">
+        <input class="table-input text-right" [(ngModel)]="inoutcome.income" placeholder="Ertrag">
       </td>
     </tr>
     <tr>
       <td scope="row">Aufwand</td>
       <td *ngFor="let inoutcome of container.inoutcomes">
-        <input class="text-right" [(ngModel)]="inoutcome.outcome" placeholder="Aufwand">
+        <input class="table-input text-right" [(ngModel)]="inoutcome.outcome" placeholder="Aufwand">
       </td>
     </tr>
 
@@ -30,7 +30,9 @@
     </tr>
 
     <tr>
-      <th scope="row">Steuerhaushalt            <button type="button" class="btn btn-sm btn-outline-primary" data-toggle="modal" data-target="#exampleModal">neue Investition</button>
+      <th scope="row">Steuerhaushalt            <button type="button" class="close" data-toggle="modal" data-target="#exampleModal" aria-label="Close">
+        <span aria-hidden="true">+</span>
+      </button>
       </th>
     </tr>
 
@@ -39,29 +41,53 @@
 
 
   <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
+    <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="exampleModalLabel">New message</h5>
+          <h5 class="modal-title" id="exampleModalLabel">Investition bearbeiten</h5>
           <button type="button" class="close" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
         </div>
         <div class="modal-body">
           <form>
-            <div class="form-group">
-              <label for="recipient-name" class="col-form-label">Recipient:</label>
-              <input type="text" class="form-control" id="recipient-name">
+            <div class="form-group row">
+              <label for="name" class="col-2 col-form-label">Bezeichnung:</label>
+              <div class="col-10">
+                <input type="text" class="form-control" id="name">
+              </div>
             </div>
-            <div class="form-group">
-              <label for="message-text" class="col-form-label">Message:</label>
-              <textarea class="form-control" id="message-text"></textarea>
+            <div class="form-group row">
+              <label for="project" class="col-2 col-form-label">Projekt-Nr.:</label>
+              <div class="col-10">
+                <input type="text" class="form-control" id="project">
+              </div>
             </div>
+            <div class="form-group row">
+              <label for="total" class="col-2 col-form-label">Investitionen Total:</label>
+              <div class="col-4">
+                <input class="form-control font-weight-bold" id="total" [(ngModel)]="total" name="tot">
+              </div>
+            </div>
+
+            <div class="form-group row">
+              <label for="category" class="col-2 col-form-label">Anlagekategorie:</label>
+              <div class="col-4">
+                <select [(ngModel)]="selectedCategory" (change)="change()" name="cat" class="form-control" id="category">
+                  <option *ngFor="let category of container.categories" [ngValue]="category">{{category.name}} {{category.rate}}%</option>
+                </select>
+              </div>
+              <label for="years" class="col-1 col-form-label">Jahre:</label>
+              <label for="years" class="col-1 col-form-label">{{100/selectedCategory.rate | number:'0.0-2'}}</label>
+              <label for="years" class="col-1 col-form-label">Abschr./Jahr:</label>
+              <label for="years" class="col-1 col-form-label">{{total/(100/selectedCategory.rate)}}</label>
+            </div>
+
           </form>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-          <button type="button" class="btn btn-primary">Send message</button>
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Abbrechen</button>
+          <button type="button" class="btn btn-primary">Speichern</button>
         </div>
       </div>
     </div>
