@@ -1,0 +1,68 @@
+<div class="modal fade" id="investmentModal" tabindex="-1" role="dialog" aria-labelledby="investmentModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="investmentModalLabel">Investition bearbeiten</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form>
+          <div class="form-group row">
+            <label for="name" class="col-2 col-form-label">Bezeichnung:</label>
+            <div class="col-5">
+              <input type="text" class="form-control" id="name" [(ngModel)]="investment.name" name="name">
+            </div>
+            <label for="project" class="col-2 col-form-label">Projekt-Nr.:</label>
+            <div class="col-3">
+              <input type="text" class="form-control" id="project" [(ngModel)]="investment.projectNr" name="proj">
+            </div>
+          </div>
+          <div class="form-group row">
+            <label for="total" class="col-2 col-form-label">Investitionen Total:</label>
+            <div class="col-2">
+              <input class="form-control font-weight-bold" id="total" [(ngModel)]="investment.total" name="tot">
+            </div>
+            <label for="total" class="col-3 col-form-label">Investitionen korrigiert:</label>
+            <div class="col-2">
+              <input class="form-control font-weight-bold" id="totalCorr" [(ngModel)]="investment.totalCorr" name="totCorr">
+            </div>
+          </div>
+
+          <div class="form-group row">
+            <label for="category" class="col-2 col-form-label">Anlagekategorie:</label>
+            <div class="col-4">
+              <select [(ngModel)]="selectedCategory" name="cat" class="form-control" id="category">
+                <option *ngFor="let category of getCategories()" [ngValue]="category">{{category.name}} {{category.rate}}%</option>
+              </select>
+            </div>
+            <label class="col-1 col-form-label">Jahre:</label>
+            <label class="col-1 col-form-label">{{calcYears() | number:'0.0-2'}}</label>
+            <label class="col-2 col-form-label">Abschr./Jahr:</label>
+            <label class="col-1 col-form-label">{{calcWriteoffPerYear() | number:'0.0-0'}}</label>
+          </div>
+
+          <div class="form-group row">
+            <label for="investment" class="col-12 col-form-label">Investitionstranchen:</label>
+          </div>
+          <div class="form-group row" *ngFor="let investmentYear of investment.investmentYears">
+            <div class="col-2">
+              <select [(ngModel)]="investmentYear.year" name="cat" class="form-control" id="investment">
+                <option *ngFor="let year of getCoupleOfYears()" [ngValue]="year">{{year}}</option>
+              </select>
+            </div>
+            <div class="col-2">
+              <input class="form-control font-weight-bold" [(ngModel)]="investmentYear.invest" name="invYear">
+            </div>
+          </div>
+
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Abbrechen</button>
+        <button type="button" class="btn btn-primary" data-dismiss="modal" (click)="save()">Speichern</button>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,99 +1,63 @@
+<script src="maintable.component.spec.ts"></script>
 <div class="table-responsive">
   <table class="table table-sm">
     <thead>
     <tr>
-      <th scope="col">Jahr</th>
-      <th class="text-center" *ngFor="let inoutcome of container.inoutcomes" scope="col">{{inoutcome.year}}</th>
+      <th scope="col" style="min-width: 410px">Jahr</th>
+      <th scope="row"></th>
+      <th class="text-center" style="min-width: 80px" *ngFor="let year of getYears()" scope="col">{{year}}</th>
     </tr>
     </thead>
     <tbody>
     <tr>
       <td scope="row">Ertrag</td>
-      <td *ngFor="let inoutcome of container.inoutcomes">
+      <td scope="row"></td>
+      <td *ngFor="let inoutcome of getInoutcomes()">
         <input class="table-input text-right" [(ngModel)]="inoutcome.income" placeholder="Ertrag">
       </td>
     </tr>
     <tr>
       <td scope="row">Aufwand</td>
-      <td *ngFor="let inoutcome of container.inoutcomes">
+      <td scope="row"></td>
+      <td *ngFor="let inoutcome of getInoutcomes()">
         <input class="table-input text-right" [(ngModel)]="inoutcome.outcome" placeholder="Aufwand">
       </td>
     </tr>
 
     <tr class="table-warning">
       <th scope="row">Überschuss/Fehlbetr. aus laufend. Rechnung</th>
-      <td class="text-right" *ngFor="let inoutcome of container.inoutcomes">{{calc(inoutcome)}}</td>
+      <td scope="row"></td>
+      <td class="text-right" *ngFor="let inoutcome of getInoutcomes()">{{calc(inoutcome)}}</td>
     </tr>
 
     <tr>
-      <th scope="row"></th>
+      <th scope="row">&#xa0;</th>
     </tr>
 
-    <tr>
-      <th scope="row">Steuerhaushalt            <button type="button" class="close" data-toggle="modal" data-target="#exampleModal" aria-label="Close">
+    <tr class="table-secondary">
+      <th scope="row">Steuerhaushalt            <button (click)="newInvestment()" type="button" class="close" data-toggle="modal" data-target="#investmentModal" aria-label="Close">
         <span aria-hidden="true">+</span>
       </button>
       </th>
     </tr>
 
+    <ng-container *ngFor="let investmentCategory of getInvestmentCategories()">
+      <tr>
+        <th scope="row" data-toggle="collapse" attr.data-target=".rate-{{investmentCategory.rate.toString().replace('.', '')}}"><span *ngIf="false">+</span> {{investmentCategory.name}} ({{investmentCategory.rate}}%)</th>
+      </tr>
+      <tr class="collapse rate-{{investmentCategory.rate.toString().replace('.', '')}}" *ngFor="let investment of getInvestmentsByRate(investmentCategory.rate)">
+        <td scope="col">{{investment.name}}<button (click)="editInvestment(investment)" type="button" class="close" data-toggle="modal" data-target="#investmentModal" aria-label="Close">
+          <span aria-hidden="true">&#x270E;</span>
+        </button>
+        </td>
+        <td scope="row">Abschreibungen</td>
+        <td scope="row" class="text-right" *ngFor="let taxoff of getTaxoffsByYear(investment)">{{taxoff}}
+        </td>
+      </tr>
+    </ng-container>
     </tbody>
   </table>
 
-
-  <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="exampleModalLabel">Investition bearbeiten</h5>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
-        </div>
-        <div class="modal-body">
-          <form>
-            <div class="form-group row">
-              <label for="name" class="col-2 col-form-label">Bezeichnung:</label>
-              <div class="col-10">
-                <input type="text" class="form-control" id="name">
-              </div>
-            </div>
-            <div class="form-group row">
-              <label for="project" class="col-2 col-form-label">Projekt-Nr.:</label>
-              <div class="col-10">
-                <input type="text" class="form-control" id="project">
-              </div>
-            </div>
-            <div class="form-group row">
-              <label for="total" class="col-2 col-form-label">Investitionen Total:</label>
-              <div class="col-4">
-                <input class="form-control font-weight-bold" id="total" [(ngModel)]="total" name="tot">
-              </div>
-            </div>
-
-            <div class="form-group row">
-              <label for="category" class="col-2 col-form-label">Anlagekategorie:</label>
-              <div class="col-4">
-                <select [(ngModel)]="selectedCategory" (change)="change()" name="cat" class="form-control" id="category">
-                  <option *ngFor="let category of container.categories" [ngValue]="category">{{category.name}} {{category.rate}}%</option>
-                </select>
-              </div>
-              <label for="years" class="col-1 col-form-label">Jahre:</label>
-              <label for="years" class="col-1 col-form-label">{{100/selectedCategory.rate | number:'0.0-2'}}</label>
-              <label for="years" class="col-1 col-form-label">Abschr./Jahr:</label>
-              <label for="years" class="col-1 col-form-label">{{total/(100/selectedCategory.rate)}}</label>
-            </div>
-
-          </form>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-dismiss="modal">Abbrechen</button>
-          <button type="button" class="btn btn-primary">Speichern</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-
-
+  <app-investment [investment]="selectedInvestment"></app-investment>
 
 </div>

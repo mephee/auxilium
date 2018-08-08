@@ -4,11 +4,13 @@ import { FormsModule } from '@angular/forms';
 
 import { AppComponent } from './app.component';
 import { MaintableComponent } from './maintable/maintable.component';
+import { InvestmentComponent } from './maintable/investment/investment.component';
 
 @NgModule({
   declarations: [
     AppComponent,
-    MaintableComponent
+    MaintableComponent,
+    InvestmentComponent
   ],
   imports: [
     BrowserModule,

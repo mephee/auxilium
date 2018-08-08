@@ -1,8 +1,10 @@
 import { Component, OnInit } from '@angular/core';
-import { Container } from "../data/container";
-import { MOCK } from "../data/container-mock";
-import {Inoutcome} from "../data/inoutcome";
-import {Category} from "../data/category";
+import {Inoutcome} from "../data/model/inoutcome";
+import {DatastoreService} from "../data/datastore.service";
+import {Investment} from "../data/model/investment";
+import {InvestmentYear} from "../data/model/investmentYear";
+import {AggregationService} from "./aggregation/aggregation.service";
+import {InvestmentCategory} from "../data/model/investmentCategory";
 
 @Component({
   selector: 'app-maintable',
@@ -11,12 +13,9 @@ import {Category} from "../data/category";
 })
 export class MaintableComponent implements OnInit {
 
-  container = MOCK;
+  selectedInvestment: Investment;
 
-  selectedCategory = null;
-  total = 0;
-
-  constructor() { }
+  constructor(private dataStore: DatastoreService, private aggregation: AggregationService) { }
 
   ngOnInit() {
   }
@@ -25,8 +24,38 @@ export class MaintableComponent implements OnInit {
     return inoutcome.income - inoutcome.outcome;
   }
 
-  change(): void {
-    console.log(this.selectedCategory.name);
+  getYears(): number[] {
+    return this.aggregation.getYears();
   }
+
+  getInoutcomes(): Inoutcome[] {
+    return this.dataStore.getInoutcomes();
+  }
+
+  getInvestmentsByRate(rate: number): Investment[] {
+    return this.aggregation.getInvestmentsByRate(rate);
+  }
+
+  getInvestmentsByYear(investment: Investment): number[] {
+    return this.aggregation.getInvestmentsByYear(investment);
+  }
+
+  getTaxoffsByYear(investment: Investment): number[] {
+    return this.aggregation.getTaxoffsByYear(investment);
+  }
+
+  newInvestment(): void {
+    this.selectedInvestment = new Investment();
+    this.selectedInvestment.investmentYears = [new InvestmentYear()];
+  }
+
+  editInvestment(investment: Investment): void {
+    this.selectedInvestment = investment;
+  }
+
+  getInvestmentCategories(): InvestmentCategory[] {
+    return this.aggregation.getInvestmentCategories();
+  }
+
 
 }
