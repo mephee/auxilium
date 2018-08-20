@@ -14,10 +14,12 @@ import {InvestmentCategory} from "../data/model/investmentCategory";
 export class MaintableComponent implements OnInit {
 
   selectedInvestment: Investment;
+  showInvestment: boolean;
 
   constructor(private dataStore: DatastoreService, private aggregation: AggregationService) { }
 
   ngOnInit() {
+    this.showInvestment = false;
   }
 
   calc(inoutcome: Inoutcome): number {
@@ -47,14 +49,25 @@ export class MaintableComponent implements OnInit {
   newInvestment(): void {
     this.selectedInvestment = new Investment();
     this.selectedInvestment.investmentYears = [new InvestmentYear()];
+    this.showInvestment = true;
+
   }
 
   editInvestment(investment: Investment): void {
     this.selectedInvestment = investment;
+    this.showInvestment = true;
   }
 
   getInvestmentCategories(): InvestmentCategory[] {
     return this.aggregation.getInvestmentCategories();
+  }
+
+  onClosed(): void {
+    this.showInvestment = false;
+  }
+
+  toggle(investmentCategory: InvestmentCategory): void {
+    investmentCategory.show = !investmentCategory.show;
   }
 
 

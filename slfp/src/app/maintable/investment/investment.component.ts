@@ -1,7 +1,8 @@
-import { Component, OnInit, Input } from '@angular/core';
+import {Component, OnInit, Input, Output, EventEmitter} from '@angular/core';
 import {DatastoreService} from "../../data/datastore.service";
 import {Category} from "../../data/model/category";
 import {Investment} from "../../data/model/investment";
+import {InvestmentYear} from "../../data/model/investmentYear";
 
 @Component({
   selector: 'app-investment',
@@ -11,12 +12,13 @@ import {Investment} from "../../data/model/investment";
 export class InvestmentComponent implements OnInit {
 
   @Input() investment: Investment;
+  @Input()  open: boolean;
+  @Output() closed = new EventEmitter<void>();
   selectedCategory: Category;
 
   constructor(private dataStore: DatastoreService) { }
 
   ngOnInit() {
-    this.investment.investmentYears = [{year: 2018, invest: 95000}, {year: 2019, invest: 120000}];
   }
 
   changeCategory(): void {
@@ -24,14 +26,18 @@ export class InvestmentComponent implements OnInit {
   }
 
   calcYears(): number {
-    return 100/this.selectedCategory.rate;
+    if (this.selectedCategory) {
+      return 100/this.selectedCategory.rate;
+    }
   }
 
   calcWriteoffPerYear(): number {
-    if (this.investment.totalCorr) {
-      return this.investment.totalCorr/(100/this.selectedCategory.rate);
-    } else {
-      return this.investment.total/(100/this.selectedCategory.rate);
+    if (this.selectedCategory) {
+      if (this.investment.totalCorr) {
+        return this.investment.totalCorr/(100/this.selectedCategory.rate);
+      } else {
+        return this.investment.total/(100/this.selectedCategory.rate);
+      }
     }
   }
 
@@ -57,11 +63,32 @@ export class InvestmentComponent implements OnInit {
   }
 
   save(): void {
-    this.dataStore.addInvestment(this.investment);
+    this.investment.rate = this.selectedCategory.rate;
+    this.dataStore.saveInvestment(this.investment);
+    this.open = false;
+    this.closed.emit();
   }
+
+  close(): void {
+    this.open = false;
+    this.closed.emit();
+  }
+
+
 
   getCategories(): Category[] {
     return this.dataStore.getCategories();
+  }
+
+  removeInvestmentYear(investmentYear: InvestmentYear): void {
+    let index = this.investment.investmentYears.indexOf(investmentYear);
+    if (index !== -1) {
+      this.investment.investmentYears.splice(index, 1);
+    }
+  }
+
+  addInvestmentYear(): void {
+    this.investment.investmentYears.push(new InvestmentYear());
   }
 
 }

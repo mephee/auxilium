@@ -9,21 +9,34 @@ import {Investment} from "./model/investment";
 })
 export class DatastoreService {
 
-  constructor() { }
+  inoutComes: Inoutcome[];
+  categories: Category[];
+  investments: Investment[];
+
+  constructor() {
+    this.inoutComes = MOCK.inoutcomes;
+    this.categories = MOCK.categories;
+    this.investments = MOCK.investments;
+  }
 
   getInoutcomes(): Inoutcome[] {
-    return MOCK.inoutcomes;
+    return this.inoutComes;
   }
 
   getCategories(): Category[] {
-    return MOCK.categories;
+    return this.categories
   }
 
   getInvestments(): Investment[] {
-    return MOCK.investments;
+    return this.investments;
   }
 
-  addInvestment(investment: Investment) {
-    MOCK.investments.push(investment);
+  saveInvestment(investment: Investment) {
+    let index = this.investments.indexOf(investment);
+    if (index !== -1) {
+      this.investments[index] = investment;
+    } else {
+      this.investments.push(investment);
+    }
   }
 }

@@ -4,6 +4,7 @@ import {Inoutcome} from "../../data/model/inoutcome";
 import {Investment} from "../../data/model/investment";
 import {InvestmentYear} from "../../data/model/investmentYear";
 import {InvestmentCategory} from "../../data/model/investmentCategory";
+import {init} from "protractor/built/launcher";
 
 @Injectable({
   providedIn: 'root'
@@ -13,7 +14,13 @@ export class AggregationService {
   yearFrom: number;
   yearTo: number;
 
-  constructor(private datastore: DatastoreService) { }
+  investmentCategory: InvestmentCategory[];
+
+  constructor(private datastore: DatastoreService) {
+    this.load();
+  }
+
+
 
   getYears(): number[] {
     let years: number[];
@@ -71,15 +78,19 @@ export class AggregationService {
   }
 
   getInvestmentCategories(): InvestmentCategory[] {
-    return [
-      { name: 'Abschreibungen (je nach Art) gemäss Invetitionsplanung HRM 2', rate: 1.25},
-      { name: 'Abschreibungen (je nach Art) gemäss Invetitionsplanung HRM 3', rate: 2.5},
-      { name: 'Abschreibungen (je nach Art) gemäss Invetitionsplanung HRM 4', rate: 3},
-      { name: 'Abschreibungen (je nach Art) gemäss Invetitionsplanung HRM 5', rate: 4},
-      { name: 'Abschreibungen (je nach Art) gemäss Invetitionsplanung HRM 6', rate: 5},
-      { name: 'Abschreibungen (je nach Art) gemäss Invetitionsplanung HRM 7', rate: 6.67},
-      { name: 'Abschreibungen (je nach Art) gemäss Invetitionsplanung HRM 8', rate: 10},
-      { name: 'Abschreibungen (je nach Art) gemäss Invetitionsplanung HRM 9', rate: 20}
+    return this.investmentCategory;
+  }
+
+  load() {
+    this.investmentCategory = [
+      { name: 'Abschreibungen (je nach Art) gemäss Invetitionsplanung HRM 2', rate: 1.25, show: false},
+      { name: 'Abschreibungen (je nach Art) gemäss Invetitionsplanung HRM 3', rate: 2.5, show: false},
+      { name: 'Abschreibungen (je nach Art) gemäss Invetitionsplanung HRM 4', rate: 3, show: false},
+      { name: 'Abschreibungen (je nach Art) gemäss Invetitionsplanung HRM 5', rate: 4, show: false},
+      { name: 'Abschreibungen (je nach Art) gemäss Invetitionsplanung HRM 6', rate: 5, show: false},
+      { name: 'Abschreibungen (je nach Art) gemäss Invetitionsplanung HRM 7', rate: 6.67, show: false},
+      { name: 'Abschreibungen (je nach Art) gemäss Invetitionsplanung HRM 8', rate: 10, show: false},
+      { name: 'Abschreibungen (je nach Art) gemäss Invetitionsplanung HRM 9', rate: 20, show: false}
     ];
   }
 }
