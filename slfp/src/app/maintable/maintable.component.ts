@@ -38,14 +38,12 @@ export class MaintableComponent implements OnInit {
     return this.aggregation.getInvestmentsByRate(rate);
   }
 
-  getInvestmentsByYear(investment: Investment): number[] {
-    return this.aggregation.getInvestmentsByYear(investment);
-  }
-
   getTaxoffsByYear(investment: Investment): number[] {
     return this.aggregation.getTaxoffsByYear(investment);
   }
 
+
+  // Edit
   newInvestment(): void {
     this.selectedInvestment = new Investment();
     this.selectedInvestment.investmentYears = [new InvestmentYear()];
@@ -66,7 +64,7 @@ export class MaintableComponent implements OnInit {
     this.showInvestment = false;
   }
 
-  toggle(investmentCategory: InvestmentCategory): void {
+  toggleInvestmentCategory(investmentCategory: InvestmentCategory): void {
     investmentCategory.show = !investmentCategory.show;
   }
 

@@ -4,3 +4,23 @@
   margin: 0;
   width: 100%;
 }
+
+.sticky-col1 {
+  position: absolute;
+  top: auto;
+  width: 410px;
+  left: 25px;
+}
+
+.sticky-col2 {
+  position: absolute;
+  top: auto;
+  width: 150px;
+  left: 435px;
+  border-right: solid 1px lightgrey;
+}
+
+.table-wrapper {
+  margin-left: 560px;
+  overflow-x: auto;
+}
