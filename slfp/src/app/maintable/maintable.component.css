@@ -3,6 +3,7 @@
   padding: 0;
   margin: 0;
   width: 100%;
+  background-color: transparent;
 }
 
 .sticky-col1 {
@@ -15,12 +16,34 @@
 .sticky-col2 {
   position: absolute;
   top: auto;
-  width: 150px;
+  width: 120px;
   left: 435px;
   border-right: solid 1px lightgrey;
 }
 
 .table-wrapper {
-  margin-left: 560px;
+  margin-left: 540px;
   overflow-x: auto;
+}
+
+.negative-value {
+  color: red;
+}
+
+.positive-value {
+  color: green;
+}
+
+table {
+  margin-left: -10px;
+}
+
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+td, th {
+  height: 26px;
 }

@@ -5,12 +5,14 @@ import { FormsModule } from '@angular/forms';
 import { AppComponent } from './app.component';
 import { MaintableComponent } from './maintable/maintable.component';
 import { InvestmentComponent } from './maintable/investment/investment.component';
+import { MoneyPipe } from './maintable/money.pipe';
 
 @NgModule({
   declarations: [
     AppComponent,
     MaintableComponent,
-    InvestmentComponent
+    InvestmentComponent,
+    MoneyPipe
   ],
   imports: [
     BrowserModule,

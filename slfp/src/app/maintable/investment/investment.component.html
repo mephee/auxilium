@@ -19,11 +19,11 @@
           <div class="form-group row">
             <label for="total" class="col-2 col-form-label">Investitionen Total:</label>
             <div class="col-2">
-              <input class="form-control font-weight-bold" id="total" [(ngModel)]="investment.total" name="tot">
+              <input type="number" class="form-control font-weight-bold" id="total" [(ngModel)]="investment.total" name="tot">
             </div>
             <label for="total" class="col-3 col-form-label">Investitionen korrigiert:</label>
             <div class="col-2">
-              <input class="form-control font-weight-bold" id="totalCorr" [(ngModel)]="investment.totalCorr" name="totCorr">
+              <input type="number" class="form-control font-weight-bold" id="totalCorr" [(ngModel)]="investment.totalCorr" name="totCorr">
             </div>
           </div>
 
@@ -50,7 +50,7 @@
               </select>
             </div>
             <div class="col-2">
-              <input class="form-control font-weight-bold" [(ngModel)]="investmentYear.invest" [ngModelOptions]="{standalone: true}">
+              <input type="number" class="form-control font-weight-bold" [(ngModel)]="investmentYear.invest" [ngModelOptions]="{standalone: true}">
             </div>
             <div class="col-1">
               <button type="button" class="btn btn-secondary" (click)="removeInvestmentYear(investmentYear)">-</button>

@@ -5,6 +5,9 @@ import {Investment} from "../data/model/investment";
 import {InvestmentYear} from "../data/model/investmentYear";
 import {AggregationService} from "./aggregation/aggregation.service";
 import {InvestmentCategory} from "../data/model/investmentCategory";
+import {Balance} from "../data/model/balance";
+import {ForeignContainer} from "../data/model/foreignContainer";
+import {LiquidityStart} from "../data/model/liquidityStart";
 
 @Component({
   selector: 'app-maintable',
@@ -22,10 +25,6 @@ export class MaintableComponent implements OnInit {
     this.showInvestment = false;
   }
 
-  calc(inoutcome: Inoutcome): number {
-    return inoutcome.income - inoutcome.outcome;
-  }
-
   getYears(): number[] {
     return this.aggregation.getYears();
   }
@@ -34,12 +33,52 @@ export class MaintableComponent implements OnInit {
     return this.dataStore.getInoutcomes();
   }
 
+  getBalanceAfterOutcome(): Balance[] {
+    return this.aggregation.getBalanceAfterOutcome();
+  }
+
+  getBalanceBeforeWriteoff(): Balance[] {
+    return this.aggregation.getBalanceBeforeWriteoff();
+  }
+
+  getBalanceAfterWriteoff(): Balance[] {
+    return this.aggregation.getBalanceAfterWriteoff();
+  }
+
+  getTaxoffsTotal(): number[] {
+    return this.aggregation.getTaxoffsTotal();
+  }
+
+  getInvestmentsTotal(): number[] {
+    return this.aggregation.getInvestmentsTotal();
+  }
+
+  getBalanceAfterInvestments(): Balance[] {
+    return this.aggregation.getBalanceAfterInvestments();
+  }
+
+  getForeignContainer(): ForeignContainer {
+    return this.aggregation.getForeignContainer();
+  }
+
   getInvestmentsByRate(rate: number): Investment[] {
     return this.aggregation.getInvestmentsByRate(rate);
   }
 
+  getTaxoffsByCategory(investmentCategory: InvestmentCategory): number[] {
+    return this.aggregation.getTaxoffsByCategory(investmentCategory);
+  }
+
   getTaxoffsByYear(investment: Investment): number[] {
     return this.aggregation.getTaxoffsByYear(investment);
+  }
+
+  getLiquidityStart(): LiquidityStart {
+    return this.dataStore.getLiquidityStart();
+  }
+
+  getLiquidityOfLastYear(): number[] {
+    return this.aggregation.getLiquidityOfLastYear();
   }
 
 
