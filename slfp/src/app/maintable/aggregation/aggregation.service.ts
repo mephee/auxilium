@@ -245,14 +245,14 @@ export class AggregationService {
   // Private shit
   private load() {
     this.investmentCategory = [
-      { name: 'Abschreibungen (je nach Art) gemäss HRM 2', rate: 1.25, show: false},
-      { name: 'Abschreibungen (je nach Art) gemäss HRM 3', rate: 2.5, show: false},
-      { name: 'Abschreibungen (je nach Art) gemäss HRM 4', rate: 3, show: false},
-      { name: 'Abschreibungen (je nach Art) gemäss HRM 5', rate: 4, show: false},
-      { name: 'Abschreibungen (je nach Art) gemäss HRM 6', rate: 5, show: false},
-      { name: 'Abschreibungen (je nach Art) gemäss HRM 7', rate: 6.67, show: false},
-      { name: 'Abschreibungen (je nach Art) gemäss HRM 8', rate: 10, show: false},
-      { name: 'Abschreibungen (je nach Art) gemäss HRM 9', rate: 20, show: false}
+      { name: 'Abschreibungen gemäss Investitionsplaung HRM 2', rate: 1.25, show: false},
+      { name: 'Abschreibungen gemäss Investitionsplaung HRM 2', rate: 2.5, show: false},
+      { name: 'Abschreibungen gemäss Investitionsplaung HRM 2', rate: 3, show: false},
+      { name: 'Abschreibungen gemäss Investitionsplaung HRM 2', rate: 4, show: false},
+      { name: 'Abschreibungen gemäss Investitionsplaung HRM 2', rate: 5, show: false},
+      { name: 'Abschreibungen gemäss Investitionsplaung HRM 2', rate: 6.67, show: false},
+      { name: 'Abschreibungen gemäss Investitionsplaung HRM 2', rate: 10, show: false},
+      { name: 'Abschreibungen gemäss Investitionsplaung HRM 2', rate: 20, show: false}
     ];
   }
 }

@@ -12,7 +12,7 @@
     <tbody>
       <!-- Ordentliche Einnahmen -->
       <tr>
-        <td class="sticky-col1">Ertrag</td>
+        <td class="sticky-col1">Steuererträge</td>
         <td class="sticky-col2">&#xa0;</td>
         <td *ngFor="let inoutcome of getInoutcomes()">
           <input type="number" class="table-input text-right" [ngModel]="inoutcome.income" (ngModelChange)="inoutcome.income=$event">
@@ -20,7 +20,7 @@
       </tr>
       <!-- Ordentliche Ausgaben -->
       <tr>
-        <td class="sticky-col1">Aufwand</td>
+        <td class="sticky-col1">Betriebsaufwände</td>
         <td class="sticky-col2">&#xa0;</td>
         <td *ngFor="let inoutcome of getInoutcomes()">
           <input type="number" class="table-input text-right" [ngClass]="{'negative-value': inoutcome.outcome<0}" [ngModel]="inoutcome.outcome" (ngModelChange)="inoutcome.outcome=$event">
@@ -34,7 +34,7 @@
       </tr>
       <!-- Flüssige Mittel aus Vorjahr -->
       <tr>
-        <td class="sticky-col1">Bestand flüssige Mittel aus Vorjahr</td>
+        <td class="sticky-col1">Bestand flüssige Mittel aus ende Vorjahr (31.12.XXXX)</td>
         <td class="sticky-col2">&#xa0;</td>
         <td class="text-right table-info">
           <input type="number" class="table-input text-right" [ngModel]="getLiquidityStart().liquidity" (ngModelChange)="getLiquidityStart().liquidity=$event">
@@ -69,7 +69,7 @@
 
       <!-- Investitionen Abschreibungen -->
       <tr class="table-secondary">
-        <th class="sticky-col1">Steuerhaushalt</th>
+        <th class="sticky-col1">Investitionen und Abschreibungen</th>
         <td class="sticky-col2">
           <button (click)="newInvestment()" type="button" class="btn-sm" style="padding: 0px 6px;margin-left: 90px" aria-label="Close">
             <span aria-hidden="true">+</span>
@@ -81,7 +81,7 @@
         <tr>
           <td class="sticky-col1" (click)="toggleInvestmentCategory(investmentCategory)">
             <div class="row">
-              <div class="col-11"><span>+</span><span style="margin-left: 10px">{{investmentCategory.name}} ({{investmentCategory.rate}}%)</span></div>
+              <div class="col-11"><span>+</span><span style="margin-left: 10px">{{investmentCategory.name}} <b>{{investmentCategory.rate}}%</b></span></div>
             </div>
           </td>
           <td class="sticky-col2">&#xa0;</td>
