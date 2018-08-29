@@ -17,11 +17,11 @@
             </div>
           </div>
           <div class="form-group row">
-            <label for="total" class="col-2 col-form-label">Investitionen Total:</label>
+            <label for="total" class="col-2 col-form-label">Genehmigte Investition:</label>
             <div class="col-2">
               <input type="number" class="form-control font-weight-bold" id="total" [(ngModel)]="investment.total" name="tot">
             </div>
-            <label for="total" class="col-3 col-form-label">Investitionen korrigiert:</label>
+            <label for="total" class="col-3 col-form-label">Effektive Investition:</label>
             <div class="col-2">
               <input type="number" class="form-control font-weight-bold" id="totalCorr" [(ngModel)]="investment.totalCorr" name="totCorr">
             </div>
@@ -43,22 +43,27 @@
           <div class="form-group row">
             <label for="investment" class="col-12 col-form-label">Teilzahlungen nach Jahr:</label>
           </div>
-          <div class="form-group row" *ngFor="let investmentYear of investment.investmentYears">
-            <div class="col-2">
-              <select [(ngModel)]="investmentYear.year" class="form-control" [ngModelOptions]="{standalone: true}">
-                <option *ngFor="let year of getCoupleOfYears()" [ngValue]="year">{{year}}</option>
-              </select>
+
+          <div class="investperyear">
+
+            <div class="form-group row" *ngFor="let investmentYear of investment.investmentYears">
+              <div class="col-2">
+                <select [(ngModel)]="investmentYear.year" class="form-control" [ngModelOptions]="{standalone: true}">
+                  <option *ngFor="let year of getCoupleOfYears()" [ngValue]="year">{{year}}</option>
+                </select>
+              </div>
+              <div class="col-2">
+                <input type="number" class="form-control font-weight-bold" [(ngModel)]="investmentYear.invest" [ngModelOptions]="{standalone: true}">
+              </div>
+              <div class="col-1">
+                <button type="button" class="btn btn-secondary" (click)="removeInvestmentYear(investmentYear)">-</button>
+              </div>
             </div>
-            <div class="col-2">
-              <input type="number" class="form-control font-weight-bold" [(ngModel)]="investmentYear.invest" [ngModelOptions]="{standalone: true}">
-            </div>
-            <div class="col-1">
-              <button type="button" class="btn btn-secondary" (click)="removeInvestmentYear(investmentYear)">-</button>
-            </div>
-          </div>
-          <div class="row">
-            <div class="col-1">
-              <button type="button" class="btn btn-primary" (click)="addInvestmentYear()">+</button>
+
+            <div class="row">
+              <div class="col-1">
+                <button type="button" class="btn auxbutton" (click)="addInvestmentYear()">+</button>
+              </div>
             </div>
           </div>
 
@@ -66,7 +71,7 @@
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" (click)="close()">Abbrechen</button>
-        <button type="button" class="btn btn-primary" (click)="save()">Speichern</button>
+        <button type="button" class="btn auxbutton" (click)="save()">Speichern</button>
       </div>
     </div>
   </div>

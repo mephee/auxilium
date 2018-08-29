@@ -3,22 +3,14 @@
 
 // Global
 $spacer: 0.5rem;
-//$enable-shadows: true;
-//$enable-rounded: false;
 
 // Font
-$font-size-base: 0.8rem;
-$font-family-sans-serif: 'Calibri', sans-serif;
+$font-size-base: 0.9rem;
+$font-family-sans-serif: 'Calibri light', sans-serif;
 
 // Table
-$table-cell-padding:          .5rem !default;
-$table-cell-padding-sm:       .2rem !default;
-
-// Focus
-//input:focus {
-//  border-color: rgba(88, 121, 225, 0.18);
-//  box-shadow: none;
-//}
+$table-cell-padding:          .6rem !default;
+$table-cell-padding-sm:       .25rem !default;
 
 @import "../node_modules/bootstrap/scss/bootstrap";
 

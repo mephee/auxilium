@@ -1,11 +1,3 @@
-.table-input {
-  border: none;
-  padding: 0;
-  margin: 0;
-  width: 100%;
-  background-color: transparent;
-}
-
 .sticky-col1 {
   position: absolute;
   top: auto;
@@ -21,6 +13,10 @@
   border-right: solid 1px lightgrey;
 }
 
+.sticky-header {
+  height: 32px;
+}
+
 .table-wrapper {
   margin-left: 540px;
   overflow-x: auto;
@@ -34,16 +30,14 @@
   color: green;
 }
 
+.balance > th, .balance > td {
+  background-color: rgba(199,0,42,0.15);
+}
+
 table {
   margin-left: -10px;
 }
 
-input[type=number]::-webkit-inner-spin-button,
-input[type=number]::-webkit-outer-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
-}
-
 td, th {
-  height: 26px;
+  height: 30px;
 }

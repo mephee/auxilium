@@ -6,19 +6,21 @@ import { AppComponent } from './app.component';
 import { MaintableComponent } from './maintable/maintable.component';
 import { InvestmentComponent } from './maintable/investment/investment.component';
 import { MoneyPipe } from './maintable/money.pipe';
+import { InlineeditComponent } from './maintable/inlineedit/inlineedit.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     MaintableComponent,
     InvestmentComponent,
-    MoneyPipe
+    MoneyPipe,
+    InlineeditComponent
   ],
   imports: [
     BrowserModule,
     FormsModule
   ],
-  providers: [],
+  providers: [MoneyPipe],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

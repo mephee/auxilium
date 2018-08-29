@@ -7,3 +7,18 @@ input[type=number]::-webkit-outer-spin-button {
   -webkit-appearance: none;
   margin: 0;
 }
+
+.auxbutton {
+  color: white;
+  background-color: rgba(199,0,42,0.6);
+}
+
+.auxbutton:hover {
+  background-color: rgba(199,0,42,0.75);
+}
+
+.investperyear {
+  height: 293px;
+  overflow-x: hidden;
+  overflow-y: scroll;
+}

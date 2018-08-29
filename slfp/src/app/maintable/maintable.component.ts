@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, ElementRef, OnInit} from '@angular/core';
 import {Inoutcome} from "../data/model/inoutcome";
 import {DatastoreService} from "../data/datastore.service";
 import {Investment} from "../data/model/investment";
@@ -8,6 +8,7 @@ import {InvestmentCategory} from "../data/model/investmentCategory";
 import {Balance} from "../data/model/balance";
 import {ForeignContainer} from "../data/model/foreignContainer";
 import {LiquidityStart} from "../data/model/liquidityStart";
+declare var $:any;
 
 @Component({
   selector: 'app-maintable',
@@ -19,10 +20,11 @@ export class MaintableComponent implements OnInit {
   selectedInvestment: Investment;
   showInvestment: boolean;
 
-  constructor(private dataStore: DatastoreService, private aggregation: AggregationService) { }
+  constructor(private dataStore: DatastoreService, private aggregation: AggregationService, private elementRef: ElementRef) { }
 
   ngOnInit() {
     this.showInvestment = false;
+    $('[data-toggle="popover"]').popover();
   }
 
   getYears(): number[] {

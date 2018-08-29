@@ -1,11 +1,10 @@
-<script src="maintable.component.spec.ts"></script>
 <div class="table-wrapper">
   <table class="table table-sm">
     <thead>
       <!-- Jahr -->
       <tr>
-        <th class="sticky-col1" style="height: 28px">Jahr</th>
-        <th class="sticky-col2" style="height: 28px">Bestände Planung</th>
+        <th class="sticky-col1 sticky-header">Jahr</th>
+        <th class="sticky-col2 sticky-header">Bestände Planung</th>
         <th class="text-center" style="min-width: 80px" *ngFor="let year of getYears()">{{year}}</th>
       </tr>
     </thead>
@@ -15,7 +14,7 @@
         <td class="sticky-col1">Steuererträge</td>
         <td class="sticky-col2">&#xa0;</td>
         <td *ngFor="let inoutcome of getInoutcomes()">
-          <input type="number" class="table-input text-right" [ngModel]="inoutcome.income" (ngModelChange)="inoutcome.income=$event">
+          <inlineedit [(value)]="inoutcome.income"></inlineedit>
         </td>
       </tr>
       <!-- Ordentliche Ausgaben -->
@@ -23,11 +22,11 @@
         <td class="sticky-col1">Betriebsaufwände</td>
         <td class="sticky-col2">&#xa0;</td>
         <td *ngFor="let inoutcome of getInoutcomes()">
-          <input type="number" class="table-input text-right" [ngClass]="{'negative-value': inoutcome.outcome<0}" [ngModel]="inoutcome.outcome" (ngModelChange)="inoutcome.outcome=$event">
+          <inlineedit [(value)]="inoutcome.outcome"></inlineedit>
         </td>
       </tr>
       <!-- Balance -->
-      <tr class="table-warning">
+      <tr class="balance">
         <th class="sticky-col1">Überschuss/Fehlbetrag aus laufender Rechnung</th>
         <td class="sticky-col2">&#xa0;</td>
         <td class="text-right" [ngClass]="{'negative-value': balance.value<0}" *ngFor="let balance of getBalanceAfterOutcome()">{{balance.value | money }}</td>
@@ -36,8 +35,8 @@
       <tr>
         <td class="sticky-col1">Bestand flüssige Mittel aus ende Vorjahr (31.12.XXXX)</td>
         <td class="sticky-col2">&#xa0;</td>
-        <td class="text-right table-info">
-          <input type="number" class="table-input text-right" [ngModel]="getLiquidityStart().liquidity" (ngModelChange)="getLiquidityStart().liquidity=$event">
+        <td class="text-right table-info" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Übertragen sie hier ihren Saldo Liquiditätsbestand per 31.12.2017">
+          <inlineedit [(value)]="getLiquidityStart().liquidity"></inlineedit>
         </td>
         <td class="text-right" [ngClass]="{'negative-value': liquidity<0}" *ngFor="let liquidity of getLiquidityOfLastYear()">{{liquidity | money}}</td>
       </tr>
@@ -45,26 +44,18 @@
       <tr>
         <td class="sticky-col1">Aufnahme / Rückzahlung Fremdkapital</td>
         <td class="sticky-col2">
-          <input type="number" class="table-input text-right" [ngModel]="getForeignContainer().foreignValue" (ngModelChange)="getForeignContainer().foreignValue=$event">
+          <inlineedit [(value)]="getForeignContainer().foreignValue"></inlineedit>
         </td>
         <td class="text-right" *ngFor="let payback of getForeignContainer().foreignPayback">
-          <input type="number" class="table-input text-right" [ngClass]="{'negative-value': payback.payback<0}" [ngModel]="payback.payback" (ngModelChange)="payback.payback=$event">
+          <inlineedit [(value)]="payback.payback"></inlineedit>
         </td>
-      </tr>
-
-      <tr>
-        <th>&#xa0;</th>
       </tr>
 
       <!-- Total Liq vor Abschreibung -->
-      <tr class="table-warning">
+      <tr class="balance">
         <th class="sticky-col1">Total Liquiditätsbestand vor Abschreibungen</th>
         <td class="sticky-col2">&#xa0;</td>
         <td class="text-right" [ngClass]="{'negative-value': balance.value<0}" *ngFor="let balance of getBalanceBeforeWriteoff()">{{balance.value | money}}</td>
-      </tr>
-
-      <tr>
-        <th>&#xa0;</th>
       </tr>
 
       <!-- Investitionen Abschreibungen -->
@@ -81,7 +72,7 @@
         <tr>
           <td class="sticky-col1" (click)="toggleInvestmentCategory(investmentCategory)">
             <div class="row">
-              <div class="col-11"><span>+</span><span style="margin-left: 10px">{{investmentCategory.name}} <b>{{investmentCategory.rate}}%</b></span></div>
+              <div class="col-11"><span>+</span><span style="margin-left: 10px">{{investmentCategory.name}} <span style="left: 370px;position: absolute"><b>{{investmentCategory.rate}}%</b></span></span></div>
             </div>
           </td>
           <td class="sticky-col2">&#xa0;</td>
@@ -101,36 +92,28 @@
       </ng-container>
 
       <!-- Total Abschreibung -->
-      <tr class="table-warning">
+      <tr class="balance">
         <th class="sticky-col1">Total Abschreibungen pro Jahr</th>
         <td class="sticky-col2">&#xa0;</td>
         <td class="text-right" [ngClass]="{'negative-value': taxoff<0}" *ngFor="let taxoff of getTaxoffsTotal()">{{taxoff | money}}</td>
       </tr>
 
-      <tr>
-        <th>&#xa0;</th>
-      </tr>
-
       <!-- Total Liquiditätszufluss -Abfluss aus Rechnung (Cash flow) -->
-      <tr class="table-success">
+      <tr class="balance">
         <th class="sticky-col1">Total Liquiditätszufluss -Abfluss aus Rechnung (Cash flow)</th>
         <td class="sticky-col2">&#xa0;</td>
         <td class="text-right" [ngClass]="{'negative-value': balance.value<0}" *ngFor="let balance of getBalanceAfterWriteoff()">{{balance.value | money}}</td>
       </tr>
 
       <!-- Total Ausgaben Investitionen (Liquiditätsabfluss) -->
-      <tr class="table-warning">
+      <tr class="balance">
         <th class="sticky-col1">Total Ausgaben Investitionen (Liquiditätsabfluss)</th>
         <td class="sticky-col2">&#xa0;</td>
         <td class="text-right" [ngClass]="{'negative-value': investment<0}" *ngFor="let investment of getInvestmentsTotal()">{{investment | money}}</td>
       </tr>
 
-      <tr>
-        <th>&#xa0;</th>
-      </tr>
-
       <!-- Liquiditätsbestand Total Ende Jahr -->
-      <tr class="table-danger">
+      <tr class="balance">
         <th class="sticky-col1">Liquiditätsbestand Total Ende Jahr</th>
         <td class="sticky-col2">&#xa0;</td>
         <th class="text-right" [ngClass]="{'negative-value': balance.value<0, 'positive-value': balance.value>=0}" *ngFor="let balance of getBalanceAfterInvestments()">{{balance.value | money}}</th>
