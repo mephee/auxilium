@@ -7,6 +7,8 @@ import { MaintableComponent } from './maintable/maintable.component';
 import { InvestmentComponent } from './maintable/investment/investment.component';
 import { MoneyPipe } from './maintable/money.pipe';
 import { InlineeditComponent } from './maintable/inlineedit/inlineedit.component';
+import { VersionsComponent } from './versions/versions.component';
+import { WizardComponent } from './versions/wizard/wizard.component';
 
 @NgModule({
   declarations: [
@@ -14,7 +16,9 @@ import { InlineeditComponent } from './maintable/inlineedit/inlineedit.component
     MaintableComponent,
     InvestmentComponent,
     MoneyPipe,
-    InlineeditComponent
+    InlineeditComponent,
+    VersionsComponent,
+    WizardComponent
   ],
   imports: [
     BrowserModule,

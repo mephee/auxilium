@@ -8,28 +8,34 @@ import {MoneyPipe} from "../money.pipe";
 })
 export class InlineeditComponent implements OnInit {
 
-  @Input() value: number;
+  private _value: number;
   @Output() valueChange = new EventEmitter();
-  private valueFormatted: string;
+  valueFormatted: string;
 
   constructor(private moneyPipe: MoneyPipe) {
   }
 
+  @Input()
+  set value(value:number) {
+    this._value = value;
+    this.updateInternalValue();
+  }
+
   ngOnInit() {
-    this.valueFormatted = this.moneyPipe.transform(this.value);
+    this.updateInternalValue();
   }
 
   onFocus(): void {
-    // this.valueFormatted = this.moneyPipe.parse(this.valueFormatted).toString();
-    this.valueFormatted = this.value.toString();
+    this.valueFormatted = this._value.toString();
   }
 
   onBlur(): void {
     this.valueChange.emit(+this.valueFormatted);
-    this.value = +this.valueFormatted;
+    this._value = +this.valueFormatted;
     this.valueFormatted = this.moneyPipe.transform(+this.valueFormatted);
   }
 
-  onDbClickInput():void {
+  updateInternalValue():void {
+    this.valueFormatted = this.moneyPipe.transform(this._value);
   }
 }

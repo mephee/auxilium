@@ -5,30 +5,64 @@ import {Category} from "./model/category";
 import {Investment} from "./model/investment";
 import {ForeignContainer} from "./model/foreignContainer";
 import {LiquidityStart} from "./model/liquidityStart";
+import {Version} from "./model/version";
 
 @Injectable({
   providedIn: 'root'
 })
 export class DatastoreService {
 
-  private inoutComes: Inoutcome[];
   private categories: Category[];
-  private investments: Investment[];
-  private foreignContainer: ForeignContainer;
-
-  liquidityStart: LiquidityStart;
+  private actualVersion: Version;
+  private versions: Version[];
 
   constructor() {
-    this.inoutComes = MOCK.inoutcomes;
+    // todo load default from disk
     this.categories = MOCK.categories;
-    this.investments = MOCK.investments;
-    this.foreignContainer = MOCK.foreignContainer;
-    this.liquidityStart = new LiquidityStart();
-    this.liquidityStart.liquidity = 3000;
+    this.versions = [];
+    this.actualVersion = this.createVersion();
+    this.actualVersion.name = 'Version 1';
+    this.versions.push(this.actualVersion);
+  }
+
+  getVersions(): Version[] {
+    return this.versions;
+  }
+
+  setActualVersion(version:Version):void {
+    this.actualVersion = version;
+  }
+
+  getActualVersion():Version {
+    return this.actualVersion;
+  }
+
+  saveVersion(version:Version):void {
+    let index = this.versions.indexOf(version);
+    if (index !== -1) {
+      this.versions[index] = version;
+    } else {
+      this.versions.push(version);
+    }
+    this.actualVersion = version;
+  }
+
+  deleteVersion(version:Version):void {
+    let index = this.versions.indexOf(version);
+    if (index !== -1) {
+      this.versions.splice(index);
+    }
+    if (this.versions.length > 0) {
+      this.actualVersion = this.versions[0];
+    } else {
+      this.actualVersion = this.createVersion();
+      this.actualVersion.name = 'Version 1';
+      this.versions.push(this.actualVersion);
+    }
   }
 
   getInoutcomes(): Inoutcome[] {
-    return this.inoutComes;
+    return this.actualVersion.inoutComes;
   }
 
   getCategories(): Category[] {
@@ -36,23 +70,42 @@ export class DatastoreService {
   }
 
   getInvestments(): Investment[] {
-    return this.investments;
+    return this.actualVersion.investments;
   }
 
   getForeignContainer(): ForeignContainer {
-    return this.foreignContainer;
+    return this.actualVersion.foreignContainer;
   }
 
   getLiquidityStart(): LiquidityStart {
-    return this.liquidityStart;
+    return this.actualVersion.liquidityStart;
   }
 
   saveInvestment(investment: Investment) {
-    let index = this.investments.indexOf(investment);
+    let index = this.actualVersion.investments.indexOf(investment);
     if (index !== -1) {
-      this.investments[index] = investment;
+      this.actualVersion.investments[index] = investment;
     } else {
-      this.investments.push(investment);
+      this.actualVersion.investments.push(investment);
     }
   }
+
+  createVersion():Version {
+    let version:Version = new Version();
+    version.yearFrom = (new Date()).getFullYear()+1;
+    version.yearTo = version.yearFrom + 50;
+    version.inoutComes = [];
+    for(let i = version.yearFrom; i <= version.yearTo; i++) {
+      let inoutcome:Inoutcome = new Inoutcome();
+      inoutcome.year = i;
+      version.inoutComes.push(inoutcome);
+    }
+    version.foreignContainer = new ForeignContainer();
+    version.foreignContainer.foreignValue = 0;
+    version.investments = [];
+    version.liquidityStart = new LiquidityStart();
+    version.liquidityStart.liquidity = 0;
+    return version;
+  }
+
 }

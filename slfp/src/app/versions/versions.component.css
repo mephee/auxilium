@@ -1,0 +1,12 @@
+.versionsDropdown {
+  min-width: 180px;
+}
+
+.auxbutton {
+  color: white;
+  background-color: rgba(199,0,42,0.6);
+}
+
+.auxbutton:hover {
+  background-color: rgba(199,0,42,0.75);
+}
