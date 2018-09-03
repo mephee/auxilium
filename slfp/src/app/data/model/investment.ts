@@ -7,4 +7,10 @@ export class Investment {
   totalCorr: number;
   rate: number;
   investmentYears: InvestmentYear[];
+
+  constructor() {
+    this.total = 0;
+    this.totalCorr = 0;
+    this.rate = 0;
+  }
 }

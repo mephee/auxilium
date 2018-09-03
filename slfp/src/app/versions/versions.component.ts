@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {Version} from "../data/model/version";
 import {DatastoreService} from "../data/datastore.service";
 
@@ -9,18 +9,16 @@ import {DatastoreService} from "../data/datastore.service";
 })
 export class VersionsComponent implements OnInit {
 
-  actualVersionName: string;
   showVersion:boolean = false;
 
   constructor(private dataStore: DatastoreService) { }
 
   ngOnInit() {
-    this.actualVersionName = this.dataStore.getActualVersion().name;
   }
 
   setActualVersion(version:Version) {
-    this.actualVersionName = version.name;
     this.dataStore.setActualVersion(version);
+    this.dataStore.save();
   }
 
   getVersions():Version[] {
@@ -29,17 +27,21 @@ export class VersionsComponent implements OnInit {
 
   addVersion() {
     this.showVersion = true;
-    this.actualVersionName = this.dataStore.getActualVersion().name;
   }
 
   deleteVersion() {
     this.dataStore.deleteVersion(this.dataStore.getActualVersion());
-    this.actualVersionName = this.dataStore.getActualVersion().name;
   }
 
   onCloseVersion() {
     this.showVersion = false;
-    this.actualVersionName = this.dataStore.getActualVersion().name;
   }
 
+  getActualVersionName():string {
+    if (this.dataStore.getActualVersion()) {
+      return this.dataStore.getActualVersion().name;
+    } else {
+      return '';
+    }
+  }
 }

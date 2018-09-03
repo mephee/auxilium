@@ -1,4 +1,4 @@
-import {Component, ElementRef, OnInit} from '@angular/core';
+import {AfterViewChecked, Component, ElementRef, OnInit} from '@angular/core';
 import {Inoutcome} from "../data/model/inoutcome";
 import {DatastoreService} from "../data/datastore.service";
 import {Investment} from "../data/model/investment";
@@ -15,7 +15,7 @@ declare var $:any;
   templateUrl: './maintable.component.html',
   styleUrls: ['./maintable.component.css']
 })
-export class MaintableComponent implements OnInit {
+export class MaintableComponent implements OnInit, AfterViewChecked {
 
   selectedInvestment: Investment;
   showInvestment: boolean;
@@ -24,7 +24,10 @@ export class MaintableComponent implements OnInit {
 
   ngOnInit() {
     this.showInvestment = false;
-    $('[data-toggle="popover"]').popover();
+  }
+
+  ngAfterViewChecked() {
+    $('[data-toggle="popover"]').popover();  // TODO Performance Bottleneck
   }
 
   getYears(): number[] {
@@ -81,6 +84,10 @@ export class MaintableComponent implements OnInit {
 
   getLiquidityOfLastYear(): number[] {
     return this.aggregation.getLiquidityOfLastYear();
+  }
+
+  hasActualVersion(): boolean {
+    return this.dataStore.getActualVersion() != null;
   }
 
 

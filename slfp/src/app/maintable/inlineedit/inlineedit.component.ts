@@ -10,6 +10,7 @@ export class InlineeditComponent implements OnInit {
 
   private _value: number;
   @Output() valueChange = new EventEmitter();
+  @Input() tableStyle:boolean = true;
   valueFormatted: string;
 
   constructor(private moneyPipe: MoneyPipe) {

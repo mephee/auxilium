@@ -1,5 +1,5 @@
 <div *ngIf="_open" class="modal" tabindex="-1" role="dialog" aria-labelledby="versionModalLabel" aria-hidden="true" style="display: block">
-  <div class="modal-dialog modal-lg" role="document">
+  <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title" id="versionModalLabel">neue Liquiditätsplanung erfassen</h5>
@@ -7,20 +7,20 @@
       <div class="modal-body">
         <form>
           <div class="form-group row">
-            <label for="name" class="col-2 col-form-label">Bezeichnung:</label>
-            <div class="col-6">
+            <label for="name" class="col-3 col-form-label">Bezeichnung:</label>
+            <div class="col-9">
               <input type="text" class="form-control" id="name" [(ngModel)]="version.name" name="name">
             </div>
           </div>
           <div class="form-group row">
-            <label class="col-2 col-form-label">Jahr von:</label>
-            <div class="col-2">
+            <label class="col-3 col-form-label">Jahr von:</label>
+            <div class="col-3">
               <select [(ngModel)]="version.yearFrom" class="form-control" [ngModelOptions]="{standalone: true}">
                 <option *ngFor="let year of getYearsForFrom()" [ngValue]="year">{{year}}</option>
               </select>
             </div>
-            <label class="col-2 col-form-label">Jahr bis:</label>
-            <div class="col-2">
+            <label class="col-3 col-form-label">Jahr bis:</label>
+            <div class="col-3">
               <select [(ngModel)]="version.yearTo" class="form-control" [ngModelOptions]="{standalone: true}">
                 <option *ngFor="let year of getYearsForTo()" [ngValue]="year">{{year}}</option>
               </select>

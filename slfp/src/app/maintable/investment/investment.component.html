@@ -7,8 +7,8 @@
       <div class="modal-body">
         <form>
           <div class="form-group row">
-            <label for="name" class="col-2 col-form-label">Bezeichnung:</label>
-            <div class="col-5">
+            <label for="name" class="col-3 col-form-label">Bezeichnung:</label>
+            <div class="col-4">
               <input type="text" class="form-control" id="name" [(ngModel)]="investment.name" name="name">
             </div>
             <label for="project" class="col-2 col-form-label">Projekt-Nr.:</label>
@@ -17,19 +17,20 @@
             </div>
           </div>
           <div class="form-group row">
-            <label for="total" class="col-2 col-form-label">Genehmigte Investition:</label>
+            <label for="total" class="col-3 col-form-label">Genehmigte Investition:</label>
             <div class="col-2">
-              <input type="number" class="form-control font-weight-bold" id="total" [(ngModel)]="investment.total" name="tot">
+              <inlineedit [(value)]="investment.total" [tableStyle]="false"></inlineedit>
             </div>
+            <div class="col-1"></div>
             <label for="total" class="col-3 col-form-label">Effektive Investition:</label>
             <div class="col-2">
-              <input type="number" class="form-control font-weight-bold" id="totalCorr" [(ngModel)]="investment.totalCorr" name="totCorr">
+              <inlineedit [(value)]="investment.totalCorr" [tableStyle]="false"></inlineedit>
             </div>
           </div>
 
           <div class="form-group row">
-            <label for="category" class="col-2 col-form-label">Anlagekategorie:</label>
-            <div class="col-4">
+            <label for="category" class="col-3 col-form-label">Anlagekategorie:</label>
+            <div class="col-3">
               <select [(ngModel)]="selectedCategory" name="cat" class="form-control" id="category">
                 <option *ngFor="let category of getCategories()" [ngValue]="category">{{category.name}} {{category.rate}}%</option>
               </select>
@@ -37,23 +38,23 @@
             <label class="col-1 col-form-label">Jahre:</label>
             <label class="col-1 col-form-label">{{calcYears() | number:'0.0-2'}}</label>
             <label class="col-2 col-form-label">Abschr./Jahr:</label>
-            <label class="col-1 col-form-label">{{calcWriteoffPerYear() | number:'0.0-0'}}</label>
+            <label class="col-1 col-form-label">{{calcWriteoffPerYear() | money}}</label>
           </div>
 
           <div class="form-group row">
-            <label for="investment" class="col-12 col-form-label">Teilzahlungen nach Jahr:</label>
+            <label class="col-12 col-form-label">Teilzahlungen nach Jahr:</label>
           </div>
 
           <div class="investperyear">
 
-            <div class="form-group row" *ngFor="let investmentYear of investment.investmentYears">
+            <div class="form-group row" *ngFor="let investmentYear of investment.investmentYears; let idx = index">
               <div class="col-2">
                 <select [(ngModel)]="investmentYear.year" class="form-control" [ngModelOptions]="{standalone: true}">
-                  <option *ngFor="let year of getCoupleOfYears()" [ngValue]="year">{{year}}</option>
+                  <option *ngFor="let year of getCoupleOfYears(idx)" [ngValue]="year">{{year}}</option>
                 </select>
               </div>
               <div class="col-2">
-                <input type="number" class="form-control font-weight-bold" [(ngModel)]="investmentYear.invest" [ngModelOptions]="{standalone: true}">
+                <inlineedit [(value)]="investmentYear.invest" [tableStyle]="false"></inlineedit>
               </div>
               <div class="col-1">
                 <button type="button" class="btn btn-secondary" (click)="removeInvestmentYear(investmentYear)">-</button>

@@ -3,6 +3,7 @@ import {DatastoreService} from "../../data/datastore.service";
 import {Category} from "../../data/model/category";
 import {Investment} from "../../data/model/investment";
 import {InvestmentYear} from "../../data/model/investmentYear";
+import {el} from "@angular/platform-browser/testing/src/browser_util";
 
 @Component({
   selector: 'app-investment',
@@ -41,25 +42,18 @@ export class InvestmentComponent implements OnInit {
     }
   }
 
-  getCoupleOfYears(): number[] {
-    return [
-      2010,
-      2011,
-      2012,
-      2013,
-      2014,
-      2015,
-      2016,
-      2017,
-      2018,
-      2019,
-      2020,
-      2021,
-      2022,
-      2023,
-      2024,
-      2025
-    ]
+  getCoupleOfYears(index: number): number[] {
+    let years:number[] = [];
+    let startIndex:number;
+    if (index == 0) {
+      startIndex = this.dataStore.getActualVersion().yearFrom;
+    } else {
+      startIndex = this.investment.investmentYears[index-1].year+1;
+    }
+    for (let i = startIndex;i<startIndex+10;i++) {
+      years.push(i);
+    }
+    return years;
   }
 
   save(): void {
