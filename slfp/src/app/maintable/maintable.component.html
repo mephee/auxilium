@@ -5,17 +5,34 @@
       <tr>
         <th class="sticky-col1 sticky-header">Jahr</th>
         <th class="sticky-col2 sticky-header">Bestände Planung</th>
-        <th class="text-center" style="min-width: 80px" *ngFor="let year of getYears()">{{year}}</th>
+        <th class="text-center" style="min-width: 100px" *ngFor="let year of getYears()">{{year}}</th>
       </tr>
     </thead>
     <tbody>
       <!-- Ordentliche Einnahmen -->
       <tr>
-        <td class="sticky-col1">Steuererträge</td>
+        <td class="sticky-col1">Steuervolumen</td>
         <td class="sticky-col2">&#xa0;</td>
         <td *ngFor="let inoutcome of getInoutcomes()">
-          <inlineedit [(value)]="inoutcome.income"></inlineedit>
+            <inlineedit [value]="inoutcome.taxvolume" (valueChange)="changedTaxVolume($event, inoutcome)"></inlineedit>
+          <!--<button (click)="copyTaxvolume(inoutcome.year)" type="button" class="copybutton">-->
+           <!--<div class="col-1">-->
+            <!--<span (click)="copyTaxvolume(inoutcome.year)" aria-hidden="true">&#xBB;</span>-->
+           <!--</div>-->
+          <!--</button>-->
         </td>
+      </tr>
+      <tr>
+        <td class="sticky-col1">Steuerfuss</td>
+        <td class="sticky-col2">&#xa0;</td>
+        <td *ngFor="let inoutcome of getInoutcomes()">
+          <input type="number" class="text-right" [(ngModel)]="inoutcome.taxrate" (blur)="calculateTaxVolume(inoutcome)">
+        </td>
+      </tr>
+      <tr>
+        <td class="sticky-col1">Steuersubstrat</td>
+        <td class="sticky-col2">&#xa0;</td>
+        <td *ngFor="let inoutcome of getInoutcomes()" class="text-right">{{inoutcome.income | money}}</td>
       </tr>
       <!-- Ordentliche Ausgaben -->
       <tr>
@@ -91,6 +108,15 @@
         </ng-container>
       </ng-container>
 
+      <!-- Abschreibungen HRM 1-->
+      <tr>
+        <td class="sticky-col1"><span><i>alt HRM1 Verwaltungsvermögen allgemein</i> <span style="left: 370px;position: absolute"><b>10%</b></span></span></td>
+        <td class="sticky-col2">
+          <inlineedit [(value)]="getInvestmentHRM1Container().value"></inlineedit>
+        </td>
+        <td class="text-right" *ngFor="let taxoff of getTaxoffsHRM1ByYear()">{{taxoff | money}}</td>
+      </tr>
+
       <!-- Total Abschreibung -->
       <tr class="balance">
         <th class="sticky-col1">Total Abschreibungen pro Jahr</th>
@@ -118,16 +144,6 @@
         <td class="sticky-col2">&#xa0;</td>
         <th class="text-right" [ngClass]="{'negative-value': balance.value<0, 'positive-value': balance.value>=0}" *ngFor="let balance of getBalanceAfterInvestments()">{{balance.value | money}}</th>
       </tr>
-
-
-
-
-
-      <!--<tr>-->
-        <!--<td class="sticky-col1"><i>alt HRM1 Verwaltungsvermögen allgemein</i></td>-->
-        <!--<td class="sticky-col2">&#xa0;</td>-->
-        <!--<td class="text-right" *ngFor="let inoutcome of getInoutcomes()">{{inoutcome.income}}</td>-->
-      <!--</tr>-->
 
     </tbody>
   </table>

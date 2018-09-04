@@ -40,6 +40,11 @@ export class AggregationService {
     return years;
   }
 
+  calculateTaxIncome(inoutcome: Inoutcome): void {
+    inoutcome.income = inoutcome.taxvolume/(100/inoutcome.taxrate);
+  }
+
+
   getInvestmentsByYear(investment: Investment): number[] {
     let investments:number[] = [];
     let investmentYears:InvestmentYear[] = investment.investmentYears;
@@ -71,6 +76,7 @@ export class AggregationService {
     let counter:number = 0;
     for(let i:number = this.yearFrom;i<this.yearTo;i++) {
       liquidity.push(this.balanceAfterInvestments[counter].value);
+      counter++;
     }
     return liquidity;
   }
@@ -113,9 +119,25 @@ export class AggregationService {
       taxoffPerYear = investedEff/(100/investment.rate);
       taxoffStartYear = investment.investmentYears[investment.investmentYears.length-1].year;
     }
-    let taxoffTotal:number = 0
+    let taxoffTotal:number = 0;
     for(let i:number = this.yearFrom;i<=this.yearTo;i++) {
       if ((taxoffStartYear <= i) && (taxoffTotal < investedEff)) {
+        taxoffs.push(taxoffPerYear);
+        taxoffTotal += taxoffPerYear;
+      } else {
+        taxoffs.push(0);
+      }
+    }
+    return taxoffs;
+  }
+
+  getTaxoffsHRM1ByYear() {
+    let taxoffs:number[] = [];
+    let total:number = this.datastore.getInvestmentHRM1Container().value;
+    let taxoffPerYear:number = total/(100/this.datastore.getInvestmentHRM1Container().rate);
+    let taxoffTotal:number = 0;
+    for(let i:number = this.yearFrom;i<=this.yearTo;i++) {
+      if (taxoffTotal < total) {
         taxoffs.push(taxoffPerYear);
         taxoffTotal += taxoffPerYear;
       } else {
@@ -207,14 +229,22 @@ export class AggregationService {
     this.datastore.getInvestments().forEach(investment => {
       counter = -1;
       this.getTaxoffsByYear(investment).forEach(taxoff => {
-          counter++;
-          if (taxoffs[counter]>0) {
-            taxoffs[counter] += taxoff;
-          } else {
-            taxoffs[counter] = taxoff;
-          }
+        counter++;
+        if (taxoffs[counter]>0) {
+          taxoffs[counter] += taxoff;
+        } else {
+          taxoffs[counter] = taxoff;
         }
-      );
+      });
+    });
+    counter = -1;
+    this.getTaxoffsHRM1ByYear().forEach(taxoff => {
+      counter++;
+      if (taxoffs[counter]>0) {
+        taxoffs[counter] += taxoff;
+      } else {
+        taxoffs[counter] = taxoff;
+      }
     });
     return taxoffs;
   }

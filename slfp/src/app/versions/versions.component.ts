@@ -1,6 +1,7 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, NgZone, OnInit} from '@angular/core';
 import {Version} from "../data/model/version";
 import {DatastoreService} from "../data/datastore.service";
+import {CommunicationService} from "../communication/communication.service";
 
 @Component({
   selector: 'app-versions',
@@ -9,9 +10,19 @@ import {DatastoreService} from "../data/datastore.service";
 })
 export class VersionsComponent implements OnInit {
 
-  showVersion:boolean = false;
+  showVersion:boolean;
 
-  constructor(private dataStore: DatastoreService) { }
+  constructor(private dataStore: DatastoreService, private communication:CommunicationService, private ngZone:NgZone) {
+    this.communication.componentMethodCalled$.subscribe(
+      value => {
+        if (!value) {
+          ngZone.run(()=> {
+            this.addVersion();
+          });
+        }
+      }
+    );
+  }
 
   ngOnInit() {
   }

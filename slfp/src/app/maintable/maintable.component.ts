@@ -8,6 +8,7 @@ import {InvestmentCategory} from "../data/model/investmentCategory";
 import {Balance} from "../data/model/balance";
 import {ForeignContainer} from "../data/model/foreignContainer";
 import {LiquidityStart} from "../data/model/liquidityStart";
+import {InvestmentHRM1Container} from "../data/model/investmentHRM1Container";
 declare var $:any;
 
 @Component({
@@ -36,6 +37,28 @@ export class MaintableComponent implements OnInit, AfterViewChecked {
 
   getInoutcomes(): Inoutcome[] {
     return this.dataStore.getInoutcomes();
+  }
+
+  calculateTaxVolume(inoutcome: Inoutcome): void {
+    this.aggregation.calculateTaxIncome(inoutcome);
+  }
+
+  changedTaxVolume(event, inoutcome:Inoutcome) {
+    inoutcome.taxvolume = event;
+    this.calculateTaxVolume(inoutcome);
+  }
+
+  copyTaxvolume(year:number): void {
+    let inoutcomes:Inoutcome[] = this.dataStore.getInoutcomes();
+    let taxvolumeToCopy:number;
+    for (let i = 0;i<inoutcomes.length;i++){
+      if (inoutcomes[i].year == year) {
+        taxvolumeToCopy = inoutcomes[i].taxvolume;
+      }
+      if (inoutcomes[i].year>year) {
+        inoutcomes[i].taxvolume = taxvolumeToCopy;
+      }
+    }
   }
 
   getBalanceAfterOutcome(): Balance[] {
@@ -88,6 +111,14 @@ export class MaintableComponent implements OnInit, AfterViewChecked {
 
   hasActualVersion(): boolean {
     return this.dataStore.getActualVersion() != null;
+  }
+
+  getInvestmentHRM1Container(): InvestmentHRM1Container {
+    return this.dataStore.getInvestmentHRM1Container();
+  }
+
+  getTaxoffsHRM1ByYear(): number[] {
+    return this.aggregation.getTaxoffsHRM1ByYear();
   }
 
 
