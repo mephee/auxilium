@@ -1,1 +1,7 @@
-<input type="text" [ngClass]="{'forTable': tableStyle, 'form-control': !tableStyle}" class="text-right" [(ngModel)]="valueFormatted" (focus)="onFocus()" (blur)="onBlur()">
+<input type="text"
+       [ngClass]="{'forTable': tableStyle, 'form-control': !tableStyle}"
+       class="text-right"
+       [(ngModel)]="valueFormatted"
+       (focus)="onFocus($event)"
+       (blur)="onBlur()"
+>

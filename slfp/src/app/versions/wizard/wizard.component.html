@@ -19,12 +19,12 @@
                 <option *ngFor="let year of getYearsForFrom()" [ngValue]="year">{{year}}</option>
               </select>
             </div>
-            <label class="col-3 col-form-label">Jahr bis:</label>
-            <div class="col-3">
-              <select [(ngModel)]="version.yearTo" class="form-control" [ngModelOptions]="{standalone: true}">
-                <option *ngFor="let year of getYearsForTo()" [ngValue]="year">{{year}}</option>
-              </select>
-            </div>
+            <!--<label class="col-3 col-form-label">Jahr bis:</label>-->
+            <!--<div class="col-3">-->
+              <!--<select [(ngModel)]="version.yearTo" class="form-control" [ngModelOptions]="{standalone: true}">-->
+                <!--<option *ngFor="let year of getYearsForTo()" [ngValue]="year">{{year}}</option>-->
+              <!--</select>-->
+            <!--</div>-->
           </div>
         </form>
       </div>

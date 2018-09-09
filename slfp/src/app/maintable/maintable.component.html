@@ -14,23 +14,18 @@
         <td class="sticky-col1">Steuervolumen</td>
         <td class="sticky-col2">&#xa0;</td>
         <td *ngFor="let inoutcome of getInoutcomes()">
-            <inlineedit [value]="inoutcome.taxvolume" (valueChange)="changedTaxVolume($event, inoutcome)"></inlineedit>
-          <!--<button (click)="copyTaxvolume(inoutcome.year)" type="button" class="copybutton">-->
-           <!--<div class="col-1">-->
-            <!--<span (click)="copyTaxvolume(inoutcome.year)" aria-hidden="true">&#xBB;</span>-->
-           <!--</div>-->
-          <!--</button>-->
+          <inlineedit [value]="inoutcome.taxvolume" (valueChange)="changedTaxVolume($event, inoutcome)"></inlineedit>
         </td>
       </tr>
       <tr>
-        <td class="sticky-col1">Steuerfuss</td>
+        <td class="sticky-col1">Steueranlage</td>
         <td class="sticky-col2">&#xa0;</td>
         <td *ngFor="let inoutcome of getInoutcomes()">
-          <input type="number" class="text-right" [(ngModel)]="inoutcome.taxrate" (blur)="calculateTaxVolume(inoutcome)">
+          <input type="number" class="text-right" [(ngModel)]="inoutcome.taxrate" (blur)="changedTaxrate(inoutcome)">
         </td>
       </tr>
       <tr>
-        <td class="sticky-col1">Steuersubstrat</td>
+        <td class="sticky-col1">Steuereinkommen</td>
         <td class="sticky-col2">&#xa0;</td>
         <td *ngFor="let inoutcome of getInoutcomes()" class="text-right">{{inoutcome.income | money}}</td>
       </tr>
@@ -39,7 +34,7 @@
         <td class="sticky-col1">Betriebsaufwände</td>
         <td class="sticky-col2">&#xa0;</td>
         <td *ngFor="let inoutcome of getInoutcomes()">
-          <inlineedit [(value)]="inoutcome.outcome"></inlineedit>
+          <inlineedit [value]="inoutcome.outcome" (valueChange)="editOutcome($event, inoutcome)"></inlineedit>
         </td>
       </tr>
       <!-- Balance -->
@@ -110,7 +105,7 @@
 
       <!-- Abschreibungen HRM 1-->
       <tr>
-        <td class="sticky-col1"><span><i>alt HRM1 Verwaltungsvermögen allgemein</i> <span style="left: 370px;position: absolute"><b>10%</b></span></span></td>
+        <td class="sticky-col1"><span><i>HRM1 Verwaltungsvermögen per 31.12.2017</i> <span style="left: 360px;position: absolute"><b>10%</b></span></span></td>
         <td class="sticky-col2">
           <inlineedit [(value)]="getInvestmentHRM1Container().value"></inlineedit>
         </td>

@@ -13,7 +13,7 @@ export class InlineeditComponent implements OnInit {
   @Input() tableStyle:boolean = true;
   valueFormatted: string;
 
-  constructor(private moneyPipe: MoneyPipe) {
+  constructor(private moneyPipe: MoneyPipe, private elementRef:ElementRef) {
   }
 
   @Input()
@@ -26,8 +26,11 @@ export class InlineeditComponent implements OnInit {
     this.updateInternalValue();
   }
 
-  onFocus(): void {
+  onFocus(event): void {
     this.valueFormatted = this._value.toString();
+    if (this.valueFormatted == '0') {
+      event.target.select();
+    }
   }
 
   onBlur(): void {

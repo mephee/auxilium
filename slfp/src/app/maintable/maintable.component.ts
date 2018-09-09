@@ -9,6 +9,7 @@ import {Balance} from "../data/model/balance";
 import {ForeignContainer} from "../data/model/foreignContainer";
 import {LiquidityStart} from "../data/model/liquidityStart";
 import {InvestmentHRM1Container} from "../data/model/investmentHRM1Container";
+import {ForeignPayback} from "../data/model/foreignPayback";
 declare var $:any;
 
 @Component({
@@ -43,9 +44,15 @@ export class MaintableComponent implements OnInit, AfterViewChecked {
     this.aggregation.calculateTaxIncome(inoutcome);
   }
 
+  changedTaxrate(inoutcome:Inoutcome) {
+    this.calculateTaxVolume(inoutcome);
+    this.copyTaxrate(inoutcome.year);
+  }
+
   changedTaxVolume(event, inoutcome:Inoutcome) {
     inoutcome.taxvolume = event;
     this.calculateTaxVolume(inoutcome);
+    this.copyTaxvolume(inoutcome.year);
   }
 
   copyTaxvolume(year:number): void {
@@ -57,6 +64,52 @@ export class MaintableComponent implements OnInit, AfterViewChecked {
       }
       if (inoutcomes[i].year>year) {
         inoutcomes[i].taxvolume = taxvolumeToCopy;
+        this.calculateTaxVolume(inoutcomes[i]);
+      }
+    }
+  }
+
+  copyTaxrate(year:number): void {
+    let inoutcomes:Inoutcome[] = this.dataStore.getInoutcomes();
+    let taxrateToCopy:number;
+    for (let i = 0;i<inoutcomes.length;i++){
+      if (inoutcomes[i].year == year) {
+        taxrateToCopy = inoutcomes[i].taxrate;
+      }
+      if (inoutcomes[i].year>year) {
+        inoutcomes[i].taxrate = taxrateToCopy;
+        this.calculateTaxVolume(inoutcomes[i]);
+      }
+    }
+  }
+
+  editPayback(event, payback:ForeignPayback): void {
+    let paybackTotal:number = this.aggregation.getForeignContainer().foreignPayback.reduce((total, foreignPaypack) => total + foreignPaypack.payback, 0);
+    if (paybackTotal + event > this.dataStore.getForeignContainer().foreignValue) {
+      // TODO alert
+      payback.payback = this.dataStore.getForeignContainer().foreignValue - paybackTotal;
+    } else {
+      payback.payback = event;
+    }
+  }
+
+  editOutcome(event, inoutcome:Inoutcome): void {
+    if (event>0) {
+      event = -1*event;
+    }
+    inoutcome.outcome = event;
+    this.copyOutcome(inoutcome.year);
+  }
+
+  copyOutcome(year:number): void {
+    let inoutcomes:Inoutcome[] = this.dataStore.getInoutcomes();
+    let outcomeToCopy:number;
+    for (let i = 0;i<inoutcomes.length;i++){
+      if (inoutcomes[i].year == year) {
+        outcomeToCopy = inoutcomes[i].outcome;
+      }
+      if (inoutcomes[i].year>year) {
+        inoutcomes[i].outcome = outcomeToCopy;
       }
     }
   }

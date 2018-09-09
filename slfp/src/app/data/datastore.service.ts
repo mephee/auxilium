@@ -8,6 +8,7 @@ import {LiquidityStart} from "./model/liquidityStart";
 import {Version} from "./model/version";
 import {CommunicationService} from "../communication/communication.service";
 import {InvestmentHRM1Container} from "./model/investmentHRM1Container";
+import {ForeignPayback} from "./model/foreignPayback";
 
 declare var storage:any;
 
@@ -57,21 +58,11 @@ export class DatastoreService {
     this.versions.push(this.actualVersion);
   }
 
-
   createVersion():Version {
     let version:Version = new Version();
     version.yearFrom = (new Date()).getFullYear()+1;
     version.yearTo = version.yearFrom + 50;
     version.inoutComes = [];
-    for(let i = version.yearFrom; i <= version.yearTo; i++) {
-      let inoutcome:Inoutcome = new Inoutcome();
-      inoutcome.year = i;
-      inoutcome.taxvolume = 0;
-      inoutcome.taxrate = 0;
-      inoutcome.income = 0;
-      inoutcome.outcome = 0;
-      version.inoutComes.push(inoutcome);
-    }
     version.foreignContainer = new ForeignContainer();
     version.foreignContainer.foreignValue = 0;
     version.investmentHRM1Container = new InvestmentHRM1Container();
@@ -80,6 +71,7 @@ export class DatastoreService {
     version.investments = [];
     version.liquidityStart = new LiquidityStart();
     version.liquidityStart.liquidity = 0;
+    this.updateVersionYearFromTo(version.yearFrom, version.yearTo);
     return version;
   }
 
@@ -103,6 +95,7 @@ export class DatastoreService {
       this.versions.push(version);
     }
     this.actualVersion = version;
+    this.updateVersionYearFromTo(version.yearFrom, version.yearTo);
   }
 
   deleteVersion(version:Version):void {
@@ -116,6 +109,23 @@ export class DatastoreService {
       this.actualVersion = this.createVersion();
       this.actualVersion.name = 'Version 1';
       this.versions.push(this.actualVersion);
+    }
+  }
+
+  updateVersionYearFromTo(yearFrom:number, yearTo:number):void {
+    this.actualVersion.yearFrom = yearFrom;
+    this.actualVersion.yearTo = yearTo;
+    for(let i = yearFrom; i <= yearTo; i++) {
+      let inoutcome:Inoutcome = this.actualVersion.inoutComes.find(itInoutcome => itInoutcome.year === i);
+      if (!inoutcome) {
+        inoutcome = new Inoutcome();
+        inoutcome.year = i;
+        inoutcome.taxvolume = 0;
+        inoutcome.taxrate = 0;
+        inoutcome.income = 0;
+        inoutcome.outcome = 0;
+        this.actualVersion.inoutComes.push(inoutcome);
+      }
     }
   }
 

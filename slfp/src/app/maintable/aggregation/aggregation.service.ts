@@ -15,21 +15,67 @@ import {count} from "rxjs/operators";
 })
 export class AggregationService {
 
+  // Fx members
   yearFrom: number;
   yearTo: number;
+  investmentCategory: InvestmentCategory[];
+
+  // calculated members
   balanceAfterOutcome: Balance[];
   balanceBeforeWriteoff: Balance[];
   balanceAfterWriteoff: Balance[];
   balanceAfterInvestments: Balance[] = [];
-
-  investmentCategory: InvestmentCategory[];
 
   constructor(private datastore: DatastoreService) {
     this.load();
   }
 
 
+  /*
+  Static Getters
+   */
+  getInvestmentCategories(): InvestmentCategory[] {
+    return this.investmentCategory;
+  }
 
+  getBalanceAfterOutcome(): Balance[] {
+    this.calculateBalances();
+    return this.balanceAfterOutcome;
+  }
+
+  getLiquidityOfLastYear(): number[] {
+    this.calculateBalances();
+    let liquidity: number[] = [];
+    let counter:number = 0;
+    for(let i:number = this.yearFrom;i<this.yearTo;i++) {
+      liquidity.push(this.balanceAfterInvestments[counter].value);
+      counter++;
+    }
+    return liquidity;
+  }
+
+  getBalanceBeforeWriteoff(): Balance[] {
+    this.calculateBalances();
+    return this.balanceBeforeWriteoff;
+  }
+
+  getBalanceAfterWriteoff(): Balance[] {
+    this.calculateBalances();
+    return this.balanceAfterWriteoff;
+  }
+
+  getBalanceAfterInvestments(): Balance[] {
+    this.calculateBalances();
+    return this.balanceAfterInvestments;
+  }
+
+
+
+  /*
+  Transient Getters
+   */
+
+  // year
   getYears(): number[] {
     let years: number[];
     years = this.datastore.getInoutcomes().map(inoutcome => {
@@ -40,11 +86,19 @@ export class AggregationService {
     return years;
   }
 
-  calculateTaxIncome(inoutcome: Inoutcome): void {
-    inoutcome.income = inoutcome.taxvolume/(100/inoutcome.taxrate);
+  // foreign Container
+  getForeignContainer(): ForeignContainer {
+    for(let i:number = this.yearFrom;i<=this.yearTo;i++) {
+      let payback:ForeignPayback = this.datastore.getForeignContainer().foreignPayback.find(payback => payback.year === i);
+      if (!payback) {
+        this.datastore.getForeignContainer().foreignPayback.push(new ForeignPayback(i));
+      }
+    }
+    this.datastore.getForeignContainer().foreignPayback.sort((payback1,payback2)=> payback1.year - payback2.year);
+    return this.datastore.getForeignContainer();
   }
 
-
+  // Investment
   getInvestmentsByYear(investment: Investment): number[] {
     let investments:number[] = [];
     let investmentYears:InvestmentYear[] = investment.investmentYears;
@@ -59,28 +113,6 @@ export class AggregationService {
     return investments;
   }
 
-  getForeignContainer(): ForeignContainer {
-    for(let i:number = this.yearFrom;i<=this.yearTo;i++) {
-      let payback:ForeignPayback = this.datastore.getForeignContainer().foreignPayback.find(payback => payback.year === i);
-      if (!payback) {
-        this.datastore.getForeignContainer().foreignPayback.push(new ForeignPayback(i));
-      }
-    }
-    this.datastore.getForeignContainer().foreignPayback.sort((payback1,payback2)=> payback1.year - payback2.year);
-    return this.datastore.getForeignContainer();
-  }
-
-  getLiquidityOfLastYear(): number[] {
-    this.calculateBalances();
-    let liquidity: number[] = [];
-    let counter:number = 0;
-    for(let i:number = this.yearFrom;i<this.yearTo;i++) {
-      liquidity.push(this.balanceAfterInvestments[counter].value);
-      counter++;
-    }
-    return liquidity;
-  }
-
   getInvestmentsByRate(rate: number): Investment[] {
     let investmnetsByRate: Investment[] = [];
     this.datastore.getInvestments().forEach(investment => {
@@ -91,6 +123,23 @@ export class AggregationService {
     return investmnetsByRate;
   }
 
+  getInvestmentsTotal(): number[] {
+    let investments:number[] = new Array(this.yearTo - this.yearFrom + 1);
+    this.datastore.getInvestments().forEach(investment => {
+      investment.investmentYears.forEach(investmentYear => {
+          let index = investmentYear.year - this.yearFrom;
+          if (investments[index] < 0) {
+            investments[index] += -investmentYear.invest;
+          } else {
+            investments[index] = -investmentYear.invest;
+          }
+        }
+      );
+    });
+    return investments;
+  }
+
+  // Taxoffs
   getTaxoffsByCategory(investmentCategory: InvestmentCategory): number[] {
     let taxoffs: number[] = new Array(this.yearTo - this.yearFrom + 1);
     let counter:number;
@@ -128,6 +177,17 @@ export class AggregationService {
         taxoffs.push(0);
       }
     }
+
+    // add Years if Investment ist still not "abgeschrieben"
+    if (investedEff > taxoffTotal) {
+      while (investedEff > taxoffTotal) {
+        taxoffs.push(taxoffPerYear);
+        taxoffTotal += taxoffPerYear;
+        this.yearTo++;
+      }
+      this.datastore.updateVersionYearFromTo(this.yearFrom, this.yearTo);
+      this.calculateBalances();
+    }
     return taxoffs;
   }
 
@@ -136,91 +196,19 @@ export class AggregationService {
     let total:number = this.datastore.getInvestmentHRM1Container().value;
     let taxoffPerYear:number = total/(100/this.datastore.getInvestmentHRM1Container().rate);
     let taxoffTotal:number = 0;
-    for(let i:number = this.yearFrom;i<=this.yearTo;i++) {
+    for(let i:number = 2018;i<=this.yearTo;i++) {
       if (taxoffTotal < total) {
-        taxoffs.push(taxoffPerYear);
+        if (i >= this.yearFrom) {
+          taxoffs.push(taxoffPerYear);
+        }
         taxoffTotal += taxoffPerYear;
       } else {
-        taxoffs.push(0);
+        if (i >= this.yearFrom) {
+          taxoffs.push(0);
+        }
       }
     }
     return taxoffs;
-  }
-
-  getInvestmentCategories(): InvestmentCategory[] {
-    return this.investmentCategory;
-  }
-
-
-  // Calculations (Balances)
-  private calculateBalances(): void {
-
-    this.balanceBeforeWriteoff = [];
-    this.balanceAfterWriteoff = [];
-    this.balanceAfterInvestments = [];
-
-    let investments:number[] = this.getInvestmentsTotal();
-    let foreignContainer: ForeignContainer = this.getForeignContainer();
-    let taxoffs:number[] = this.getTaxoffsTotal();
-    let counter:number = 0;
-    for(let i:number = this.yearFrom;i<=this.yearTo;i++) {
-
-      // before writeoff
-      let balance = new Balance();
-      balance.year = i;
-      balance.type = 'beforewriteoff';
-      if (counter == 0) {
-        balance.value = this.balanceAfterOutcome[counter].value + this.datastore.getLiquidityStart().liquidity;
-      } else {
-        balance.value = this.balanceAfterOutcome[counter].value + this.balanceAfterInvestments[counter-1].value;
-      }
-      if (foreignContainer.foreignPayback[counter].payback) {
-        balance.value += foreignContainer.foreignPayback[counter].payback;
-      }
-      this.balanceBeforeWriteoff.push(balance);
-
-
-      // after writeoff
-      balance = new Balance();
-      balance.year = i;
-      balance.type = 'afterwriteoff';
-      balance.value = this.balanceBeforeWriteoff[counter].value + taxoffs[counter];
-      this.balanceAfterWriteoff.push(balance);
-
-      // after investment
-      balance = new Balance();
-      balance.year = i;
-      balance.type = 'afterinvestment';
-      balance.value = this.balanceAfterWriteoff[counter].value;
-      if (investments[counter]<0) {
-        balance.value += investments[counter];
-      }
-      this.balanceAfterInvestments.push(balance);
-
-      counter++;
-    }
-  }
-
-  getBalanceAfterOutcome(): Balance[] {
-    this.balanceAfterOutcome = this.datastore.getInoutcomes().map(inoutcome => {
-      let balance = new Balance();
-      balance.year = inoutcome.year;
-      balance.type = 'inoutcome';
-      balance.value = inoutcome.income + inoutcome.outcome;
-      return balance;
-    });
-    return this.balanceAfterOutcome;
-  }
-
-  getBalanceBeforeWriteoff(): Balance[] {
-    this.calculateBalances();
-    return this.balanceBeforeWriteoff;
-  }
-
-  getBalanceAfterWriteoff(): Balance[] {
-    this.calculateBalances();
-    return this.balanceAfterWriteoff;
-
   }
 
   getTaxoffsTotal(): number[] {
@@ -249,25 +237,73 @@ export class AggregationService {
     return taxoffs;
   }
 
-  getInvestmentsTotal(): number[] {
-    let investments:number[] = new Array(this.yearTo - this.yearFrom + 1);
-    this.datastore.getInvestments().forEach(investment => {
-      investment.investmentYears.forEach(investmentYear => {
-          let index = investmentYear.year - this.yearFrom;
-          if (investments[index] < 0) {
-            investments[index] += -investmentYear.invest;
-          } else {
-            investments[index] = -investmentYear.invest;
-          }
-        }
-      );
-    });
-    return investments;
+
+  /*
+  Calculations
+   */
+  // Balances
+  private calculateBalances(): void {
+
+    this.balanceAfterOutcome = [];
+    this.balanceBeforeWriteoff = [];
+    this.balanceAfterWriteoff = [];
+    this.balanceAfterInvestments = [];
+
+    let inoutComes:Inoutcome[] = this.datastore.getInoutcomes();
+    let investments:number[] = this.getInvestmentsTotal();
+    let foreignContainer: ForeignContainer = this.getForeignContainer();
+    let taxoffs:number[] = this.getTaxoffsTotal();
+    let counter:number = 0;
+    for(let i:number = this.yearFrom;i<=this.yearTo;i++) {
+
+      // After Outcome
+      let balance = new Balance();
+      balance.year = inoutComes[counter].year;
+      balance.type = 'inoutcome';
+      balance.value = inoutComes[counter].income + inoutComes[counter].outcome;
+      this.balanceAfterOutcome.push(balance);
+
+      // before writeoff
+      balance = new Balance();
+      balance.year = i;
+      balance.type = 'beforewriteoff';
+      if (counter == 0) {
+        balance.value = this.balanceAfterOutcome[counter].value + this.datastore.getLiquidityStart().liquidity;
+      } else {
+        balance.value = this.balanceAfterOutcome[counter].value + this.balanceAfterInvestments[counter-1].value;
+      }
+      if (foreignContainer.foreignPayback[counter].payback) {
+        balance.value += foreignContainer.foreignPayback[counter].payback;
+      }
+      this.balanceBeforeWriteoff.push(balance);
+
+
+      // after writeoff
+      balance = new Balance();
+      balance.year = i;
+      balance.type = 'afterwriteoff';
+      balance.value = this.balanceBeforeWriteoff[counter].value + taxoffs[counter];
+      this.balanceAfterWriteoff.push(balance);
+
+
+      // after investment
+      balance = new Balance();
+      balance.year = i;
+      balance.type = 'afterinvestment';
+      balance.value = this.balanceAfterWriteoff[counter].value;
+      if (investments[counter]<0) {
+        balance.value += investments[counter];
+      }
+      this.balanceAfterInvestments.push(balance);
+
+      counter++;
+    }
   }
 
-  getBalanceAfterInvestments(): Balance[] {
-    this.calculateBalances();
-    return this.balanceAfterInvestments;
+
+  // Taxincome
+  calculateTaxIncome(inoutcome: Inoutcome): void {
+    inoutcome.income = inoutcome.taxvolume/(100/inoutcome.taxrate);
   }
 
 

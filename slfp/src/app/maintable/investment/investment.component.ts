@@ -46,7 +46,7 @@ export class InvestmentComponent implements OnInit {
     let years:number[] = [];
     let startIndex:number;
     if (index == 0) {
-      startIndex = this.dataStore.getActualVersion().yearFrom;
+      startIndex = 2018;
     } else {
       startIndex = this.investment.investmentYears[index-1].year+1;
     }
