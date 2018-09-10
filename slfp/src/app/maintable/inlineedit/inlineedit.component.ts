@@ -14,6 +14,7 @@ export class InlineeditComponent implements OnInit {
 
   @Output() valueChange = new EventEmitter();
   @Input() tableStyle:boolean = true;
+  @Input() inThousand:boolean = true;
 
   constructor(private moneyPipe: MoneyPipe, private elementRef:ElementRef) {
   }
@@ -44,11 +45,19 @@ export class InlineeditComponent implements OnInit {
   onBlur(): void {
     this.valueChange.emit(+this.valueFormatted);
     this._value = +this.valueFormatted;
-    this.valueFormatted = this.moneyPipe.transform(+this.valueFormatted);
+    if (this.inThousand) {
+      this.valueFormatted = this.moneyPipe.transform(+this.valueFormatted);
+    } else {
+      this.valueFormatted = '' + (this._value !== 0 ? this._value : "");
+    }
     this.mouseUpCatched = false;
   }
 
   updateInternalValue():void {
-    this.valueFormatted = this.moneyPipe.transform(this._value);
+    if (this.inThousand) {
+      this.valueFormatted = this.moneyPipe.transform(this._value);
+    } else {
+      this.valueFormatted = '' + (this._value !== 0 ? this._value : "");
+    }
   }
 }

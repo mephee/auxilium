@@ -43,7 +43,8 @@ export class MaintableComponent implements OnInit {
     this.aggregation.calculateTaxIncome(inoutcome);
   }
 
-  changedTaxrate(inoutcome:Inoutcome) {
+  changedTaxrate(event, inoutcome:Inoutcome) {
+    inoutcome.taxrate = event;
     this.calculateTaxVolume(inoutcome);
     this.copyTaxrate(inoutcome.year);
   }

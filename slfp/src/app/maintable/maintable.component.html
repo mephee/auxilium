@@ -21,7 +21,8 @@
         <td class="sticky-col1">Steueranlage</td>
         <td class="sticky-col2">&#xa0;</td>
         <td *ngFor="let inoutcome of getInoutcomes()">
-          <input type="number" class="text-right" [(ngModel)]="inoutcome.taxrate" (blur)="changedTaxrate(inoutcome)">
+          <inlineedit [value]="inoutcome.taxrate" (valueChange)="changedTaxrate($event, inoutcome)" [inThousand]="false"></inlineedit>
+          <!--<input type="number" class="text-right" [(ngModel)]="inoutcome.taxrate" (blur)="changedTaxrate(inoutcome)">-->
         </td>
       </tr>
       <tr>
