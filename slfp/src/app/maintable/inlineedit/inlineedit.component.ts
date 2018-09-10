@@ -9,9 +9,11 @@ import {MoneyPipe} from "../money.pipe";
 export class InlineeditComponent implements OnInit {
 
   private _value: number;
+  private mouseUpCatched:boolean = false;
+  valueFormatted: string;
+
   @Output() valueChange = new EventEmitter();
   @Input() tableStyle:boolean = true;
-  valueFormatted: string;
 
   constructor(private moneyPipe: MoneyPipe, private elementRef:ElementRef) {
   }
@@ -28,8 +30,14 @@ export class InlineeditComponent implements OnInit {
 
   onFocus(event): void {
     this.valueFormatted = this._value.toString();
-    if (this.valueFormatted == '0') {
-      event.target.select();
+  }
+
+  onMouseUp(event):void {
+    if (!this.mouseUpCatched) {
+      if (this.valueFormatted == '0') {
+        event.target.select();
+      }
+      this.mouseUpCatched = true;
     }
   }
 
@@ -37,6 +45,7 @@ export class InlineeditComponent implements OnInit {
     this.valueChange.emit(+this.valueFormatted);
     this._value = +this.valueFormatted;
     this.valueFormatted = this.moneyPipe.transform(+this.valueFormatted);
+    this.mouseUpCatched = false;
   }
 
   updateInternalValue():void {
