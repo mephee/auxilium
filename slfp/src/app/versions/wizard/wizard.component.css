@@ -6,3 +6,7 @@
 .auxbutton:hover {
   background-color: rgba(199,0,42,0.75);
 }
+
+.visible {
+  display: block;
+}

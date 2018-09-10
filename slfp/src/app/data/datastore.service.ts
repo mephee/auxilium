@@ -8,7 +8,6 @@ import {LiquidityStart} from "./model/liquidityStart";
 import {Version} from "./model/version";
 import {CommunicationService} from "../communication/communication.service";
 import {InvestmentHRM1Container} from "./model/investmentHRM1Container";
-import {ForeignPayback} from "./model/foreignPayback";
 
 declare var storage:any;
 
@@ -25,7 +24,7 @@ export class DatastoreService {
     this.categories = MOCK.categories;
     this.versions = [];
 
-    if (storage) {
+    if (typeof storage !== 'undefined') {
       storage.has('versions', (error, has) => {
         if (error) throw error;
         if (has) {
@@ -71,6 +70,7 @@ export class DatastoreService {
     version.investments = [];
     version.liquidityStart = new LiquidityStart();
     version.liquidityStart.liquidity = 0;
+    this.actualVersion = version;
     this.updateVersionYearFromTo(version.yearFrom, version.yearTo);
     return version;
   }

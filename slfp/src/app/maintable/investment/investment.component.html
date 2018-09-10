@@ -1,4 +1,4 @@
-<div *ngIf="open" class="modal" tabindex="-1" role="dialog" aria-labelledby="investmentModalLabel" aria-hidden="true" style="display: block">
+<div id="investment" class="modal" tabindex="-1" role="dialog" aria-labelledby="investmentModalLabel" aria-hidden="true" [ngClass]="{'visible': open}">
   <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
     <div class="modal-content">
       <div class="modal-header">

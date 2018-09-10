@@ -1,7 +1,7 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {Investment} from "../../data/model/investment";
 import {Version} from "../../data/model/version";
 import {DatastoreService} from "../../data/datastore.service";
+declare var $:any;
 
 @Component({
   selector: 'app-wizard',
@@ -10,12 +10,15 @@ import {DatastoreService} from "../../data/datastore.service";
 })
 export class WizardComponent implements OnInit {
 
-  private version: Version;
+  version: Version;
   _open: boolean;
   @Output() closed = new EventEmitter<void>();
   constructor(private dataStore:DatastoreService) { }
 
   ngOnInit() {
+    $('#wizard').draggable({
+      handle: '.modal-header'
+    });
   }
 
   @Input()

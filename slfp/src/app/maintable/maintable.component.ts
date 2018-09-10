@@ -1,4 +1,4 @@
-import {AfterViewChecked, Component, ElementRef, OnInit} from '@angular/core';
+import {Component, ElementRef, OnInit} from '@angular/core';
 import {Inoutcome} from "../data/model/inoutcome";
 import {DatastoreService} from "../data/datastore.service";
 import {Investment} from "../data/model/investment";
@@ -17,7 +17,7 @@ declare var $:any;
   templateUrl: './maintable.component.html',
   styleUrls: ['./maintable.component.css']
 })
-export class MaintableComponent implements OnInit, AfterViewChecked {
+export class MaintableComponent implements OnInit {
 
   selectedInvestment: Investment;
   showInvestment: boolean;
@@ -26,10 +26,9 @@ export class MaintableComponent implements OnInit, AfterViewChecked {
 
   ngOnInit() {
     this.showInvestment = false;
-  }
-
-  ngAfterViewChecked() {
-    $('[data-toggle="popover"]').popover();  // TODO Performance Bottleneck
+    setTimeout(() => {
+      $('[data-toggle="popover"]').popover();
+    }, 2000);
   }
 
   getYears(): number[] {

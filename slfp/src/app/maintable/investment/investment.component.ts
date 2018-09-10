@@ -1,16 +1,16 @@
-import {Component, OnInit, Input, Output, EventEmitter} from '@angular/core';
+import {Component, OnInit, Input, Output, EventEmitter, AfterViewChecked} from '@angular/core';
 import {DatastoreService} from "../../data/datastore.service";
 import {Category} from "../../data/model/category";
 import {Investment} from "../../data/model/investment";
 import {InvestmentYear} from "../../data/model/investmentYear";
-import {el} from "@angular/platform-browser/testing/src/browser_util";
+declare var $:any;
 
 @Component({
   selector: 'app-investment',
   templateUrl: './investment.component.html',
   styleUrls: ['./investment.component.css']
 })
-export class InvestmentComponent implements OnInit {
+export class InvestmentComponent implements OnInit, AfterViewChecked {
 
   @Input() investment: Investment;
   @Input()  open: boolean;
@@ -20,6 +20,12 @@ export class InvestmentComponent implements OnInit {
   constructor(private dataStore: DatastoreService) { }
 
   ngOnInit() {
+    $('#investment').draggable({
+      handle: '.modal-header'
+    });
+  }
+
+  ngAfterViewChecked() {
   }
 
   changeCategory(): void {
