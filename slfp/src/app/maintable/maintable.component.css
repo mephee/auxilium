@@ -61,3 +61,15 @@ input {
   width: 100%;
   background-color: transparent;
 }
+
+.new-button {
+  margin-left: 85px;
+  margin-top: -2px;
+  padding: 0.1rem 0.5rem;
+}
+
+.edit-button {
+  margin-left: 85px;
+  margin-top: -2px;
+  padding: 0.1rem 0.3rem;
+}

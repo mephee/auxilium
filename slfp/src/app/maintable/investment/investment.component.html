@@ -1,4 +1,4 @@
-<div id="investment" class="modal" tabindex="-1" role="dialog" aria-labelledby="investmentModalLabel" aria-hidden="true" [ngClass]="{'visible': open}">
+<div id="investment" class="modal m-1 p-1" tabindex="-1" role="dialog" aria-labelledby="investmentModalLabel" aria-hidden="true" [ngClass]="{'visible': open}">
   <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
     <div class="modal-content">
       <div class="modal-header">
@@ -6,73 +6,96 @@
       </div>
       <div class="modal-body">
         <form>
-          <div class="form-group row">
+          <div class="row mb-2">
             <label for="name" class="col-3 col-form-label">Bezeichnung:</label>
             <div class="col-4">
-              <input type="text" class="form-control" id="name" [(ngModel)]="investment.name" name="name">
+              <input type="text" class="form-control form-control-sm" id="name" [(ngModel)]="investment.name" name="name">
             </div>
             <label for="project" class="col-2 col-form-label">Projekt-Nr.:</label>
             <div class="col-3">
-              <input type="text" class="form-control" id="project" [(ngModel)]="investment.projectNr" name="proj">
-            </div>
-          </div>
-          <div class="form-group row">
-            <label for="total" class="col-3 col-form-label">Genehmigte Investition:</label>
-            <div class="col-2">
-              <input type="number" class="form-control font-weight-bold text-right" id="total" [(ngModel)]="investment.total" name="tot">
-            </div>
-            <div class="col-1"></div>
-            <label for="total" class="col-3 col-form-label">Effektive Investition:</label>
-            <div class="col-2">
-              <input type="number" class="form-control font-weight-bold text-right" id="totalCorr" [(ngModel)]="investment.totalCorr" name="totCorr">
+              <input type="text" class="form-control form-control-sm" id="project" [(ngModel)]="investment.projectNr" name="proj">
             </div>
           </div>
 
-          <div class="form-group row">
+          <div class="row mb-2">
+            <label for="total" class="col-3 col-form-label">Genehmigte Investition:</label>
+            <div class="col-2">
+              <input type="number" class="form-control font-weight-bold text-right form-control-sm" id="total" [(ngModel)]="investment.total" name="tot">
+            </div>
+            <div class="col-1"></div>
             <label for="category" class="col-3 col-form-label">Anlagekategorie:</label>
             <div class="col-3">
-              <select [(ngModel)]="selectedCategory" name="cat" class="form-control" id="category">
+              <select [(ngModel)]="selectedCategory" name="cat" class="form-control form-control-sm" id="category">
                 <option *ngFor="let category of getCategories()" [ngValue]="category">{{category.name}} {{category.rate}}%</option>
               </select>
             </div>
+          </div>
+
+          <div class="row mb-2">
+            <label for="total" class="col-3 col-form-label">Effektive Investition:</label>
+            <div class="col-2">
+              <input type="number" class="form-control font-weight-bold text-right form-control-sm" id="totalCorr" [(ngModel)]="investment.totalCorr" name="totCorr">
+            </div>
+            <div class="col-1"></div>
             <label class="col-1 col-form-label">Jahre:</label>
             <label class="col-1 col-form-label">{{calcYears() | number:'0.0-2'}}</label>
             <label class="col-2 col-form-label">Abschr./Jahr:</label>
-            <label class="col-1 col-form-label">{{calcWriteoffPerYear() | money}}</label>
+            <label class="col-1 col-form-label">{{calcWriteoffPerYear() | number:'0.0'}}</label>
           </div>
 
-          <div class="form-group row">
-            <label class="col-12 col-form-label">Teilzahlungen nach Jahr:</label>
-          </div>
+          <div class="row mb-2 mt-4">
+            <div class="col-5">
+              <label class="row col-12 col-form-label">Teilzahlungen nach Jahr:</label>
+              <div class="investperyear">
+                <div class="row mb-3" *ngFor="let investmentYear of investment.investmentYears; let idx = index">
+                  <div class="col-5">
+                    <select [(ngModel)]="investmentYear.year" class="form-control form-control-sm" [ngModelOptions]="{standalone: true}">
+                      <option *ngFor="let year of getCoupleOfYears(idx)" [ngValue]="year">{{year}}</option>
+                    </select>
+                  </div>
+                  <div class="col-5">
+                    <input type="number" class="form-control font-weight-bold text-right form-control-sm" [(ngModel)]="investmentYear.invest" [ngModelOptions]="{standalone: true}">
+                  </div>
+                  <div class="col-2">
+                    <button type="button" class="btn btn-secondary btn-sm" (click)="removeInvestmentYear(investmentYear)">-</button>
+                  </div>
+                </div>
 
-          <div class="investperyear">
-
-            <div class="form-group row" *ngFor="let investmentYear of investment.investmentYears; let idx = index">
-              <div class="col-2">
-                <select [(ngModel)]="investmentYear.year" class="form-control" [ngModelOptions]="{standalone: true}">
-                  <option *ngFor="let year of getCoupleOfYears(idx)" [ngValue]="year">{{year}}</option>
-                </select>
-              </div>
-              <div class="col-2">
-                <input type="number" class="form-control font-weight-bold text-right" [(ngModel)]="investmentYear.invest" [ngModelOptions]="{standalone: true}">
-              </div>
-              <div class="col-1">
-                <button type="button" class="btn btn-secondary" (click)="removeInvestmentYear(investmentYear)">-</button>
+                <div class="row mb-3">
+                  <div class="col-2">
+                    <button type="button" class="btn btn-secondary btn-sm" (click)="addInvestmentYear()">+</button>
+                  </div>
+                </div>
               </div>
             </div>
 
-            <div class="row">
-              <div class="col-1">
-                <button type="button" class="btn btn-secondary" (click)="addInvestmentYear()">+</button>
+            <div class="col-1"></div>
+
+            <div class="col-6">
+              <label class="row col-12 col-form-label">Subventionen</label>
+              <div class="row mb-3">
+                <label class="col-2 col-form-label">Bund</label>
+                <div class="col-2">
+                  <input type="number" class="form-control text-right form-control-sm" [(ngModel)]="investment.rate" [ngModelOptions]="{standalone: true}">
+                </div>
+                <label class="col-4 col-form-label">{{calcWriteoffPerYear() | number:'0.0'}}</label>
+              </div>
+              <div class="row mb-3">
+                <label class="col-2 col-form-label">Kanton</label>
+                <div class="col-2">
+                  <input type="number" class="form-control text-right form-control-sm" [(ngModel)]="investment.rate" [ngModelOptions]="{standalone: true}">
+                </div>
+                <label class="col-4 col-form-label">{{calcWriteoffPerYear() | number:'0.0'}}</label>
               </div>
             </div>
           </div>
+
 
         </form>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" (click)="close()">Abbrechen</button>
-        <button type="button" class="btn auxbutton" (click)="save()">Speichern</button>
+        <button type="button" class="btn btn-secondary btn-sm" (click)="close()">Abbrechen</button>
+        <button type="button" class="btn auxbutton btn-sm" (click)="save()">Speichern</button>
       </div>
     </div>
   </div>

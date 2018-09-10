@@ -75,9 +75,8 @@
       <tr class="table-secondary">
         <th class="sticky-col1">Investitionen und Abschreibungen</th>
         <td class="sticky-col2">
-          <button (click)="newInvestment()" type="button" class="btn-sm" style="padding: 0px 6px;margin-left: 90px" aria-label="Close">
-            <span aria-hidden="true">+</span>
-          </button></td>
+          <button type="button" class="btn btn-secondary btn-sm new-button" (click)="newInvestment()">+</button>
+        </td>
         <td class="text-right" *ngFor="let inoutcome of getInoutcomes()"></td>
       </tr>
 
@@ -85,7 +84,17 @@
         <tr>
           <td class="sticky-col1" (click)="toggleInvestmentCategory(investmentCategory)">
             <div class="row">
-              <div class="col-11"><span>+</span><span style="margin-left: 10px">{{investmentCategory.name}} <span style="left: 370px;position: absolute"><b>{{investmentCategory.rate}}%</b></span></span></div>
+              <div class="col-11">
+                <span>
+                  <span *ngIf="!investmentCategory.show" style="width: 12px">&#x2B9E;</span>
+                  <span *ngIf="investmentCategory.show" style="width: 12px">&#x2B9F;</span>
+                </span>
+                <span style="margin-left: 10px">{{investmentCategory.name}}
+                  <span style="left: 370px;position: absolute">
+                    <b>{{investmentCategory.rate}}%</b>
+                  </span>
+                </span>
+              </div>
             </div>
           </td>
           <td class="sticky-col2">&#xa0;</td>
@@ -95,9 +104,7 @@
           <tr *ngFor="let investment of getInvestmentsByRate(investmentCategory.rate)">
             <td class="sticky-col1"><span style="margin-left: 25px">{{investment.name}}    (Projekt-Nr: {{investment.projectNr}})</span></td>
             <td class="sticky-col2">
-              <button (click)="editInvestment(investment)" type="button" class="btn-sm" style="padding: 0px 4px;margin-left: 90px" aria-label="Close">
-                <span aria-hidden="true">&#x270E;</span>
-              </button>
+              <button type="button" class="btn btn-secondary btn-sm edit-button" (click)="editInvestment(investment)">&#x270E;</button>
             </td>
             <td class="text-right" *ngFor="let taxoff of getTaxoffsByYear(investment)">{{taxoff | money}}</td>
           </tr>

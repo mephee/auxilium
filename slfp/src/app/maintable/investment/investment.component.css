@@ -18,11 +18,15 @@ input[type=number]::-webkit-outer-spin-button {
 }
 
 .investperyear {
-  height: 293px;
+  height: 200px;
   overflow-x: hidden;
   overflow-y: scroll;
 }
 
 .visible {
   display: block;
+}
+
+.form-control-sm {
+  font-size: 0.9rem;
 }
