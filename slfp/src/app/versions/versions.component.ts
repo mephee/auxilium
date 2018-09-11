@@ -2,6 +2,7 @@ import {Component, NgZone, OnInit} from '@angular/core';
 import {Version} from "../data/model/version";
 import {DatastoreService} from "../data/datastore.service";
 import {CommunicationService} from "../communication/communication.service";
+import {AggregationService} from "../maintable/aggregation/aggregation.service";
 
 @Component({
   selector: 'app-versions',
@@ -12,14 +13,17 @@ export class VersionsComponent implements OnInit {
 
   showVersion:boolean;
 
-  constructor(private dataStore: DatastoreService, private communication:CommunicationService, private ngZone:NgZone) {
+  constructor(private dataStore: DatastoreService, private communication:CommunicationService, private ngZone:NgZone, private aggregation:AggregationService) {
     this.communication.componentMethodCalled$.subscribe(
       value => {
-        if (!value) {
-          ngZone.run(()=> {
+        ngZone.run(()=> {
+          if (!value) {
             this.addVersion();
-          });
-        }
+          } else {
+            this.aggregation.calculateBalances();
+            this.dataStore.setVersionInitialized();
+          }
+        });
       }
     );
   }
@@ -30,6 +34,7 @@ export class VersionsComponent implements OnInit {
   setActualVersion(version:Version) {
     this.dataStore.setActualVersion(version);
     this.dataStore.save();
+    this.aggregation.calculateBalances();
   }
 
   getVersions():Version[] {
@@ -42,6 +47,7 @@ export class VersionsComponent implements OnInit {
 
   deleteVersion() {
     this.dataStore.deleteVersion(this.dataStore.getActualVersion());
+    this.dataStore.save();
   }
 
   onCloseVersion() {

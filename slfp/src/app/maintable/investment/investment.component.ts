@@ -1,8 +1,9 @@
-import {Component, OnInit, Input, Output, EventEmitter, AfterViewChecked} from '@angular/core';
+import {Component, OnInit, Input, Output, EventEmitter} from '@angular/core';
 import {DatastoreService} from "../../data/datastore.service";
 import {Category} from "../../data/model/category";
 import {Investment} from "../../data/model/investment";
 import {InvestmentYear} from "../../data/model/investmentYear";
+import {AggregationService} from "../aggregation/aggregation.service";
 declare var $:any;
 
 @Component({
@@ -10,14 +11,14 @@ declare var $:any;
   templateUrl: './investment.component.html',
   styleUrls: ['./investment.component.css']
 })
-export class InvestmentComponent implements OnInit, AfterViewChecked {
+export class InvestmentComponent implements OnInit {
 
-  @Input() investment: Investment;
+  _investment: Investment = new Investment();
   @Input()  open: boolean;
   @Output() closed = new EventEmitter<void>();
   selectedCategory: Category;
 
-  constructor(private dataStore: DatastoreService) { }
+  constructor(private dataStore: DatastoreService, private aggregation:AggregationService) { }
 
   ngOnInit() {
     $('#investment').draggable({
@@ -25,11 +26,17 @@ export class InvestmentComponent implements OnInit, AfterViewChecked {
     });
   }
 
-  ngAfterViewChecked() {
+  @Input()
+  set investment(investment:Investment) {
+    this._investment = investment;
+    if (investment) {
+      this.selectedCategory = this.dataStore.getCategories().find(category => category.rate == this._investment.rate);
+    }
   }
 
+
   changeCategory(): void {
-    this.investment.rate = this.selectedCategory.rate;
+    this._investment.rate = this.selectedCategory.rate;
   }
 
   calcYears(): number {
@@ -40,11 +47,27 @@ export class InvestmentComponent implements OnInit, AfterViewChecked {
 
   calcWriteoffPerYear(): number {
     if (this.selectedCategory) {
-      if (this.investment.totalCorr) {
-        return this.investment.totalCorr/(100/this.selectedCategory.rate);
+      if (this._investment.totalCorr) {
+        return this._investment.totalCorr/(100/this.selectedCategory.rate);
       } else {
-        return this.investment.total/(100/this.selectedCategory.rate);
+        return this._investment.total/(100/this.selectedCategory.rate);
       }
+    }
+  }
+
+  calcGrantFederal():number {
+    if (this._investment.totalCorr) {
+      return this._investment.totalCorr/(100/this._investment.grantFederal);
+    } else {
+      return this._investment.total/(100/this._investment.grantFederal);
+    }
+  }
+
+  calcGrantCanton():number {
+    if (this._investment.totalCorr) {
+      return this._investment.totalCorr/(100/this._investment.grantCanton);
+    } else {
+      return this._investment.total/(100/this._investment.grantCanton);
     }
   }
 
@@ -54,7 +77,7 @@ export class InvestmentComponent implements OnInit, AfterViewChecked {
     if (index == 0) {
       startIndex = 2018;
     } else {
-      startIndex = this.investment.investmentYears[index-1].year+1;
+      startIndex = this._investment.investmentYears[index-1].year+1;
     }
     for (let i = startIndex;i<startIndex+10;i++) {
       years.push(i);
@@ -63,8 +86,10 @@ export class InvestmentComponent implements OnInit, AfterViewChecked {
   }
 
   save(): void {
-    this.investment.rate = this.selectedCategory.rate;
-    this.dataStore.saveInvestment(this.investment);
+    this._investment.rate = this.selectedCategory.rate;
+    this.dataStore.saveInvestment(this._investment);
+    this.dataStore.save();
+    this.aggregation.calculateBalances();
     this.open = false;
     this.closed.emit();
   }
@@ -81,14 +106,14 @@ export class InvestmentComponent implements OnInit, AfterViewChecked {
   }
 
   removeInvestmentYear(investmentYear: InvestmentYear): void {
-    let index = this.investment.investmentYears.indexOf(investmentYear);
+    let index = this._investment.investmentYears.indexOf(investmentYear);
     if (index !== -1) {
-      this.investment.investmentYears.splice(index, 1);
+      this._investment.investmentYears.splice(index, 1);
     }
   }
 
   addInvestmentYear(): void {
-    this.investment.investmentYears.push(new InvestmentYear());
+    this._investment.investmentYears.push(new InvestmentYear());
   }
 
 }

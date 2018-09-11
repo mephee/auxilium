@@ -1,5 +1,7 @@
 import {Component, ElementRef, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {MoneyPipe} from "../money.pipe";
+import {DatastoreService} from "../../data/datastore.service";
+import {AggregationService} from "../aggregation/aggregation.service";
 
 @Component({
   selector: 'inlineedit',
@@ -16,7 +18,7 @@ export class InlineeditComponent implements OnInit {
   @Input() tableStyle:boolean = true;
   @Input() inThousand:boolean = true;
 
-  constructor(private moneyPipe: MoneyPipe, private elementRef:ElementRef) {
+  constructor(private moneyPipe: MoneyPipe, private elementRef:ElementRef, private datastore:DatastoreService, private aggregation:AggregationService) {
   }
 
   @Input()
@@ -46,18 +48,22 @@ export class InlineeditComponent implements OnInit {
     this.valueChange.emit(+this.valueFormatted);
     this._value = +this.valueFormatted;
     if (this.inThousand) {
-      this.valueFormatted = this.moneyPipe.transform(+this.valueFormatted);
+      this.valueFormatted = this.moneyPipe.transform(+this.valueFormatted, 1000);
     } else {
-      this.valueFormatted = '' + (this._value !== 0 ? this._value : "");
+      this.valueFormatted = this.moneyPipe.transform(+this.valueFormatted, 1);
     }
     this.mouseUpCatched = false;
+
+    // save on every change
+    this.datastore.save();
+    this.aggregation.calculateBalances();
   }
 
   updateInternalValue():void {
     if (this.inThousand) {
-      this.valueFormatted = this.moneyPipe.transform(this._value);
+      this.valueFormatted = this.moneyPipe.transform(this._value, 1000);
     } else {
-      this.valueFormatted = '' + (this._value !== 0 ? this._value : "");
+      this.valueFormatted = this.moneyPipe.transform(this._value, 1);
     }
   }
 }

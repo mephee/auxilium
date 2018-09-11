@@ -1,4 +1,4 @@
-<div *ngIf="hasActualVersion()" class="table-wrapper">
+<div *ngIf="isVersionInitialized()" class="table-wrapper">
   <table id="maintable" class="table table-sm">
     <thead>
       <!-- Jahr -->
@@ -56,11 +56,11 @@
       <!-- Fremdkapital -->
       <tr>
         <td class="sticky-col1">Aufnahme / Rückzahlung Fremdkapital</td>
-        <td class="sticky-col2">
+        <td class="sticky-col2" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Übertragen sie hier ihr Total an Fremdkapital">
           <inlineedit [(value)]="getForeignContainer().foreignValue"></inlineedit>
         </td>
         <td class="text-right" *ngFor="let payback of getForeignContainer().foreignPayback">
-          <inlineedit [(value)]="payback.payback"></inlineedit>
+          <inlineedit [value]="payback.payback" (valueChange)="editPayback($event, payback)"></inlineedit>
         </td>
       </tr>
 
@@ -114,7 +114,7 @@
       <!-- Abschreibungen HRM 1-->
       <tr>
         <td class="sticky-col1"><span><i>HRM1 Verwaltungsvermögen per 31.12.2017</i> <span style="left: 360px;position: absolute"><b>10%</b></span></span></td>
-        <td class="sticky-col2">
+        <td class="sticky-col2" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Übertragen sie hier ihr Total an Investitionen nach HRM1 per 31.12.2017">
           <inlineedit [(value)]="getInvestmentHRM1Container().value"></inlineedit>
         </td>
         <td class="text-right" *ngFor="let taxoff of getTaxoffsHRM1ByYear()">{{taxoff | money}}</td>
@@ -139,6 +139,15 @@
         <th class="sticky-col1">Total Ausgaben Investitionen (Liquiditätsabfluss)</th>
         <td class="sticky-col2">&#xa0;</td>
         <td class="text-right" [ngClass]="{'negative-value': investment<0}" *ngFor="let investment of getInvestmentsTotal()">{{investment | money}}</td>
+      </tr>
+
+      <!-- Total Ausgaben Investitionen (Liquiditätsabfluss) -->
+      <tr class>
+        <th class="sticky-col1">Subventionen</th>
+        <td class="sticky-col2">&#xa0;</td>
+        <td class="text-right" *ngFor="let grant of getGrantsTotal()">
+          <inlineedit [value]="grant.value" (valueChange)="editGrant($event, grant)"></inlineedit>
+        </td>
       </tr>
 
       <!-- Liquiditätsbestand Total Ende Jahr -->

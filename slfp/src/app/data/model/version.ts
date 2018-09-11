@@ -4,6 +4,7 @@ import {Investment} from "./investment";
 import {Category} from "./category";
 import {ForeignContainer} from "./foreignContainer";
 import {InvestmentHRM1Container} from "./investmentHRM1Container";
+import {Grant} from "./grant";
 
 export class Version {
   name:string;
@@ -14,4 +15,5 @@ export class Version {
   foreignContainer: ForeignContainer;
   liquidityStart: LiquidityStart;
   investmentHRM1Container: InvestmentHRM1Container;
+  grants: Grant[];
 }

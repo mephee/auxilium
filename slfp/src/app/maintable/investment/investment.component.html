@@ -9,18 +9,18 @@
           <div class="row mb-2">
             <label for="name" class="col-3 col-form-label">Bezeichnung:</label>
             <div class="col-4">
-              <input type="text" class="form-control form-control-sm" id="name" [(ngModel)]="investment.name" name="name">
+              <input type="text" class="form-control form-control-sm" id="name" [(ngModel)]="_investment.name" name="name">
             </div>
             <label for="project" class="col-2 col-form-label">Projekt-Nr.:</label>
             <div class="col-3">
-              <input type="text" class="form-control form-control-sm" id="project" [(ngModel)]="investment.projectNr" name="proj">
+              <input type="text" class="form-control form-control-sm" id="project" [(ngModel)]="_investment.projectNr" name="proj">
             </div>
           </div>
 
           <div class="row mb-2">
             <label for="total" class="col-3 col-form-label">Genehmigte Investition:</label>
             <div class="col-2">
-              <input type="number" class="form-control font-weight-bold text-right form-control-sm" id="total" [(ngModel)]="investment.total" name="tot">
+              <input type="number" class="form-control font-weight-bold text-right form-control-sm" id="total" [(ngModel)]="_investment.total" name="tot">
             </div>
             <div class="col-1"></div>
             <label for="category" class="col-3 col-form-label">Anlagekategorie:</label>
@@ -34,20 +34,20 @@
           <div class="row mb-2">
             <label for="total" class="col-3 col-form-label">Effektive Investition:</label>
             <div class="col-2">
-              <input type="number" class="form-control font-weight-bold text-right form-control-sm" id="totalCorr" [(ngModel)]="investment.totalCorr" name="totCorr">
+              <input type="number" class="form-control font-weight-bold text-right form-control-sm" id="totalCorr" [(ngModel)]="_investment.totalCorr" name="totCorr">
             </div>
             <div class="col-1"></div>
             <label class="col-1 col-form-label">Jahre:</label>
             <label class="col-1 col-form-label">{{calcYears() | number:'0.0-2'}}</label>
             <label class="col-2 col-form-label">Abschr./Jahr:</label>
-            <label class="col-1 col-form-label">{{calcWriteoffPerYear() | number:'0.0'}}</label>
+            <label class="col-1 col-form-label">{{calcWriteoffPerYear() | money:1}}</label>
           </div>
 
           <div class="row mb-2 mt-4">
             <div class="col-5">
               <label class="row col-12 col-form-label">Teilzahlungen nach Jahr:</label>
               <div class="investperyear">
-                <div class="row mb-3" *ngFor="let investmentYear of investment.investmentYears; let idx = index">
+                <div class="row mb-3" *ngFor="let investmentYear of _investment.investmentYears; let idx = index">
                   <div class="col-5">
                     <select [(ngModel)]="investmentYear.year" class="form-control form-control-sm" [ngModelOptions]="{standalone: true}">
                       <option *ngFor="let year of getCoupleOfYears(idx)" [ngValue]="year">{{year}}</option>
@@ -76,21 +76,19 @@
               <div class="row mb-3">
                 <label class="col-2 col-form-label">Bund</label>
                 <div class="col-2">
-                  <input type="number" class="form-control text-right form-control-sm" [(ngModel)]="investment.rate" [ngModelOptions]="{standalone: true}">
+                  <input type="number" class="form-control text-right form-control-sm" [(ngModel)]="_investment.grantFederal" [ngModelOptions]="{standalone: true}">
                 </div>
-                <label class="col-4 col-form-label">{{calcWriteoffPerYear() | number:'0.0'}}</label>
+                <label class="col-4 col-form-label">%   =   {{calcGrantFederal() | money:1}}</label>
               </div>
               <div class="row mb-3">
                 <label class="col-2 col-form-label">Kanton</label>
                 <div class="col-2">
-                  <input type="number" class="form-control text-right form-control-sm" [(ngModel)]="investment.rate" [ngModelOptions]="{standalone: true}">
+                  <input type="number" class="form-control text-right form-control-sm" [(ngModel)]="_investment.grantCanton" [ngModelOptions]="{standalone: true}">
                 </div>
-                <label class="col-4 col-form-label">{{calcWriteoffPerYear() | number:'0.0'}}</label>
+                <label class="col-4 col-form-label">%   =   {{calcGrantCanton() | money:1}}</label>
               </div>
             </div>
           </div>
-
-
         </form>
       </div>
       <div class="modal-footer">

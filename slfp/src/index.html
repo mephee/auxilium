@@ -9,9 +9,9 @@
   <link rel="icon" type="image/x-icon" href="favicon.ico">
 
   <script>
-    if (typeof require !== 'undefined') {
       const storage = require('electron-json-storage');
-    }
+    //if (typeof require !== 'undefined') {
+    //}
   </script>
 
 </head>
@@ -25,7 +25,7 @@
   <app-root></app-root>
   <script>
     if (typeof require !== 'undefined') {
-      window.$ = window.jQuery = require('../../jquery.min.js');
+      window.$ = window.jQuery = require('jquery');
     }
   </script>
 </body>

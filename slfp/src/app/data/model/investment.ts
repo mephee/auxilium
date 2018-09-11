@@ -6,6 +6,10 @@ export class Investment {
   total: number;
   totalCorr: number;
   rate: number;
+
+  grantFederal:number;
+  grantCanton:number;
+
   investmentYears: InvestmentYear[];
 
   constructor() {

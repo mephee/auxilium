@@ -1,6 +1,7 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {Version} from "../../data/model/version";
 import {DatastoreService} from "../../data/datastore.service";
+import {AggregationService} from "../../maintable/aggregation/aggregation.service";
 declare var $:any;
 
 @Component({
@@ -10,10 +11,10 @@ declare var $:any;
 })
 export class WizardComponent implements OnInit {
 
-  version: Version;
+  version: Version = new Version();
   _open: boolean;
   @Output() closed = new EventEmitter<void>();
-  constructor(private dataStore:DatastoreService) { }
+  constructor(private dataStore:DatastoreService, private aggregation:AggregationService) { }
 
   ngOnInit() {
     $('#wizard').draggable({
@@ -47,6 +48,9 @@ export class WizardComponent implements OnInit {
 
   save(): void {
     this.dataStore.saveVersion(this.version);
+    this.dataStore.save();
+    this.aggregation.calculateBalances();
+    this.dataStore.setVersionInitialized();
     this.open = false;
     this.closed.emit();
   }

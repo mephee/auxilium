@@ -8,6 +8,8 @@ import {LiquidityStart} from "./model/liquidityStart";
 import {Version} from "./model/version";
 import {CommunicationService} from "../communication/communication.service";
 import {InvestmentHRM1Container} from "./model/investmentHRM1Container";
+import {ForeignPayback} from "./model/foreignPayback";
+import {Grant} from "./model/grant";
 
 declare var storage:any;
 
@@ -19,6 +21,7 @@ export class DatastoreService {
   private categories: Category[];
   private actualVersion: Version;
   private versions: Version[];
+  private versionInitialized:boolean = false;
 
   constructor(private ngZone:NgZone, private communication:CommunicationService) {
     this.categories = MOCK.categories;
@@ -45,6 +48,7 @@ export class DatastoreService {
       });
     } else {
       this.loadDefaultVersions();
+      this.communication.callComponentMethod(this.actualVersion);
     }
   }
 
@@ -70,8 +74,8 @@ export class DatastoreService {
     version.investments = [];
     version.liquidityStart = new LiquidityStart();
     version.liquidityStart.liquidity = 0;
-    this.actualVersion = version;
-    this.updateVersionYearFromTo(version.yearFrom, version.yearTo);
+    version.grants = [];
+    //this.updateVersionYearFromTo(version.yearFrom, version.yearTo);
     return version;
   }
 
@@ -88,6 +92,7 @@ export class DatastoreService {
   }
 
   saveVersion(version:Version):void {
+    version.yearTo = version.yearFrom + 50
     let index = this.versions.indexOf(version);
     if (index !== -1) {
       this.versions[index] = version;
@@ -106,25 +111,47 @@ export class DatastoreService {
     if (this.versions.length > 0) {
       this.actualVersion = this.versions[0];
     } else {
-      this.actualVersion = this.createVersion();
-      this.actualVersion.name = 'Version 1';
-      this.versions.push(this.actualVersion);
+      this.actualVersion = undefined;
+      this.versionInitialized = false;
     }
   }
 
   updateVersionYearFromTo(yearFrom:number, yearTo:number):void {
     this.actualVersion.yearFrom = yearFrom;
     this.actualVersion.yearTo = yearTo;
+    let lastInoutcome:Inoutcome = new Inoutcome();
+    lastInoutcome.outcome = 0;
+    lastInoutcome.income = 0;
+    lastInoutcome.taxrate = 0;
+    lastInoutcome.taxvolume = 0;
     for(let i = yearFrom; i <= yearTo; i++) {
       let inoutcome:Inoutcome = this.actualVersion.inoutComes.find(itInoutcome => itInoutcome.year === i);
       if (!inoutcome) {
         inoutcome = new Inoutcome();
         inoutcome.year = i;
-        inoutcome.taxvolume = 0;
-        inoutcome.taxrate = 0;
-        inoutcome.income = 0;
-        inoutcome.outcome = 0;
+        inoutcome.taxvolume = lastInoutcome.taxvolume;
+        inoutcome.taxrate = lastInoutcome.taxrate;
+        inoutcome.income = lastInoutcome.income;
+        inoutcome.outcome = lastInoutcome.outcome;
         this.actualVersion.inoutComes.push(inoutcome);
+      } else {
+        lastInoutcome = inoutcome;
+      }
+
+      let foreignPayback:ForeignPayback = this.actualVersion.foreignContainer.foreignPayback.find(foreign => foreign.year === i);
+      if (!foreignPayback) {
+        foreignPayback = new ForeignPayback(i);
+        foreignPayback.payback = 0;
+        this.actualVersion.foreignContainer.foreignPayback.push(foreignPayback);
+      }
+
+      let grant:Grant = this.actualVersion.grants.find(grant => grant.year === i);
+      if (!grant) {
+        grant = new Grant();
+        grant.year = i;
+        grant.value = 0;
+        grant.type = "calculated";
+        this.actualVersion.grants.push(grant);
       }
     }
   }
@@ -157,6 +184,10 @@ export class DatastoreService {
     return this.actualVersion.investmentHRM1Container;
   }
 
+  getGrants(): Grant[] {
+    return this.actualVersion.grants;
+  }
+
 
   /*
   Edits
@@ -172,6 +203,14 @@ export class DatastoreService {
 
   save():void {
     storage.set('versions', this.versions);
+  }
+
+  setVersionInitialized():void {
+    this.versionInitialized = true;
+  }
+
+  isVersionInitialized():boolean {
+    return this.versionInitialized;
   }
 
 }

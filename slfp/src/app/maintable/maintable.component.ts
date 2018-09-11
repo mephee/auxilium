@@ -10,6 +10,8 @@ import {ForeignContainer} from "../data/model/foreignContainer";
 import {LiquidityStart} from "../data/model/liquidityStart";
 import {InvestmentHRM1Container} from "../data/model/investmentHRM1Container";
 import {ForeignPayback} from "../data/model/foreignPayback";
+import {Grant} from "../data/model/grant";
+import {validateConfig} from "@angular/router/src/config";
 declare var $:any;
 
 @Component({
@@ -19,7 +21,7 @@ declare var $:any;
 })
 export class MaintableComponent implements OnInit {
 
-  selectedInvestment: Investment;
+  selectedInvestment: Investment = new Investment();
   showInvestment: boolean;
 
   constructor(private dataStore: DatastoreService, private aggregation: AggregationService, private elementRef: ElementRef) { }
@@ -47,12 +49,14 @@ export class MaintableComponent implements OnInit {
     inoutcome.taxrate = event;
     this.calculateTaxVolume(inoutcome);
     this.copyTaxrate(inoutcome.year);
+    this.dataStore.save();
   }
 
   changedTaxVolume(event, inoutcome:Inoutcome) {
     inoutcome.taxvolume = event;
     this.calculateTaxVolume(inoutcome);
     this.copyTaxvolume(inoutcome.year);
+    this.dataStore.save();
   }
 
   copyTaxvolume(year:number): void {
@@ -84,13 +88,17 @@ export class MaintableComponent implements OnInit {
   }
 
   editPayback(event, payback:ForeignPayback): void {
-    let paybackTotal:number = this.aggregation.getForeignContainer().foreignPayback.reduce((total, foreignPaypack) => total + foreignPaypack.payback, 0);
-    if (paybackTotal + event > this.dataStore.getForeignContainer().foreignValue) {
+    if (event>0) {
+      event = -1*event;
+    }
+    let paybackTotal:number = this.aggregation.getForeignContainer().foreignPayback.reduce((total, foreignPaypack) => total - foreignPaypack.payback, 0);
+    if (paybackTotal - event > this.dataStore.getForeignContainer().foreignValue) {
       // TODO alert
-      payback.payback = this.dataStore.getForeignContainer().foreignValue - paybackTotal;
+      payback.payback = -(this.dataStore.getForeignContainer().foreignValue - paybackTotal);
     } else {
       payback.payback = event;
     }
+    this.dataStore.save();
   }
 
   editOutcome(event, inoutcome:Inoutcome): void {
@@ -99,6 +107,7 @@ export class MaintableComponent implements OnInit {
     }
     inoutcome.outcome = event;
     this.copyOutcome(inoutcome.year);
+    this.dataStore.save();
   }
 
   copyOutcome(year:number): void {
@@ -111,6 +120,14 @@ export class MaintableComponent implements OnInit {
       if (inoutcomes[i].year>year) {
         inoutcomes[i].outcome = outcomeToCopy;
       }
+    }
+  }
+
+  editGrant(event, grant:Grant): void {
+    if (event != grant.value) {
+      grant.type = "overwritten";
+      grant.value = event;
+      this.dataStore.save();
     }
   }
 
@@ -162,8 +179,8 @@ export class MaintableComponent implements OnInit {
     return this.aggregation.getLiquidityOfLastYear();
   }
 
-  hasActualVersion(): boolean {
-    return this.dataStore.getActualVersion() != null;
+  isVersionInitialized(): boolean {
+    return this.dataStore.isVersionInitialized();
   }
 
   getInvestmentHRM1Container(): InvestmentHRM1Container {
@@ -172,6 +189,10 @@ export class MaintableComponent implements OnInit {
 
   getTaxoffsHRM1ByYear(): number[] {
     return this.aggregation.getTaxoffsHRM1ByYear();
+  }
+
+  getGrantsTotal(): Grant[] {
+    return this.dataStore.getGrants();
   }
 
 
