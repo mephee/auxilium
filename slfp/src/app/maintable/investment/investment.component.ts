@@ -4,6 +4,8 @@ import {Category} from "../../data/model/category";
 import {Investment} from "../../data/model/investment";
 import {InvestmentYear} from "../../data/model/investmentYear";
 import {AggregationService} from "../aggregation/aggregation.service";
+import {forEach} from "@angular/router/src/utils/collection";
+import {GrantYear} from "../../data/model/grantYear";
 declare var $:any;
 
 @Component({
@@ -71,15 +73,19 @@ export class InvestmentComponent implements OnInit {
     }
   }
 
-  getCoupleOfYears(index: number): number[] {
+  getCoupleOfYears(index: number, grant:boolean): number[] {
     let years:number[] = [];
     let startIndex:number;
     if (index == 0) {
       startIndex = 2018;
     } else {
-      startIndex = this._investment.investmentYears[index-1].year+1;
+      if (grant) {
+        startIndex = this._investment.grantYears[index-1].year+1;
+      } else {
+        startIndex = this._investment.investmentYears[index-1].year+1;
+      }
     }
-    for (let i = startIndex;i<startIndex+10;i++) {
+    for (let i = startIndex;i<startIndex+20;i++) {
       years.push(i);
     }
     return years;
@@ -114,6 +120,33 @@ export class InvestmentComponent implements OnInit {
 
   addInvestmentYear(): void {
     this._investment.investmentYears.push(new InvestmentYear());
+  }
+
+  removeGrantYear(grantYear: GrantYear): void {
+    let index = this._investment.grantYears.indexOf(grantYear);
+    if (index !== -1) {
+      this._investment.grantYears.splice(index, 1);
+    }
+  }
+
+  addGrantYear(): void {
+    this._investment.grantYears.push(new GrantYear());
+  }
+
+  getMoveOptions():string[] {
+    let moveoptions:string[] = [];
+    for(let i:number = 1;i<11;i++) {
+      if (i == 1) {
+        moveoptions.push("um 1 Jahr");
+      }  else {
+        moveoptions.push("um " + i + " Jahre")
+      }
+    }
+    return moveoptions;
+  }
+
+  selectMoveOption(index:number):void {
+    this._investment.investmentYears.forEach(investmentYear => investmentYear.year += index + 1);
   }
 
 }

@@ -4,12 +4,9 @@ import {Inoutcome} from "../../data/model/inoutcome";
 import {Investment} from "../../data/model/investment";
 import {InvestmentYear} from "../../data/model/investmentYear";
 import {InvestmentCategory} from "../../data/model/investmentCategory";
-import {init} from "protractor/built/launcher";
 import {Balance} from "../../data/model/balance";
 import {ForeignPayback} from "../../data/model/foreignPayback";
 import {ForeignContainer} from "../../data/model/foreignContainer";
-import {count} from "rxjs/operators";
-import {Grant} from "../../data/model/grant";
 
 @Injectable({
   providedIn: 'root'
@@ -241,24 +238,27 @@ export class AggregationService {
 
 
   // Grants
-  calcGrants(): number[] {
+  getGrants(): number[] {
     let grants: number[] = new Array(this.yearTo - this.yearFrom + 1).fill(0);
     this.datastore.getInvestments().forEach(investment => {
-      if ((investment.grantCanton > 0) || (investment.grantFederal > 0)) {
+      let hasGrantYears:boolean = (investment.grantYears.length > 0) && (investment.grantYears[0].grant > 0);
+      console.log('has grants: ' + hasGrantYears);
+      if ((investment.grantCanton > 0) || (investment.grantFederal > 0) || hasGrantYears) {
         let totalEff: number = investment.totalCorr > 0 ? investment.totalCorr : investment.total;
         let investedEff = investment.investmentYears.reduce((total, investmentYear) => total + investmentYear.invest, 0);
         let taxoffStartYear:number = 0;
         if (investedEff === totalEff) {
           taxoffStartYear = investment.investmentYears[investment.investmentYears.length-1].year+1;
-          if (this.datastore.getGrants()[taxoffStartYear - this.yearFrom].type === 'calculated') {
+          if (hasGrantYears) {
+            investment.grantYears.forEach(grantYear => grants[grantYear.year - this.yearFrom] += grantYear.grant);
+          } else {
             if (investment.grantFederal > 0) {
-              this.datastore.getGrants()[taxoffStartYear - this.yearFrom].value += investedEff*investment.grantFederal/100;
+              grants[taxoffStartYear - this.yearFrom] += investedEff*investment.grantFederal/100;
             }
             if (investment.grantCanton > 0) {
-              this.datastore.getGrants()[taxoffStartYear - this.yearFrom].value += investedEff*investment.grantCanton/100;
+              grants[taxoffStartYear - this.yearFrom] += investedEff*investment.grantCanton/100;
             }
           }
-          grants[taxoffStartYear - this.yearFrom] += this.datastore.getGrants()[taxoffStartYear - this.yearFrom].value;
         }
       }
     });
@@ -284,7 +284,7 @@ export class AggregationService {
     let inoutComes:Inoutcome[] = this.datastore.getInoutcomes();
     let investments:number[] = this.getInvestmentsTotal();
     let foreignContainer: ForeignContainer = this.getForeignContainer();
-    let grants:number[] = this.calcGrants();
+    let grants:number[] = this.getGrants();
     let counter:number = 0;
     for(let i:number = this.yearFrom;i<=this.yearTo;i++) {
 
@@ -324,8 +324,9 @@ export class AggregationService {
       balance.type = 'afterinvestment';
       balance.value = this.balanceAfterWriteoff[counter].value;
       if (investments[counter]<0) {
-        balance.value += investments[counter] + grants[counter];
+        balance.value += investments[counter];
       }
+      balance.value += grants[counter];
       this.balanceAfterInvestments.push(balance);
 
       counter++;

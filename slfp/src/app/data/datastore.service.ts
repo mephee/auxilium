@@ -9,7 +9,6 @@ import {Version} from "./model/version";
 import {CommunicationService} from "../communication/communication.service";
 import {InvestmentHRM1Container} from "./model/investmentHRM1Container";
 import {ForeignPayback} from "./model/foreignPayback";
-import {Grant} from "./model/grant";
 
 declare var storage:any;
 
@@ -74,8 +73,6 @@ export class DatastoreService {
     version.investments = [];
     version.liquidityStart = new LiquidityStart();
     version.liquidityStart.liquidity = 0;
-    version.grants = [];
-    //this.updateVersionYearFromTo(version.yearFrom, version.yearTo);
     return version;
   }
 
@@ -144,15 +141,6 @@ export class DatastoreService {
         foreignPayback.payback = 0;
         this.actualVersion.foreignContainer.foreignPayback.push(foreignPayback);
       }
-
-      let grant:Grant = this.actualVersion.grants.find(grant => grant.year === i);
-      if (!grant) {
-        grant = new Grant();
-        grant.year = i;
-        grant.value = 0;
-        grant.type = "calculated";
-        this.actualVersion.grants.push(grant);
-      }
     }
   }
 
@@ -182,10 +170,6 @@ export class DatastoreService {
 
   getInvestmentHRM1Container(): InvestmentHRM1Container {
     return this.actualVersion.investmentHRM1Container;
-  }
-
-  getGrants(): Grant[] {
-    return this.actualVersion.grants;
   }
 
 

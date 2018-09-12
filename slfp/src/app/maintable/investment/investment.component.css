@@ -23,10 +23,20 @@ input[type=number]::-webkit-outer-spin-button {
   overflow-y: scroll;
 }
 
+.grantperyear {
+  height: 114px;
+  overflow-x: hidden;
+  overflow-y: scroll;
+}
+
 .visible {
   display: block;
 }
 
 .form-control-sm {
   font-size: 0.9rem;
+}
+
+.investCol {
+  padding-right: 5px;
 }

@@ -1,4 +1,3 @@
-<!--The content below is only a placeholder and can be replaced.-->
 <div class="container-fluid">
   <div class="row p-3 m-5">
     <div class="col">
@@ -58,9 +57,18 @@
     </div>
   </div>
 
-  <div class="row p-4">
+  <div *ngIf="isVersionInitialized()" class="row p-4">
     <div class="col">
       <p class="h6"><i>in Tausend</i></p>
+    </div>
+    <div class="col">
+    </div>
+    <div class="col">
+      <div class="float-right">
+        <button type="button" class="btn btn-secondary btn-sm" (click)="zoomOut()">-</button>
+        <label class="col-form-label mx-2">{{actualZoom}}</label>
+        <button type="button" class="btn btn-secondary btn-sm" (click)="zoomIn()">+</button>
+      </div>
     </div>
   </div>
 

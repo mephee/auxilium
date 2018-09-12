@@ -10,8 +10,7 @@
 
   <script>
       const storage = require('electron-json-storage');
-    //if (typeof require !== 'undefined') {
-    //}
+      const {webFrame} = require('electron');
   </script>
 
 </head>
@@ -24,9 +23,7 @@
             user-select: none;">
   <app-root></app-root>
   <script>
-    if (typeof require !== 'undefined') {
-      window.$ = window.jQuery = require('jquery');
-    }
+    window.$ = window.jQuery = require('jquery');
   </script>
 </body>
 </html>

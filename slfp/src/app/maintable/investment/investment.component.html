@@ -32,7 +32,7 @@
           </div>
 
           <div class="row mb-2">
-            <label for="total" class="col-3 col-form-label">Effektive Investition:</label>
+            <label for="totalCorr" class="col-3 col-form-label">Effektive Investition:</label>
             <div class="col-2">
               <input type="number" class="form-control font-weight-bold text-right form-control-sm" id="totalCorr" [(ngModel)]="_investment.totalCorr" name="totCorr">
             </div>
@@ -43,50 +43,86 @@
             <label class="col-1 col-form-label">{{calcWriteoffPerYear() | money:1}}</label>
           </div>
 
-          <div class="row mb-2 mt-4">
-            <div class="col-5">
-              <label class="row col-12 col-form-label">Teilzahlungen nach Jahr:</label>
+          <div class="row mb-2 mt-5 border-top border-light">
+
+            <div class="col-6">
+              <div class="row">
+                <div class="col-12">
+                  <h6 class="col-form-label investCol">Teilzahlungen nach Jahr:</h6>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-5 investCol">
+                  <button class="btn btn-secondary btn-sm dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Verschieben
+                  </button>
+                  <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                    <a *ngFor="let moveOption of getMoveOptions(); let idx = index" class="dropdown-item" (click)="selectMoveOption(idx)">{{moveOption}}</a>
+                  </div>
+                </div>
+              </div>
               <div class="investperyear">
                 <div class="row mb-3" *ngFor="let investmentYear of _investment.investmentYears; let idx = index">
-                  <div class="col-5">
+                  <div class="col-5 investCol">
                     <select [(ngModel)]="investmentYear.year" class="form-control form-control-sm" [ngModelOptions]="{standalone: true}">
                       <option *ngFor="let year of getCoupleOfYears(idx)" [ngValue]="year">{{year}}</option>
                     </select>
                   </div>
-                  <div class="col-5">
+                  <div class="col-5 investCol">
                     <input type="number" class="form-control font-weight-bold text-right form-control-sm" [(ngModel)]="investmentYear.invest" [ngModelOptions]="{standalone: true}">
                   </div>
-                  <div class="col-2">
+                  <div class="col-2 investCol">
                     <button type="button" class="btn btn-secondary btn-sm" (click)="removeInvestmentYear(investmentYear)">-</button>
                   </div>
                 </div>
-
                 <div class="row mb-3">
-                  <div class="col-2">
+                  <div class="col-2 investCol">
                     <button type="button" class="btn btn-secondary btn-sm" (click)="addInvestmentYear()">+</button>
                   </div>
                 </div>
               </div>
             </div>
 
-            <div class="col-1"></div>
+            <div class="col-6 border-left border-light">
 
-            <div class="col-6">
-              <label class="row col-12 col-form-label">Subventionen</label>
+              <h6 class="row col-12 col-form-label investCol">Subventionen geplant:</h6>
               <div class="row mb-3">
-                <label class="col-2 col-form-label">Bund</label>
-                <div class="col-2">
+                <label class="col-2 col-form-label investCol">Bund</label>
+                <div class="col-2 investCol">
                   <input type="number" class="form-control text-right form-control-sm" [(ngModel)]="_investment.grantFederal" [ngModelOptions]="{standalone: true}">
                 </div>
-                <label class="col-4 col-form-label">%   =   {{calcGrantFederal() | money:1}}</label>
+                <label class="col-4 col-form-label investCol">%&nbsp;&nbsp;&nbsp;=&nbsp;&nbsp;&nbsp;{{calcGrantFederal() | money:1}}</label>
               </div>
               <div class="row mb-3">
-                <label class="col-2 col-form-label">Kanton</label>
-                <div class="col-2">
+                <label class="col-2 col-form-label investCol">Kanton</label>
+                <div class="col-2 investCol">
                   <input type="number" class="form-control text-right form-control-sm" [(ngModel)]="_investment.grantCanton" [ngModelOptions]="{standalone: true}">
                 </div>
-                <label class="col-4 col-form-label">%   =   {{calcGrantCanton() | money:1}}</label>
+                <label class="col-4 col-form-label investCol">%&nbsp;&nbsp;&nbsp;=&nbsp;&nbsp;&nbsp;{{calcGrantCanton() | money:1}}</label>
               </div>
+
+              <h6 class="row col-12 col-form-label investCol">Subventionen effektiv nach Jahr:</h6>
+              <div class="grantperyear">
+                <div class="row mb-3" *ngFor="let grantYear of _investment.grantYears; let idx = index">
+                  <div class="col-5 investCol">
+                    <select [(ngModel)]="grantYear.year" class="form-control form-control-sm" [ngModelOptions]="{standalone: true}">
+                      <option *ngFor="let year of getCoupleOfYears(idx, true)" [ngValue]="year">{{year}}</option>
+                    </select>
+                  </div>
+                  <div class="col-5 investCol">
+                    <input type="number" class="form-control font-weight-bold text-right form-control-sm" [(ngModel)]="grantYear.grant" [ngModelOptions]="{standalone: true}">
+                  </div>
+                  <div class="col-2 investCol">
+                    <button type="button" class="btn btn-secondary btn-sm" (click)="removeGrantYear(grantYear)">-</button>
+                  </div>
+                </div>
+                <div class="row mb-3">
+                  <div class="col-2 investCol">
+                    <button type="button" class="btn btn-secondary btn-sm" (click)="addGrantYear()">+</button>
+                  </div>
+                </div>
+              </div>
+
             </div>
           </div>
         </form>

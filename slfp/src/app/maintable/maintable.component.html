@@ -141,13 +141,11 @@
         <td class="text-right" [ngClass]="{'negative-value': investment<0}" *ngFor="let investment of getInvestmentsTotal()">{{investment | money}}</td>
       </tr>
 
-      <!-- Total Ausgaben Investitionen (Liquiditätsabfluss) -->
+      <!-- Subventionen -->
       <tr class>
         <th class="sticky-col1">Subventionen</th>
         <td class="sticky-col2">&#xa0;</td>
-        <td class="text-right" *ngFor="let grant of getGrantsTotal()">
-          <inlineedit [value]="grant.value" (valueChange)="editGrant($event, grant)"></inlineedit>
-        </td>
+        <td class="text-right" *ngFor="let grant of getGrants()">{{grant | money}}</td>
       </tr>
 
       <!-- Liquiditätsbestand Total Ende Jahr -->

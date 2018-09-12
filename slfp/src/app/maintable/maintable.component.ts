@@ -2,7 +2,6 @@ import {Component, ElementRef, OnInit} from '@angular/core';
 import {Inoutcome} from "../data/model/inoutcome";
 import {DatastoreService} from "../data/datastore.service";
 import {Investment} from "../data/model/investment";
-import {InvestmentYear} from "../data/model/investmentYear";
 import {AggregationService} from "./aggregation/aggregation.service";
 import {InvestmentCategory} from "../data/model/investmentCategory";
 import {Balance} from "../data/model/balance";
@@ -10,8 +9,6 @@ import {ForeignContainer} from "../data/model/foreignContainer";
 import {LiquidityStart} from "../data/model/liquidityStart";
 import {InvestmentHRM1Container} from "../data/model/investmentHRM1Container";
 import {ForeignPayback} from "../data/model/foreignPayback";
-import {Grant} from "../data/model/grant";
-import {validateConfig} from "@angular/router/src/config";
 declare var $:any;
 
 @Component({
@@ -123,14 +120,6 @@ export class MaintableComponent implements OnInit {
     }
   }
 
-  editGrant(event, grant:Grant): void {
-    if (event != grant.value) {
-      grant.type = "overwritten";
-      grant.value = event;
-      this.dataStore.save();
-    }
-  }
-
   getBalanceAfterOutcome(): Balance[] {
     return this.aggregation.getBalanceAfterOutcome();
   }
@@ -191,15 +180,14 @@ export class MaintableComponent implements OnInit {
     return this.aggregation.getTaxoffsHRM1ByYear();
   }
 
-  getGrantsTotal(): Grant[] {
-    return this.dataStore.getGrants();
+  getGrants(): number[] {
+    return this.aggregation.getGrants();
   }
 
 
   // Edit
   newInvestment(): void {
     this.selectedInvestment = new Investment();
-    this.selectedInvestment.investmentYears = [new InvestmentYear()];
     this.showInvestment = true;
 
   }
