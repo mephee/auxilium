@@ -12,6 +12,7 @@ export class AppComponent {
   title = 'app';
 
   actualZoom:string = '100%';
+  actualZoomNumber:number = 100;
 
   constructor(private datastore:DatastoreService) {}
 
@@ -20,14 +21,14 @@ export class AppComponent {
   }
 
   zoomIn():void {
-    let actualZoom:number = webFrame.getZoomFactor();
-    webFrame.setZoomFactor(actualZoom+0.05);
-    this.actualZoom = ~~((actualZoom + 0.05) * 100) + '%';
+    this.actualZoomNumber = this.actualZoomNumber + 5;
+    this.actualZoom = this.actualZoomNumber + '%';
+    webFrame.setZoomFactor(this.actualZoomNumber/100);
   }
 
   zoomOut():void {
-    let actualZoom:number = webFrame.getZoomFactor();
-    webFrame.setZoomFactor(actualZoom-0.05);
-    this.actualZoom = ~~((actualZoom - 0.05) * 100) + '%';
+    this.actualZoomNumber = this.actualZoomNumber - 5;
+    this.actualZoom = this.actualZoomNumber + '%';
+    webFrame.setZoomFactor(this.actualZoomNumber/100);
   }
 }
