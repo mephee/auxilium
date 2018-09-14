@@ -15,7 +15,7 @@ export class InlineeditComponent implements OnInit {
   private mouseUpCatched:boolean = false;
   valueFormatted: string;
 
-  private arrow = { left: 37, up: 38, right: 39, down: 40, enter: 13, escape: 27 };
+  private key = { left: 37, up: 38, right: 39, down: 40, enter: 13, escape: 27 };
 
   @Output() valueChange = new EventEmitter();
   @Input() tableStyle:boolean = true;
@@ -62,74 +62,76 @@ export class InlineeditComponent implements OnInit {
     this.aggregation.calculateBalances();
   }
 
-  keyDown(event) {
+  onKeyDown(event) {
     // shortcut for key other than arrow keys
-    if ($.inArray(event.which, [this.arrow.left, this.arrow.up, this.arrow.right, this.arrow.down, this.arrow.enter, this.arrow.escape]) < 0) { return; }
+    if ($.inArray(event.which, [this.key.left, this.key.up, this.key.right, this.key.down, this.key.enter, this.key.escape]) < 0) { return; }
 
     let input = event.target;
     let td = $(event.target).closest('td');
-    let moveTo = null;
+    let moveToInput = null;
     switch (event.which) {
-      case this.arrow.left: {
+      case this.key.left: {
         if (input.selectionStart == 0) {
-          moveTo = td.prev('td:has(input)');
+          td.prev('td:has(input)').find('input').each((i, input)=>{
+            moveToInput = input;
+          });
         }
         break;
       }
-      case this.arrow.right: {
+      case this.key.right: {
         if (input.selectionEnd == input.value.length) {
-          moveTo = td.next('td:has(input)');
+          td.next('td:has(input)').find('input').each((i, input)=>{
+            moveToInput = input;
+          });
         }
         break;
       }
-      case this.arrow.up:
-      case this.arrow.down:
-      case this.arrow.enter: {
+      case this.key.up:
+      case this.key.down:
+      case this.key.enter: {
         let tr = td.closest('tr');
         let pos = td[0].cellIndex;
         let moveToRow = null;
-        if (event.which == this.arrow.down || event.which == this.arrow.enter) {
-          moveToRow = tr.nextAll('tr:has(input)');
+        if (event.which == this.key.down || event.which == this.key.enter) {
+
+          // TODO clean code
+          moveToRow = tr.nextAll('tr:has(input)').each((i, tr)=>{
+            $(tr.cells[pos]).find('input').each((i, input) => {
+              moveToInput = input;
+              return false;  // break
+            });
+            if (moveToInput) return false; //break
+          });
         }
-        else if (event.which == this.arrow.up) {
-          moveToRow = tr.prevAll('tr:has(input)');
-        }
-        if (moveToRow.length) {
-          moveTo = $(moveToRow[0].cells[pos]);
-          if (!moveTo || !moveTo.length) {
-            if (event.which == this.arrow.down || event.which == this.arrow.enter) {
-              moveToRow = tr.nextAll('tr:has(input)');
-            }
-            else if (event.which == this.arrow.up) {
-              moveToRow = tr.prevAll('tr:has(input)');
-            }
-            if (moveToRow.length) {
-              moveTo = $(moveToRow[0].cells[pos]);
-            }
-          }
+        else if (event.which == this.key.up) {
+          moveToRow = tr.prevAll('tr:has(input)').each((i, tr)=>{
+            $(tr.cells[pos]).find('input').each((i, input)=>{
+              moveToInput = input;
+              return false;
+            });
+            if (moveToInput) return false;
+          });
         }
         break;
       }
-      case this.arrow.escape: {
+      case this.key.escape: {
         this.valueFormatted = this._value.toString();
         input.blur();
         break;
       }
     }
-    if (moveTo && moveTo.length) {
+    if (moveToInput) {
       event.preventDefault();
-      moveTo.find('input').each(function (i, input) {
-        input.focus();
-        setTimeout(()=> {
-          input.select();
-        },10);
-      });
-    } else if (event.which == this.arrow.enter) {
+      moveToInput.focus();
+      setTimeout(()=> {
+        moveToInput.select();
+      },10);
+    } else if (event.which == this.key.enter) {
       input.blur();
     }
   }
 
-  updateInternalValue():void {
+  private updateInternalValue():void {
     if (this.inThousand) {
       this.valueFormatted = this.moneyPipe.transform(this._value, 1000);
     } else {
