@@ -9,6 +9,7 @@ import { MoneyPipe } from './maintable/money.pipe';
 import { InlineeditComponent } from './maintable/inlineedit/inlineedit.component';
 import { VersionsComponent } from './versions/versions.component';
 import { WizardComponent } from './versions/wizard/wizard.component';
+import {ExportToExcelService} from "./data/export/export-to-excel.service";
 
 @NgModule({
   declarations: [
@@ -24,7 +25,7 @@ import { WizardComponent } from './versions/wizard/wizard.component';
     BrowserModule,
     FormsModule
   ],
-  providers: [MoneyPipe],
+  providers: [MoneyPipe, ExportToExcelService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

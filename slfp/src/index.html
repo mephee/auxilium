@@ -9,8 +9,7 @@
   <link rel="icon" type="image/x-icon" href="favicon.ico">
 
   <script>
-      const storage = require('electron-json-storage');
-      const {webFrame} = require('electron');
+
   </script>
 
 </head>
@@ -23,7 +22,11 @@
             user-select: none;">
   <app-root></app-root>
   <script>
+    const storage = require('electron-json-storage');
+    const {webFrame} = require('electron');
+    const {ipcRenderer} = require('electron');
     window.$ = window.jQuery = require('jquery');
+    //XLSX = require('xlsx');
   </script>
 </body>
 </html>
