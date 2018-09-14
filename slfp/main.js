@@ -35,9 +35,6 @@ function startApp () {
       openMainWindow(size.width, size.height);
     }
   });
-
-  // install main menu
-  menu.installMainMenu(win);
 }
 
 // Create window on electron intialization
@@ -108,6 +105,9 @@ function openMainWindow(width, height, x, y, maximized) {
     }
     win.show();
   });
+
+  // install main menu
+  menu.installMainMenu(win);
 }
 
 function savePreferences() {
