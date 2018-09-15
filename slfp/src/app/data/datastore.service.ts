@@ -11,6 +11,7 @@ import {InvestmentHRM1Container} from "./model/investmentHRM1Container";
 import {ForeignPayback} from "./model/foreignPayback";
 
 declare var storage:any;
+declare var fs:any;
 
 @Injectable({
   providedIn: 'root'
@@ -188,6 +189,14 @@ export class DatastoreService {
   save():void {
     storage.set('versions', this.versions);
   }
+
+  // saveAs(fileName:string):void {
+  //   try {
+  //     fs.writeFileSync(fileName, this.versions, 'utf-8'); }
+  //   catch(e) {
+  //     console.log('Failed to save the file !');
+  //   }
+  // }
 
   setVersionInitialized():void {
     this.versionInitialized = true;

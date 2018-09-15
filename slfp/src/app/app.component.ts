@@ -21,7 +21,7 @@ export class AppComponent implements OnInit {
 
   ngOnInit() {
     ipcRenderer.on('export-excel', (event, arg) => {
-      this.exportToExcel.export();
+      this.exportToExcel.export(arg);
     });
     storage.has('zoom', (error, has) => {
       if (error) throw error;

@@ -1,7 +1,7 @@
 const {Menu, BrowserWindow} = require('electron');
 const electron = require('electron');
 const app = electron.app;
-const {ipcMain} = require('electron');
+const {ipcMain, dialog} = require('electron');
 
   let mainWindow;
   let splashWindow;
@@ -9,47 +9,58 @@ const {ipcMain} = require('electron');
     {
       label: 'File',
       submenu: [
+        // {
+        //   label: 'Kopie speichern',
+        //   click () {
+        //     let filename = dialog.showSaveDialog({
+        //       title:'Kopie speichern unter',
+        //       defaultPath: 'Kopie.aux',
+        //       filters: [
+        //         {name: 'Auxfina', extensions: ['aux']}
+        //       ]});
+        //     if (filename) {
+        //       mainWindow.webContents.send('export-aux', filename);
+        //     }
+        //   }
+        // },
         {
-          label: 'exportieren nach Excel...',
+          label: 'Exportieren in Excel-Datei',
           click () {
-            mainWindow.webContents.send('export-excel');
+            let filename = dialog.showSaveDialog({
+              title:'Exportieren in Excel-Datei',
+              defaultPath: 'Export.xlsx',
+              filters: [
+                {name: 'Excel', extensions: ['xlsx']}
+              ]});
+            if (filename) {
+              mainWindow.webContents.send('export-excel', filename);
+            }
           }
         }
       ]
     },
-    {
-      label: 'View',
-      submenu: [
-        {
-          label: 'Reload',
-          accelerator: 'CmdOrCtrl+R',
-          click (item, focusedWindow) {
-            if (focusedWindow) focusedWindow.reload()
-          }
-        },
-        {
-          label: 'Toggle Developer Tools',
-          accelerator: process.platform === 'darwin' ? 'Alt+Command+I' : 'Ctrl+Shift+I',
-          click (item, focusedWindow) {
-            if (focusedWindow) focusedWindow.webContents.toggleDevTools()
-          }
-        },
-        {
-          role: 'togglefullscreen'
-        }
-      ]
-    },
-    {
-      role: 'window',
-      submenu: [
-        {
-          role: 'minimize'
-        },
-        {
-          role: 'close'
-        }
-      ]
-    },
+    // {
+    //   label: 'View',
+    //   submenu: [
+    //     {
+    //       label: 'Reload',
+    //       accelerator: 'CmdOrCtrl+R',
+    //       click (item, focusedWindow) {
+    //         if (focusedWindow) focusedWindow.reload()
+    //       }
+    //     },
+    //     {
+    //       label: 'Toggle Developer Tools',
+    //       accelerator: process.platform === 'darwin' ? 'Alt+Command+I' : 'Ctrl+Shift+I',
+    //       click (item, focusedWindow) {
+    //         if (focusedWindow) focusedWindow.webContents.toggleDevTools()
+    //       }
+    //     },
+    //     {
+    //       role: 'togglefullscreen'
+    //     }
+    //   ]
+    // },
     {
       role: 'help',
       submenu: [
