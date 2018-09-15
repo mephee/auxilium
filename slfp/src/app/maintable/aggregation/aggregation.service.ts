@@ -7,6 +7,8 @@ import {InvestmentCategory} from "../../data/model/investmentCategory";
 import {Balance} from "../../data/model/balance";
 import {ForeignPayback} from "../../data/model/foreignPayback";
 import {ForeignContainer} from "../../data/model/foreignContainer";
+import {AdditionalTaxoff} from "../../data/model/additionalTaxoff";
+import {Reserve} from "../../data/model/reserve";
 
 @Injectable({
   providedIn: 'root'
@@ -23,6 +25,7 @@ export class AggregationService {
   balanceBeforeWriteoff: Balance[];
   balanceAfterWriteoff: Balance[];
   balanceAfterInvestments: Balance[] = [];
+  balanceAfterReserves: Balance[] = [];
 
   constructor(private datastore: DatastoreService) {
     this.load();
@@ -65,6 +68,11 @@ export class AggregationService {
   getBalanceAfterInvestments(): Balance[] {
     //this.calculateBalances();
     return this.balanceAfterInvestments;
+  }
+
+  getBalanceAfterReserves(): Balance[] {
+    //this.calculateBalances();
+    return this.balanceAfterReserves;
   }
 
 
@@ -233,6 +241,15 @@ export class AggregationService {
         taxoffs[counter] = taxoff;
       }
     });
+    counter = -1;
+    this.datastore.getAdditionalTaxoffs().forEach(taxoff => {
+      counter++;
+      if (taxoffs[counter]>0) {
+        taxoffs[counter] += taxoff.taxoff;
+      } else {
+        taxoffs[counter] = taxoff.taxoff;
+      }
+    });
     return taxoffs;
   }
 
@@ -242,7 +259,6 @@ export class AggregationService {
     let grants: number[] = new Array(this.yearTo - this.yearFrom + 1).fill(0);
     this.datastore.getInvestments().forEach(investment => {
       let hasGrantYears:boolean = (investment.grantYears.length > 0) && (investment.grantYears[0].grant > 0);
-      console.log('has grants: ' + hasGrantYears);
       if ((investment.grantCanton > 0) || (investment.grantFederal > 0) || hasGrantYears) {
         let totalEff: number = investment.totalCorr > 0 ? investment.totalCorr : investment.total;
         let investedEff = investment.investmentYears.reduce((total, investmentYear) => total + investmentYear.invest, 0);
@@ -279,12 +295,14 @@ export class AggregationService {
     this.balanceBeforeWriteoff = [];
     this.balanceAfterWriteoff = [];
     this.balanceAfterInvestments = [];
+    this.balanceAfterReserves = [];
 
     let taxoffs:number[] = this.getTaxoffsTotal();  // passt ggf yearTo an, deshalb zuoberst
     let inoutComes:Inoutcome[] = this.datastore.getInoutcomes();
     let investments:number[] = this.getInvestmentsTotal();
     let foreignContainer: ForeignContainer = this.getForeignContainer();
     let grants:number[] = this.getGrants();
+    let reserves:Reserve[] = this.datastore.getReserves();
     let counter:number = 0;
     for(let i:number = this.yearFrom;i<=this.yearTo;i++) {
 
@@ -328,6 +346,14 @@ export class AggregationService {
       }
       balance.value += grants[counter];
       this.balanceAfterInvestments.push(balance);
+
+
+      // after Reserve
+      balance = new Balance();
+      balance.year = i;
+      balance.type = 'afterreserve';
+      balance.value = this.balanceAfterInvestments[counter].value + reserves[counter].reserve;
+      this.balanceAfterReserves.push(balance);
 
       counter++;
     }

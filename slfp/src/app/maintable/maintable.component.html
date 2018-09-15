@@ -120,6 +120,16 @@
         <td class="text-right" *ngFor="let taxoff of getTaxoffsHRM1ByYear()">{{taxoff | money}}</td>
       </tr>
 
+
+      <!--zusätzliche Abschreibungen nach HRM2 (finanzpolitische Reserve)-->
+      <tr>
+        <td class="sticky-col1">zusätzliche Abschreibungen nach HRM2 (finanzpolitische Reserve)</td>
+        <td class="sticky-col2">&#xa0;</td>
+        <td *ngFor="let addTaxoff of getAdditionalTaxoffs()">
+          <inlineedit [(value)]="addTaxoff.taxoff"></inlineedit>
+        </td>
+      </tr>
+
       <!-- Total Abschreibung -->
       <tr class="balance">
         <th class="sticky-col1">Total Abschreibungen pro Jahr</th>
@@ -153,6 +163,23 @@
         <th class="sticky-col1">Liquiditätsbestand Total Ende Jahr</th>
         <td class="sticky-col2">&#xa0;</td>
         <th class="text-right" [ngClass]="{'negative-value': balance.value<0, 'positive-value': balance.value>=0}" *ngFor="let balance of getBalanceAfterInvestments()">{{balance.value | money}}</th>
+      </tr>
+
+
+      <!--Abzüglich zweckgebundene Reserve (finanzpolitische Reserve-->
+      <tr>
+        <td class="sticky-col1">Abzüglich zweckgebundene Reserve (finanzpolitische Reserve)</td>
+        <td class="sticky-col2">&#xa0;</td>
+        <td *ngFor="let reserve of getReserves()">
+          <inlineedit [(value)]="reserve.reserve"></inlineedit>
+        </td>
+      </tr>
+
+      <!-- Verfügbare Liquidität -->
+      <tr class="balance">
+        <th class="sticky-col1">Verfügbare Liquidität</th>
+        <td class="sticky-col2">&#xa0;</td>
+        <th class="text-right" [ngClass]="{'negative-value': balance.value<0, 'positive-value': balance.value>=0}" *ngFor="let balance of getBalanceAfterReserves()">{{balance.value | money}}</th>
       </tr>
 
     </tbody>

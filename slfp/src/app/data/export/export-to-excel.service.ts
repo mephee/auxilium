@@ -86,6 +86,11 @@ export class ExportToExcelService {
       let taxoffsHRM1 = this.aggregation.getTaxoffsHRM1ByYear();
       rowCounter++;
 
+      // zusätzliche Abschreibungen nach HRM2 (finanzpolitische Reserve)
+      sheet[XLSX.utils.encode_cell({c:0,r:rowCounter})] = this.getTextCell('zusätzliche Abschreibungen nach HRM2 (finanzpolitische Reserve)');
+      sheet[XLSX.utils.encode_cell({c:1,r:rowCounter})] = this.getTextCell('');
+      rowCounter++;
+
       // Total Abschreibungen
       sheet[XLSX.utils.encode_cell({c:0,r:rowCounter})] = this.getTextCell('Total Abschreibungen pro Jahr');
       sheet[XLSX.utils.encode_cell({c:1,r:rowCounter})] = this.getTextCell('');
@@ -111,6 +116,16 @@ export class ExportToExcelService {
 
       // Liquiditätsbestand Total Ende Jahr
       sheet[XLSX.utils.encode_cell({c:0,r:rowCounter})] = this.getTextCell('Liquiditätsbestand Total Ende Jahr');
+      sheet[XLSX.utils.encode_cell({c:1,r:rowCounter})] = this.getTextCell('');
+      rowCounter++;
+
+      // Abzüglich zweckgebundene Reserve (finanzpolitische Reserve
+      sheet[XLSX.utils.encode_cell({c:0,r:rowCounter})] = this.getTextCell('Abzüglich zweckgebundene Reserve (finanzpolitische Reserve)');
+      sheet[XLSX.utils.encode_cell({c:1,r:rowCounter})] = this.getTextCell('');
+      rowCounter++;
+
+      // Verfügbare Liquidität
+      sheet[XLSX.utils.encode_cell({c:0,r:rowCounter})] = this.getTextCell('Verfügbare Liquidität');
       sheet[XLSX.utils.encode_cell({c:1,r:rowCounter})] = this.getTextCell('');
       rowCounter++;
 
@@ -165,6 +180,10 @@ export class ExportToExcelService {
         sheet[XLSX.utils.encode_cell({c:colCounter,r:rowCounter})] = this.getNumCell1000(taxoffsHRM1[colCounter-2]);
         rowCounter++;
 
+        // zusätzliche Abschreibungen nach HRM2 (finanzpolitische Reserve)
+        sheet[XLSX.utils.encode_cell({c:colCounter,r:rowCounter})] = this.getNumCell1000(version.additionalTaxoffs[colCounter-2].taxoff);
+        rowCounter++;
+
         // Abschreibungen Total
         sheet[XLSX.utils.encode_cell({c:colCounter,r:rowCounter})] = this.getNumCell1000(taxoffsTotal[colCounter-2]);
         rowCounter++;
@@ -183,6 +202,14 @@ export class ExportToExcelService {
 
         // Liquiditätsbestand Total Ende Jahr
         sheet[XLSX.utils.encode_cell({c:colCounter,r:rowCounter})] = this.getNumCell1000(this.aggregation.getBalanceAfterInvestments()[colCounter-2].value);
+        rowCounter++;
+
+        // Reserve
+        sheet[XLSX.utils.encode_cell({c:colCounter,r:rowCounter})] = this.getNumCell1000(version.reserves[colCounter-2].reserve);
+        rowCounter++;
+
+        // Verfügbare Liquidität
+        sheet[XLSX.utils.encode_cell({c:colCounter,r:rowCounter})] = this.getNumCell1000(this.aggregation.getBalanceAfterReserves()[colCounter-2].value);
         rowCounter++;
 
         colCounter++;

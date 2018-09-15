@@ -9,6 +9,8 @@ import {Version} from "./model/version";
 import {CommunicationService} from "../communication/communication.service";
 import {InvestmentHRM1Container} from "./model/investmentHRM1Container";
 import {ForeignPayback} from "./model/foreignPayback";
+import {AdditionalTaxoff} from "./model/additionalTaxoff";
+import {Reserve} from "./model/reserve";
 
 declare var storage:any;
 declare var fs:any;
@@ -74,6 +76,8 @@ export class DatastoreService {
     version.investments = [];
     version.liquidityStart = new LiquidityStart();
     version.liquidityStart.liquidity = 0;
+    version.additionalTaxoffs = [];
+    version.reserves = [];
     return version;
   }
 
@@ -90,7 +94,7 @@ export class DatastoreService {
   }
 
   saveVersion(version:Version):void {
-    version.yearTo = version.yearFrom + 50
+    version.yearTo = version.yearFrom + 50;
     let index = this.versions.indexOf(version);
     if (index !== -1) {
       this.versions[index] = version;
@@ -142,6 +146,22 @@ export class DatastoreService {
         foreignPayback.payback = 0;
         this.actualVersion.foreignContainer.foreignPayback.push(foreignPayback);
       }
+
+      let additionalTaxoff:AdditionalTaxoff = this.actualVersion.additionalTaxoffs.find(addTaxoff => addTaxoff.year === i);
+      if (!additionalTaxoff) {
+        additionalTaxoff = new AdditionalTaxoff();
+        additionalTaxoff.year = i;
+        additionalTaxoff.taxoff = 0;
+        this.actualVersion.additionalTaxoffs.push(additionalTaxoff);
+      }
+
+      let reserve:Reserve = this.actualVersion.reserves.find(reserve => reserve.year === i);
+      if (!reserve) {
+        reserve = new Reserve();
+        reserve.year = i;
+        reserve.reserve = 0;
+        this.actualVersion.reserves.push(reserve);
+      }
     }
   }
 
@@ -171,6 +191,14 @@ export class DatastoreService {
 
   getInvestmentHRM1Container(): InvestmentHRM1Container {
     return this.actualVersion.investmentHRM1Container;
+  }
+
+  getAdditionalTaxoffs(): AdditionalTaxoff[] {
+    return this.actualVersion.additionalTaxoffs;
+  }
+
+  getReserves(): Reserve[] {
+    return this.actualVersion.reserves;
   }
 
 

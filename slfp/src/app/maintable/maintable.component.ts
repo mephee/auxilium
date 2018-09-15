@@ -9,6 +9,8 @@ import {ForeignContainer} from "../data/model/foreignContainer";
 import {LiquidityStart} from "../data/model/liquidityStart";
 import {InvestmentHRM1Container} from "../data/model/investmentHRM1Container";
 import {ForeignPayback} from "../data/model/foreignPayback";
+import {AdditionalTaxoff} from "../data/model/additionalTaxoff";
+import {Reserve} from "../data/model/reserve";
 declare var $:any;
 
 @Component({
@@ -144,6 +146,10 @@ export class MaintableComponent implements OnInit {
     return this.aggregation.getBalanceAfterInvestments();
   }
 
+  getBalanceAfterReserves(): Balance[] {
+    return this.aggregation.getBalanceAfterReserves();
+  }
+
   getForeignContainer(): ForeignContainer {
     return this.aggregation.getForeignContainer();
   }
@@ -182,6 +188,14 @@ export class MaintableComponent implements OnInit {
 
   getGrants(): number[] {
     return this.aggregation.getGrants();
+  }
+
+  getAdditionalTaxoffs(): AdditionalTaxoff[] {
+    return this.dataStore.getAdditionalTaxoffs();
+  }
+
+  getReserves(): Reserve[] {
+    return this.dataStore.getReserves();
   }
 
 
