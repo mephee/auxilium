@@ -70,7 +70,7 @@ function openMainWindow(width, height, x, y, maximized) {
     minWidth: 1024,
     minHeight: 768
   });
-  win.loadURL(`file://${__dirname}/dist/slfp/index.html`);
+  win.loadURL(`file://${__dirname}/dist/auxfina/index.html`);
 
   win.on('maximize', function () {
     savePreferences();
