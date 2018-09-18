@@ -20,5 +20,7 @@ export class Investment {
     this.rate = 0;
     this.investmentYears = [new InvestmentYear()];
     this.grantYears = [];
+    this.grantCanton = 0;
+    this.grantFederal = 0;
   }
 }

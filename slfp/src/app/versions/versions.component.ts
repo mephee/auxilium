@@ -14,7 +14,7 @@ export class VersionsComponent implements OnInit {
   showVersion:boolean;
 
   constructor(private dataStore: DatastoreService, private communication:CommunicationService, private ngZone:NgZone, private aggregation:AggregationService) {
-    this.communication.componentMethodCalled$.subscribe(
+    this.communication.versionReady$.subscribe(
       value => {
         ngZone.run(()=> {
           if (!value) {
@@ -35,6 +35,7 @@ export class VersionsComponent implements OnInit {
     this.dataStore.setActualVersion(version);
     this.dataStore.save();
     this.aggregation.calculateBalances();
+    this.dataStore.setVersionInitialized();
   }
 
   getVersions():Version[] {

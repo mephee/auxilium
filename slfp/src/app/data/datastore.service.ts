@@ -14,6 +14,7 @@ import {Reserve} from "./model/reserve";
 
 declare var storage:any;
 declare var fs:any;
+declare var $:any;
 
 @Injectable({
   providedIn: 'root'
@@ -40,17 +41,17 @@ export class DatastoreService {
               } else if (versions) {
                 this.versions = versions;
                 this.actualVersion = versions[0];
-                this.communication.callComponentMethod(this.actualVersion);
+                this.communication.versionReady(this.actualVersion);
               }
             });
           });
         } else {
-          this.communication.callComponentMethod(null);
+          this.communication.versionReady(null);
         }
       });
     } else {
       this.loadDefaultVersions();
-      this.communication.callComponentMethod(this.actualVersion);
+      this.communication.versionReady(this.actualVersion);
     }
   }
 
@@ -228,10 +229,17 @@ export class DatastoreService {
 
   setVersionInitialized():void {
     this.versionInitialized = true;
+    this.enableTooltips();
   }
 
   isVersionInitialized():boolean {
     return this.versionInitialized;
+  }
+
+  enableTooltips() {
+    setTimeout(() => {
+      $('[data-toggle="popover"]').popover();
+    }, 2000);
   }
 
 }

@@ -10,6 +10,7 @@ import { InlineeditComponent } from './maintable/inlineedit/inlineedit.component
 import { VersionsComponent } from './versions/versions.component';
 import { WizardComponent } from './versions/wizard/wizard.component';
 import {ExportToExcelService} from "./data/export/export-to-excel.service";
+import { SafeHtmlPipe } from './maintable/safe-html.pipe';
 
 @NgModule({
   declarations: [
@@ -19,7 +20,8 @@ import {ExportToExcelService} from "./data/export/export-to-excel.service";
     MoneyPipe,
     InlineeditComponent,
     VersionsComponent,
-    WizardComponent
+    WizardComponent,
+    SafeHtmlPipe,
   ],
   imports: [
     BrowserModule,

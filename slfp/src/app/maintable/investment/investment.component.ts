@@ -6,6 +6,7 @@ import {InvestmentYear} from "../../data/model/investmentYear";
 import {AggregationService} from "../aggregation/aggregation.service";
 import {forEach} from "@angular/router/src/utils/collection";
 import {GrantYear} from "../../data/model/grantYear";
+import {CommunicationService} from "../../communication/communication.service";
 declare var $:any;
 
 @Component({
@@ -20,7 +21,7 @@ export class InvestmentComponent implements OnInit {
   @Output() closed = new EventEmitter<void>();
   selectedCategory: Category;
 
-  constructor(private dataStore: DatastoreService, private aggregation:AggregationService) { }
+  constructor(private dataStore: DatastoreService, private aggregation:AggregationService, private communicatrion:CommunicationService) { }
 
   ngOnInit() {
     $('#investment').draggable({
@@ -133,6 +134,22 @@ export class InvestmentComponent implements OnInit {
     this._investment.grantYears.push(new GrantYear());
   }
 
+  changedInvestValue(event, actualInvestYear:InvestmentYear) {
+    let totalPlanned: number = this._investment.totalCorr > 0 ? this._investment.totalCorr : this._investment.total;
+    let investTotal:number = this._investment.investmentYears.reduce(function(total, investmentYear) {
+      if (actualInvestYear.year != investmentYear.year) {
+        total = total + investmentYear.invest;
+      }
+      return total;
+    }, 0);
+    if (investTotal + event > totalPlanned) {
+      this.communicatrion.alert('Teilzahlungen übersteigen otal Investitionen. Die Teilzahlung wurde automatisch angepasst.');
+      actualInvestYear.invest = totalPlanned - investTotal;
+    } else {
+      actualInvestYear.invest = event;
+    }
+  }
+
   getMoveOptions():string[] {
     let moveoptions:string[] = [];
     for(let i:number = 1;i<11;i++) {
@@ -148,5 +165,4 @@ export class InvestmentComponent implements OnInit {
   selectMoveOption(index:number):void {
     this._investment.investmentYears.forEach(investmentYear => investmentYear.year += index + 1);
   }
-
 }

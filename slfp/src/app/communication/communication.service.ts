@@ -7,12 +7,19 @@ import {Version} from "../data/model/version";
 })
 export class CommunicationService {
 
-  private componentMethodCallSource = new Subject<Version>();
-  componentMethodCalled$ = this.componentMethodCallSource.asObservable();
+  private versionReadySubject = new Subject<Version>();
+  versionReady$ = this.versionReadySubject.asObservable();
+
+  private alertSubject = new Subject<string>();
+  alert$ = this.alertSubject.asObservable();
 
   constructor() { }
 
-  callComponentMethod(value:Version) {
-    this.componentMethodCallSource.next(value);
+  versionReady(value:Version) {
+    this.versionReadySubject.next(value);
+  }
+
+  alert(value:string) {
+    this.alertSubject.next(value);
   }
 }

@@ -11,7 +11,20 @@ package to asar archive
 - asar pack app app.asar
 - delete app folder
 
-build installer
-- run npm run installer
 
-see https://github.com/unindented/electron-installer-windows
+build installer
+- https://github.com/felixrieseberg/electron-wix-msi
+
+or maybe:
+- https://github.com/electron/windows-installer
+
+
+
+
+//
+
+
+
+Version:
+- edit in package.json
+- edit in splash.html

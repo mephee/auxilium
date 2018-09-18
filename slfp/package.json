@@ -1,6 +1,12 @@
 {
+  "author": {
+    "name": "Auxilium AG",
+    "email": "mail@auxiliumag.ch",
+    "url": "https://auxiliumag.ch/"
+  },
   "name": "Auxfina",
-  "version": "0.0.0",
+  "description": "Auxfina - Langfristige Liquiditätsplanung",
+  "version": "2.5.1",
   "main": "main.js",
   "scripts": {
     "ng": "ng",
@@ -46,6 +52,7 @@
     "codelyzer": "~4.2.1",
     "electron": "^2.0.7",
     "electron-installer-windows": "^1.1.0",
+    "electron-wix-msi": "^2.0.5",
     "jasmine-core": "~2.99.1",
     "jasmine-spec-reporter": "~4.2.1",
     "karma": "~1.7.1",

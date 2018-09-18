@@ -65,9 +65,11 @@
     </div>
     <div class="col">
       <div class="float-right">
-        <button type="button" class="btn btn-secondary btn-sm" (click)="zoomOut()">-</button>
+        <button type="button" class="btn btn-secondary btn-sm" (click)="zoomOut()"
+                data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Ansicht verkleinern">-</button>
         <label class="col-form-label mx-2">{{actualZoom}}</label>
-        <button type="button" class="btn btn-secondary btn-sm" (click)="zoomIn()">+</button>
+        <button type="button" class="btn btn-secondary btn-sm" (click)="zoomIn()"
+                data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Ansicht vergrössern">+</button>
       </div>
     </div>
   </div>

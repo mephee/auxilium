@@ -22,7 +22,6 @@
         <td class="sticky-col2">&#xa0;</td>
         <td *ngFor="let inoutcome of getInoutcomes()">
           <inlineedit [value]="inoutcome.taxrate" (valueChange)="changedTaxrate($event, inoutcome)" [inThousand]="false"></inlineedit>
-          <!--<input type="number" class="text-right" [(ngModel)]="inoutcome.taxrate" (blur)="changedTaxrate(inoutcome)">-->
         </td>
       </tr>
       <tr>
@@ -75,7 +74,8 @@
       <tr class="table-secondary">
         <th class="sticky-col1">Investitionen und Abschreibungen</th>
         <td class="sticky-col2">
-          <button type="button" class="btn btn-secondary btn-sm new-button" (click)="newInvestment()">+</button>
+          <button type="button" class="btn btn-secondary btn-sm new-button" (click)="newInvestment()"
+                  data-toggle="popover" data-trigger="hover" data-placement="top" data-content="neue Investition erfassen">+</button>
         </td>
         <td class="text-right" *ngFor="let inoutcome of getInoutcomes()"></td>
       </tr>
@@ -104,7 +104,8 @@
           <tr *ngFor="let investment of getInvestmentsByRate(investmentCategory.rate)">
             <td class="sticky-col1"><span style="margin-left: 25px">{{investment.name}}    (Projekt-Nr: {{investment.projectNr}})</span></td>
             <td class="sticky-col2">
-              <button type="button" class="btn btn-secondary btn-sm edit-button" (click)="editInvestment(investment)">&#x270E;</button>
+              <button type="button" class="btn btn-secondary btn-sm edit-button" (click)="editInvestment(investment)"
+                      data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Investition bearbeiten">&#x270E;</button>
             </td>
             <td class="text-right" *ngFor="let taxoff of getTaxoffsByYear(investment)">{{taxoff | money}}</td>
           </tr>
@@ -155,7 +156,10 @@
       <tr class>
         <th class="sticky-col1">Subventionen</th>
         <td class="sticky-col2">&#xa0;</td>
-        <td class="text-right" *ngFor="let grant of getGrants()">{{grant | money}}</td>
+        <td class="text-right" *ngFor="let grant of getGrants()"
+            (mouseenter)="mouseEnter($event, grant)"
+            (mouseleave)="mouseLeave(grant)"
+            (mouseout)="mouseLeave(grant)">{{grant.grantTotal | money}}</td>
       </tr>
 
       <!-- Liquiditätsbestand Total Ende Jahr -->
@@ -186,5 +190,25 @@
   </table>
 
   <app-investment (closed)="onClosed()" [open]="showInvestment" [investment]="selectedInvestment"></app-investment>
+
+
+  <div class="floatalert alert alert-danger">
+    <h4 class="alert-heading">Achtung!</h4>
+    <p>{{alertText}}</p>
+    <hr>
+    <div class="text-center">
+      <button type="button" class="btn btn-secondary btn-sm alertbutton" (click)="closeAlert()">OK</button>
+    </div>
+  </div>
+
+
+  <div class="grantpopover popover" role="tooltip">
+    <button type="button" class="close" (click)="hideGrantPopup()">
+      <span style="margin-right: 5px" aria-hidden="true">&times;</span>
+    </button>
+    <h4 class="popover-header">Subventionen Jahr {{actualGrantYear}}</h4>
+    <div class="popover-body" [innerHTML]="actualGrantTooltip | safeHtml">
+    </div>
+  </div>
 
 </div>

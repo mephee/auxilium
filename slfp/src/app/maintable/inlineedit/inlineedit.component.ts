@@ -56,10 +56,11 @@ export class InlineeditComponent implements OnInit {
       this.valueFormatted = this.moneyPipe.transform(+this.valueFormatted, 1);
     }
     this.mouseUpCatched = false;
-
     // save on every change
-    this.datastore.save();
-    this.aggregation.calculateBalances();
+    if (this.tableStyle) {
+      this.datastore.save();
+      this.aggregation.calculateBalances();
+    }
   }
 
   onKeyDown(event) {

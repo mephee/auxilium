@@ -197,7 +197,7 @@ export class ExportToExcelService {
         rowCounter++;
 
         // Subventionen
-        sheet[XLSX.utils.encode_cell({c:colCounter,r:rowCounter})] = this.getNumCell1000(grants[colCounter-2]);
+        sheet[XLSX.utils.encode_cell({c:colCounter,r:rowCounter})] = this.getNumCell1000(grants[colCounter-2].grantTotal);
         rowCounter++;
 
         // Liquiditätsbestand Total Ende Jahr

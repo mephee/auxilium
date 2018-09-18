@@ -37,6 +37,7 @@ export class AppComponent implements OnInit {
         });
       }
     });
+    this.datastore.enableTooltips();
   }
 
   isVersionInitialized():boolean {

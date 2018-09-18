@@ -11,6 +11,8 @@ import {InvestmentHRM1Container} from "../data/model/investmentHRM1Container";
 import {ForeignPayback} from "../data/model/foreignPayback";
 import {AdditionalTaxoff} from "../data/model/additionalTaxoff";
 import {Reserve} from "../data/model/reserve";
+import {CommunicationService} from "../communication/communication.service";
+import {GrantGUI} from "./aggregation/model/grantGUI";
 declare var $:any;
 
 @Component({
@@ -22,14 +24,21 @@ export class MaintableComponent implements OnInit {
 
   selectedInvestment: Investment = new Investment();
   showInvestment: boolean;
+  alertText:string;
+  actualGrantTooltip:string;
+  actualGrantYear:string;
 
-  constructor(private dataStore: DatastoreService, private aggregation: AggregationService, private elementRef: ElementRef) { }
+  constructor(private dataStore: DatastoreService, private aggregation: AggregationService, private elementRef: ElementRef, private communication:CommunicationService) { }
 
   ngOnInit() {
     this.showInvestment = false;
-    setTimeout(() => {
-      $('[data-toggle="popover"]').popover();
-    }, 2000);
+
+    this.communication.alert$.subscribe(
+      value => {
+        this.showAlert(value);
+      }
+    );
+
   }
 
   getYears(): number[] {
@@ -90,10 +99,15 @@ export class MaintableComponent implements OnInit {
     if (event>0) {
       event = -1*event;
     }
-    let paybackTotal:number = this.aggregation.getForeignContainer().foreignPayback.reduce((total, foreignPaypack) => total - foreignPaypack.payback, 0);
+    let paybackTotal:number = this.aggregation.getForeignContainer().foreignPayback.reduce(function(total, foreignPaypack) {
+      if (foreignPaypack.year != payback.year) {
+        total = total - foreignPaypack.payback;
+      }
+      return total;
+    }, 0);
     if (paybackTotal - event > this.dataStore.getForeignContainer().foreignValue) {
-      // TODO alert
-      payback.payback = -(this.dataStore.getForeignContainer().foreignValue - paybackTotal);
+      this.showAlert('Rückzahlungen übesteigen das Total Fremdkapital. Die Rückzahlung wurde automatisch angepasst.');
+      payback.payback = paybackTotal - this.dataStore.getForeignContainer().foreignValue;
     } else {
       payback.payback = event;
     }
@@ -186,7 +200,7 @@ export class MaintableComponent implements OnInit {
     return this.aggregation.getTaxoffsHRM1ByYear();
   }
 
-  getGrants(): number[] {
+  getGrants(): GrantGUI[] {
     return this.aggregation.getGrants();
   }
 
@@ -221,6 +235,42 @@ export class MaintableComponent implements OnInit {
 
   toggleInvestmentCategory(investmentCategory: InvestmentCategory): void {
     investmentCategory.show = !investmentCategory.show;
+  }
+
+  mouseEnter(event, grant:GrantGUI) {
+    this.actualGrantTooltip = grant.tooltip;
+    this.actualGrantYear = grant.year + '';
+    if (this.actualGrantTooltip != '') {
+      let left = $(event.target).offset().left;
+      let top = $(event.target).offset().top;
+      let grantPopover = $('.grantpopover');
+      grantPopover.show();
+      let actualHeight = grantPopover.height();
+      grantPopover.css('left', left+'px');
+      grantPopover.css('top', (top-actualHeight-5)+'px');
+    } else {
+      this.hideGrantPopup();
+    }
+  }
+
+  mouseLeave(grant:GrantGUI) {
+    this.hideGrantPopup();
+    this.actualGrantTooltip = "";
+  }
+
+  hideGrantPopup() {
+    $('.grantpopover').hide();
+  }
+
+
+  // This is somewhat ugly -> Alerts can be used through communicationservice fronm other components
+  showAlert(text:string):void {
+    this.alertText = text;
+    $('.floatalert').show();
+  }
+
+  closeAlert():void {
+    $('.floatalert').hide();
   }
 
 
