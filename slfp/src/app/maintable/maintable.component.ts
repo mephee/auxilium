@@ -169,6 +169,15 @@ export class MaintableComponent implements OnInit {
     return this.aggregation.getForeignContainer();
   }
 
+  getForeignOK():string {
+    let foreignTot = this.aggregation.getForeignContainer().foreignPayback.reduce((total, foreign) => total + foreign.payback, 0);
+    if (foreignTot + this.aggregation.getForeignContainer().foreignValue != 0) {
+      return 'Fremdkapital prüfen!';
+    } else {
+      return '';
+    }
+  }
+
   hasInvestmentsForRate(rate:number):boolean {
     return this.aggregation.hasInvestmentsByRate(rate);
   }

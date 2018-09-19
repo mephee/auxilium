@@ -54,7 +54,7 @@
       </tr>
       <!-- Fremdkapital -->
       <tr>
-        <td class="sticky-col1">Aufnahme / Rückzahlung Fremdkapital</td>
+        <td class="sticky-col1">Aufnahme / Rückzahlung Fremdkapital<span style="position: absolute;right: 0px; color: red">{{getForeignOK()}}</span></td>
         <td class="sticky-col2" data-toggle="popover" data-trigger="hover" data-placement="top" attr.data-content="Übertragen sie hier ihr Total an Fremdkapital per 31.12.{{getStartYear()-1}}">
           <inlineedit [(value)]="getForeignContainer().foreignValue"></inlineedit>
         </td>

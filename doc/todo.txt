@@ -1,2 +1,1 @@
-•	kontrollfeld warnfeld wenn saldo nicht korrekt
 •	enter auf ok-button
