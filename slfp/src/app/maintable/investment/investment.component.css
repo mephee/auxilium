@@ -18,13 +18,13 @@ input[type=number]::-webkit-outer-spin-button {
 }
 
 .investperyear {
-  height: 200px;
+  height: 244px;
   overflow-x: hidden;
   overflow-y: scroll;
 }
 
 .grantperyear {
-  height: 114px;
+  height: 75px;
   overflow-x: hidden;
   overflow-y: scroll;
 }

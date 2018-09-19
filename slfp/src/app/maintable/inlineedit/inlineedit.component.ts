@@ -12,7 +12,6 @@ declare var $:any;
 export class InlineeditComponent implements OnInit {
 
   private _value: number;
-  private mouseUpCatched:boolean = false;
   valueFormatted: string;
 
   private key = { left: 37, up: 38, right: 39, down: 40, enter: 13, escape: 27 };
@@ -36,14 +35,10 @@ export class InlineeditComponent implements OnInit {
 
   onFocus(event): void {
     this.valueFormatted = this._value.toString();
-  }
-
-  onMouseUp(event):void {
-    if (!this.mouseUpCatched) {
-      if (this.valueFormatted == '0') {
+    if (this.valueFormatted == '0') {
+      setTimeout(()=>{
         event.target.select();
-      }
-      this.mouseUpCatched = true;
+      });
     }
   }
 
@@ -55,7 +50,6 @@ export class InlineeditComponent implements OnInit {
     } else {
       this.valueFormatted = this.moneyPipe.transform(+this.valueFormatted, 1);
     }
-    this.mouseUpCatched = false;
     // save on every change
     if (this.tableStyle) {
       this.datastore.save();
@@ -88,12 +82,11 @@ export class InlineeditComponent implements OnInit {
         break;
       }
       case this.key.up:
-      case this.key.down:
-      case this.key.enter: {
+      case this.key.down: {
         let tr = td.closest('tr');
         let pos = td[0].cellIndex;
         let moveToRow = null;
-        if (event.which == this.key.down || event.which == this.key.enter) {
+        if (event.which == this.key.down) {
 
           // TODO clean code
           moveToRow = tr.nextAll('tr:has(input)').each((i, tr)=>{
@@ -120,6 +113,10 @@ export class InlineeditComponent implements OnInit {
         input.blur();
         break;
       }
+      case this.key.enter: {
+        input.blur();
+        break;
+      }
     }
     if (moveToInput) {
       event.preventDefault();
@@ -127,8 +124,6 @@ export class InlineeditComponent implements OnInit {
       setTimeout(()=> {
         moveToInput.select();
       },10);
-    } else if (event.which == this.key.enter) {
-      input.blur();
     }
   }
 

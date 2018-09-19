@@ -12,10 +12,6 @@ async function installer() {
     version: '2.5.1',
     outputDirectory: 'C:/Design/auxilium/slfp/installer',
     language: 2055,
-    ui:{
-      enabled: true,
-      chooseDirectory: true
-    }
   });
 
   // Step 2: Create a .wxs template file

@@ -74,19 +74,24 @@ export class InvestmentComponent implements OnInit {
     }
   }
 
-  getCoupleOfYears(index: number, grant:boolean): number[] {
+  getCoupleOfYears(index: number, grant:string): number[] {
     let years:number[] = [];
     let startIndex:number;
     if (index == 0) {
-      startIndex = 2018;
+      if (grant) {
+        startIndex = (this._investment.investmentYears.length > 0) ? this._investment.investmentYears[this._investment.investmentYears.length-1].year : 2018;
+      } else {
+        startIndex = 2018;
+      }
     } else {
       if (grant) {
-        startIndex = this._investment.grantYears[index-1].year+1;
+        let grantYears:GrantYear[] = (grant == 'federal') ? this._investment.grantYearsFederal : this._investment.grantYearsCanton;
+        startIndex = grantYears[index-1].year+1;
       } else {
         startIndex = this._investment.investmentYears[index-1].year+1;
       }
     }
-    for (let i = startIndex;i<startIndex+20;i++) {
+    for (let i = startIndex;i<startIndex+30;i++) {
       years.push(i);
     }
     return years;
@@ -120,18 +125,32 @@ export class InvestmentComponent implements OnInit {
   }
 
   addInvestmentYear(): void {
-    this._investment.investmentYears.push(new InvestmentYear());
+    let investYear:InvestmentYear = new InvestmentYear();
+    if (this._investment.investmentYears.length > 0) {
+      investYear.year = this._investment.investmentYears[this._investment.investmentYears.length-1].year+1;
+    } else {
+      investYear.year = this.aggregation.yearFrom;
+    }
+    this._investment.investmentYears.push(investYear);
   }
 
-  removeGrantYear(grantYear: GrantYear): void {
-    let index = this._investment.grantYears.indexOf(grantYear);
+  removeGrantYear(grantYear: GrantYear, type:string): void {
+    let grantYears:GrantYear[] = (type == 'federal') ? this._investment.grantYearsFederal : this._investment.grantYearsCanton;
+    let index = grantYears.indexOf(grantYear);
     if (index !== -1) {
-      this._investment.grantYears.splice(index, 1);
+      grantYears.splice(index, 1);
     }
   }
 
-  addGrantYear(): void {
-    this._investment.grantYears.push(new GrantYear());
+  addGrantYear(type:string): void {
+    let grantYear:GrantYear = new GrantYear();
+    let grantYears:GrantYear[] = (type == 'federal') ? this._investment.grantYearsFederal : this._investment.grantYearsCanton;
+    if (grantYears.length > 0) {
+      grantYear.year = grantYears[grantYears.length-1].year+1;
+    } else {
+      grantYear.year = this.aggregation.yearFrom;
+    }
+    grantYears.push(grantYear);
   }
 
   changedInvestValue(event, actualInvestYear:InvestmentYear) {
@@ -143,8 +162,10 @@ export class InvestmentComponent implements OnInit {
       return total;
     }, 0);
     if (investTotal + event > totalPlanned) {
-      this.communicatrion.alert('Teilzahlungen übersteigen otal Investitionen. Die Teilzahlung wurde automatisch angepasst.');
-      actualInvestYear.invest = totalPlanned - investTotal;
+      this.communicatrion.alert('Teilzahlungen übersteigen Total Investitionen. Die Teilzahlung wurde automatisch angepasst.');
+      setTimeout(()=>{
+        actualInvestYear.invest = totalPlanned - investTotal;
+      });
     } else {
       actualInvestYear.invest = event;
     }

@@ -145,6 +145,7 @@ export class DatastoreService {
       if (!foreignPayback) {
         foreignPayback = new ForeignPayback(i);
         foreignPayback.payback = 0;
+        foreignPayback.year = i;
         this.actualVersion.foreignContainer.foreignPayback.push(foreignPayback);
       }
 

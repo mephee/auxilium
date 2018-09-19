@@ -93,3 +93,7 @@ input {
 .alertbutton {
   width: 110px;
 }
+
+.investment-inactive {
+  color: #bbbbbb;
+}

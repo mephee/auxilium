@@ -113,6 +113,12 @@ export class AggregationService {
     return investments;
   }
 
+  hasInvestmentsByRate(rate: number):boolean {
+    return this.datastore.getInvestments().find((element) => {
+      return element.rate == rate;
+    }) != undefined;
+  }
+
   getInvestmentsByRate(rate: number): Investment[] {
     let investmnetsByRate: Investment[] = [];
     this.datastore.getInvestments().forEach(investment => {
@@ -261,17 +267,18 @@ export class AggregationService {
       grants[i].year = this.yearFrom + i;
     }
     this.datastore.getInvestments().forEach(investment => {
-      let hasGrantYears:boolean = (investment.grantYears.length > 0) && (investment.grantYears[0].grant > 0);
-      if ((investment.grantCanton > 0) || (investment.grantFederal > 0) || hasGrantYears) {
+      let hasGrantYearsFederal:boolean = (investment.grantYearsFederal.length > 0) && (investment.grantYearsFederal[0].grant > 0);
+      let hasGrantYearsCanton:boolean = (investment.grantYearsCanton.length > 0) && (investment.grantYearsCanton[0].grant > 0);
+      if ((investment.grantCanton > 0) || (investment.grantFederal > 0) || hasGrantYearsFederal || hasGrantYearsCanton) {
         let totalEff: number = investment.totalCorr > 0 ? investment.totalCorr : investment.total;
         let investedEff = investment.investmentYears.reduce((total, investmentYear) => total + investmentYear.invest, 0);
         let taxoffStartYear:number = 0;
         if (investedEff === totalEff) {
           taxoffStartYear = investment.investmentYears[investment.investmentYears.length-1].year+1;
-          if (hasGrantYears) {
-            investment.grantYears.forEach(grantYear => {
+          if (hasGrantYearsFederal) {
+            investment.grantYearsFederal.forEach(grantYear => {
               grants[grantYear.year - this.yearFrom].grantTotal += grantYear.grant;
-              grants[grantYear.year - this.yearFrom].tooltip += this.getGrantTooltipLine(investment, grantYear.grant, 'effektiv');
+              grants[grantYear.year - this.yearFrom].tooltip += this.getGrantTooltipLine(investment, grantYear.grant, 'Bund effektiv');
 
             });
           } else {
@@ -279,6 +286,14 @@ export class AggregationService {
               grants[taxoffStartYear - this.yearFrom].grantTotal += investedEff*investment.grantFederal/100;
               grants[taxoffStartYear - this.yearFrom].tooltip += this.getGrantTooltipLine(investment,investedEff*investment.grantFederal/100, 'Bund geplant');
             }
+          }
+          if (hasGrantYearsCanton) {
+            investment.grantYearsCanton.forEach(grantYear => {
+              grants[grantYear.year - this.yearFrom].grantTotal += grantYear.grant;
+              grants[grantYear.year - this.yearFrom].tooltip += this.getGrantTooltipLine(investment, grantYear.grant, 'Kanton effektiv');
+
+            });
+          } else {
             if (investment.grantCanton > 0) {
               grants[taxoffStartYear - this.yearFrom].grantTotal += investedEff*investment.grantCanton/100;
               grants[taxoffStartYear - this.yearFrom].tooltip += this.getGrantTooltipLine(investment,investedEff*investment.grantCanton/100, 'Kanton geplant');
@@ -291,10 +306,10 @@ export class AggregationService {
   }
 
   private getGrantTooltipLine(investment:Investment, grant:number, type:string):string {
-    let tooltipline = //investment.name + ' (' + investment.projectNr + '):\t' + this.money.transform(grant, 1000) + '\r\n';
+    let tooltipline =
     "<div class='row'>" +
-      "<div class='col'>"+investment.name + "("+investment.projectNr+") ("+type+")</div>" +
-      "<div class='col text-right'><b>" + this.money.transform(grant, 1000) + "</b></div>"+
+      "<div class='col-8'>"+investment.name + " ("+investment.projectNr+") ("+type+")</div>" +
+      "<div class='col-4 text-right'><b>" + this.money.transform(grant, 1000) + "</b></div>"+
     "</div>";
     return tooltipline;
   }

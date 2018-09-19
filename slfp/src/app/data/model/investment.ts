@@ -12,14 +12,16 @@ export class Investment {
   grantCanton:number;
 
   investmentYears: InvestmentYear[];
-  grantYears: GrantYear[];
+  grantYearsFederal: GrantYear[];
+  grantYearsCanton: GrantYear[];
 
   constructor() {
     this.total = 0;
     this.totalCorr = 0;
     this.rate = 0;
     this.investmentYears = [new InvestmentYear()];
-    this.grantYears = [];
+    this.grantYearsFederal = [];
+    this.grantYearsCanton = [];
     this.grantCanton = 0;
     this.grantFederal = 0;
   }

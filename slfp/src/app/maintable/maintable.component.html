@@ -47,7 +47,7 @@
       <tr>
         <td class="sticky-col1">Bestand flüssige Mittel aus ende Vorjahr (31.12.XXXX)</td>
         <td class="sticky-col2">&#xa0;</td>
-        <td class="text-right table-info" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Übertragen sie hier ihren Saldo Liquiditätsbestand per 31.12.2017">
+        <td class="text-right table-info" data-toggle="popover" data-trigger="hover" data-placement="top" attr.data-content="Übertragen sie hier ihren Saldo Liquiditätsbestand per 31.12.{{getStartYear()-1}}">
           <inlineedit [(value)]="getLiquidityStart().liquidity"></inlineedit>
         </td>
         <td class="text-right" [ngClass]="{'negative-value': liquidity<0}" *ngFor="let liquidity of getLiquidityOfLastYear()">{{liquidity | money}}</td>
@@ -55,7 +55,7 @@
       <!-- Fremdkapital -->
       <tr>
         <td class="sticky-col1">Aufnahme / Rückzahlung Fremdkapital</td>
-        <td class="sticky-col2" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Übertragen sie hier ihr Total an Fremdkapital">
+        <td class="sticky-col2" data-toggle="popover" data-trigger="hover" data-placement="top" attr.data-content="Übertragen sie hier ihr Total an Fremdkapital per 31.12.{{getStartYear()-1}}">
           <inlineedit [(value)]="getForeignContainer().foreignValue"></inlineedit>
         </td>
         <td class="text-right" *ngFor="let payback of getForeignContainer().foreignPayback">
@@ -85,15 +85,27 @@
           <td class="sticky-col1" (click)="toggleInvestmentCategory(investmentCategory)">
             <div class="row">
               <div class="col-11">
-                <span>
-                  <span *ngIf="!investmentCategory.show" style="width: 12px">&#x2B9E;</span>
-                  <span *ngIf="investmentCategory.show" style="width: 12px">&#x2B9F;</span>
-                </span>
-                <span style="margin-left: 10px">{{investmentCategory.name}}
-                  <span style="left: 370px;position: absolute">
-                    <b>{{investmentCategory.rate}}%</b>
+                <ng-container *ngIf='hasInvestmentsForRate(investmentCategory.rate); else elseBlock'>
+                  <span>
+                    <span *ngIf="!investmentCategory.show" style="width: 12px">&#x2BC8;</span>
+                    <span *ngIf="investmentCategory.show" style="width: 12px">&#x2BC6;</span>
                   </span>
-                </span>
+                  <span style="margin-left: 10px">{{investmentCategory.name}}
+                    <span class="text-right" style="right: -20px;position: absolute">
+                      <b>{{investmentCategory.rate}}%</b>
+                    </span>
+                  </span>
+                </ng-container>
+                <ng-template #elseBlock>
+                  <span class="investment-inactive">
+                    <span style="width: 12px">&#x2BC8;</span>
+                  </span>
+                  <span class="investment-inactive" style="margin-left: 10px">{{investmentCategory.name}}
+                    <span class="text-right" style="right: -20px;position: absolute">
+                      <b>{{investmentCategory.rate}}%</b>
+                    </span>
+                  </span>
+                </ng-template>
               </div>
             </div>
           </td>
@@ -114,7 +126,7 @@
 
       <!-- Abschreibungen HRM 1-->
       <tr>
-        <td class="sticky-col1"><span><i>HRM1 Verwaltungsvermögen per 31.12.2017</i> <span style="left: 360px;position: absolute"><b>10%</b></span></span></td>
+        <td class="sticky-col1"><span><i>HRM1 Verwaltungsvermögen per 31.12.2017</i> <span class="text-right" style="right: 5px;position: absolute"><b>10%</b></span></span></td>
         <td class="sticky-col2" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Übertragen sie hier ihr Total an Investitionen nach HRM1 per 31.12.2017">
           <inlineedit [(value)]="getInvestmentHRM1Container().value"></inlineedit>
         </td>
@@ -197,7 +209,7 @@
     <p>{{alertText}}</p>
     <hr>
     <div class="text-center">
-      <button type="button" class="btn btn-secondary btn-sm alertbutton" (click)="closeAlert()">OK</button>
+      <button type="submit" class="btn btn-secondary btn-sm alertbutton" (click)="closeAlert()">OK</button>
     </div>
   </div>
 

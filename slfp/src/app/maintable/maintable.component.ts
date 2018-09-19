@@ -41,6 +41,10 @@ export class MaintableComponent implements OnInit {
 
   }
 
+  getStartYear() {
+    return this.aggregation.yearFrom;
+  }
+
   getYears(): number[] {
     return this.aggregation.getYears();
   }
@@ -96,18 +100,15 @@ export class MaintableComponent implements OnInit {
   }
 
   editPayback(event, payback:ForeignPayback): void {
-    if (event>0) {
-      event = -1*event;
+    let saldo:number = 0;
+    for (let i = this.aggregation.yearFrom;i<payback.year;i++) {
+      saldo+=this.aggregation.getForeignContainer().foreignPayback[i-this.aggregation.yearFrom].payback;
     }
-    let paybackTotal:number = this.aggregation.getForeignContainer().foreignPayback.reduce(function(total, foreignPaypack) {
-      if (foreignPaypack.year != payback.year) {
-        total = total - foreignPaypack.payback;
-      }
-      return total;
-    }, 0);
-    if (paybackTotal - event > this.dataStore.getForeignContainer().foreignValue) {
+    if ((saldo + event + this.dataStore.getForeignContainer().foreignValue) < 0) {
       this.showAlert('Rückzahlungen übesteigen das Total Fremdkapital. Die Rückzahlung wurde automatisch angepasst.');
-      payback.payback = paybackTotal - this.dataStore.getForeignContainer().foreignValue;
+      setTimeout(()=>{
+        payback.payback = -(saldo + this.dataStore.getForeignContainer().foreignValue);
+      });
     } else {
       payback.payback = event;
     }
@@ -168,6 +169,10 @@ export class MaintableComponent implements OnInit {
     return this.aggregation.getForeignContainer();
   }
 
+  hasInvestmentsForRate(rate:number):boolean {
+    return this.aggregation.hasInvestmentsByRate(rate);
+  }
+
   getInvestmentsByRate(rate: number): Investment[] {
     return this.aggregation.getInvestmentsByRate(rate);
   }
@@ -215,12 +220,14 @@ export class MaintableComponent implements OnInit {
 
   // Edit
   newInvestment(): void {
+    this.hideGrantPopup();
     this.selectedInvestment = new Investment();
     this.showInvestment = true;
 
   }
 
   editInvestment(investment: Investment): void {
+    this.hideGrantPopup();
     this.selectedInvestment = investment;
     this.showInvestment = true;
   }
@@ -245,9 +252,11 @@ export class MaintableComponent implements OnInit {
       let top = $(event.target).offset().top;
       let grantPopover = $('.grantpopover');
       grantPopover.show();
-      let actualHeight = grantPopover.height();
-      grantPopover.css('left', left+'px');
-      grantPopover.css('top', (top-actualHeight-5)+'px');
+      setTimeout(()=>{
+        let actualHeight = grantPopover.height();
+        grantPopover.css('left', left+'px');
+        grantPopover.css('top', (top-actualHeight-5)+'px');
+      },20);
     } else {
       this.hideGrantPopup();
     }
