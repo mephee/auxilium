@@ -18,7 +18,7 @@
           </div>
 
           <div class="row mb-2">
-            <label for="total" class="col-3 col-form-label">Genehmigte Investition:</label>
+            <label class="col-3 col-form-label">Genehmigte Investition:</label>
             <div class="col-2">
               <inlineedit [(value)]="_investment.total" [inThousand]="false" [tableStyle]="false"></inlineedit>
             </div>
@@ -32,7 +32,7 @@
           </div>
 
           <div class="row mb-2">
-            <label for="totalCorr" class="col-3 col-form-label">Effektive Investition:</label>
+            <label class="col-3 col-form-label">Effektive Investition:</label>
             <div class="col-2">
               <inlineedit [(value)]="_investment.totalCorr" [inThousand]="false" [tableStyle]="false"></inlineedit>
             </div>
@@ -61,7 +61,7 @@
                   </div>
                 </div>
               </div>
-              <div class="investperyear">
+              <div class="investperyear mb-3">
                 <div class="row mb-3" *ngFor="let investmentYear of _investment.investmentYears; let idx = index">
                   <div class="col-5 investCol">
                     <select [(ngModel)]="investmentYear.year" class="form-control form-control-sm" [ngModelOptions]="{standalone: true}">
@@ -81,6 +81,34 @@
                   </div>
                 </div>
               </div>
+
+              <h6 class="row col-12 col-form-label investCol border-top">Reinvestitionen indexbereinigt:</h6>
+              <div class="row mb-3">
+                <div class="col-5 investCol">
+                  <button [disabled]="!reinvestmentsActive" class="btn btn-secondary btn-sm dropdown-toggle" type="button" id="indexMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Anzahl Reinvestitionen
+                  </button>
+                  <div class="dropdown-menu" aria-labelledby="indexMenuButton">
+                    <a class="dropdown-item" (click)="selectReinvestmentCount(0)">0</a>
+                    <a class="dropdown-item" (click)="selectReinvestmentCount(1)">1</a>
+                    <a class="dropdown-item" (click)="selectReinvestmentCount(2)">2</a>
+                    <a class="dropdown-item" (click)="selectReinvestmentCount(3)">3</a>
+                    <a class="dropdown-item" (click)="selectReinvestmentCount(4)">4</a>
+                    <a class="dropdown-item" (click)="selectReinvestmentCount(5)">5</a>
+                  </div>
+                </div>
+              </div>
+              <div class="reinvest">
+                <div class="row mb-3" *ngFor="let reinvest of reinvestments">
+                  <div class="col-12 investCol">
+                    {{reinvest}}
+                  </div>
+                  <!--<div class="col-2 investCol">-->
+                    <!--<button type="button" class="btn btn-secondary btn-sm">*</button>-->
+                  <!--</div>-->
+                </div>
+              </div>
+
             </div>
 
             <div class="col-6 border-left">

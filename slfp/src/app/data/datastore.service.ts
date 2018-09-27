@@ -11,6 +11,7 @@ import {InvestmentHRM1Container} from "./model/investmentHRM1Container";
 import {ForeignPayback} from "./model/foreignPayback";
 import {AdditionalTaxoff} from "./model/additionalTaxoff";
 import {Reserve} from "./model/reserve";
+import {Index} from "./model";
 
 declare var storage:any;
 declare var fs:any;
@@ -22,37 +23,62 @@ declare var $:any;
 export class DatastoreService {
 
   private categories: Category[];
+  private indexes: Index[];
   private actualVersion: Version;
   private versions: Version[];
   private versionInitialized:boolean = false;
 
   constructor(private ngZone:NgZone, private communication:CommunicationService) {
-    this.categories = MOCK.categories;
+    this.categories = MOCK.categories.sort((a,b)=>a.name.localeCompare(b.name));
     this.versions = [];
 
     if (typeof storage !== 'undefined') {
-      storage.has('versions', (error, has) => {
-        if (error) throw error;
-        if (has) {
-          storage.get('versions', (error, versions) => {
-            ngZone.run(() => {
-              if (error) {
-                throw error;
-              } else if (versions) {
-                this.versions = versions;
-                this.actualVersion = versions[0];
-                this.communication.versionReady(this.actualVersion);
-              }
-            });
-          });
-        } else {
-          this.communication.versionReady(null);
-        }
-      });
+      this.loadIndexes();
     } else {
+      this.indexes = [];
       this.loadDefaultVersions();
       this.communication.versionReady(this.actualVersion);
     }
+  }
+
+  private loadVersions(){
+    storage.has('versions', (error, has) => {
+      if (error) throw error;
+      if (has) {
+        storage.get('versions', (error, versions) => {
+          this.ngZone.run(() => {
+            if (error) {
+              throw error;
+            } else if (versions) {
+              this.versions = versions;
+              this.actualVersion = versions[0];
+              this.communication.versionReady(this.actualVersion);
+            }
+          });
+        });
+      } else {
+        this.communication.versionReady(null);
+      }
+    });
+  }
+
+  private loadIndexes() {
+    storage.has('indexes', (error, has) => {
+      if (error) throw error;
+      if (has) {
+        storage.get('indexes', (error, indexes) => {
+          if (error) {
+            throw error;
+          } else if (indexes) {
+            this.indexes = indexes;
+            this.loadVersions();
+          }
+        });
+      } else {
+        this.indexes = [];
+        this.loadVersions();
+      }
+    });
   }
 
   /*
@@ -183,6 +209,10 @@ export class DatastoreService {
     return this.actualVersion.investments;
   }
 
+  getInvestmentsWithoutIndexed(): Investment[] {
+    return this.getInvestments().filter(investment => !(investment.reinvestParentId))
+  }
+
   getForeignContainer(): ForeignContainer {
     return this.actualVersion.foreignContainer;
   }
@@ -203,6 +233,10 @@ export class DatastoreService {
     return this.actualVersion.reserves;
   }
 
+  getIndexes(): Index[] {
+    return this.indexes;
+  }
+
 
   /*
   Edits
@@ -216,8 +250,35 @@ export class DatastoreService {
     }
   }
 
+  deleteInvestment(investment: Investment) {
+    let index = this.actualVersion.investments.indexOf(investment);
+    if (index > -1) {
+      this.actualVersion.investments.splice(index, 1);
+    }
+  }
+
+  saveIndex(index:Index) {
+    let idx = this.indexes.indexOf(index);
+    if (idx !== -1) {
+      this.indexes[idx] = index;
+    } else {
+      this.indexes.push(index);
+    }
+  }
+
+  deleteIndex(index: Index) {
+    let idx = this.indexes.indexOf(index);
+    if (idx > -1) {
+      this.indexes.splice(idx, 1);
+    }
+  }
+
   save():void {
     storage.set('versions', this.versions);
+  }
+
+  saveIndexes():void {
+    storage.set('indexes', this.indexes);
   }
 
   // saveAs(fileName:string):void {

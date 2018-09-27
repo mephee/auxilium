@@ -13,16 +13,7 @@ package to asar archive
 
 
 build installer
-- https://github.com/felixrieseberg/electron-wix-msi
-
-or maybe:
-- https://github.com/electron/windows-installer
-
-
-
-
-//
-
+- run installerscript.js
 
 
 Version:

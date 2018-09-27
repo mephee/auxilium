@@ -17,11 +17,17 @@ export class AppComponent implements OnInit {
   actualZoom:string = '100%';
   actualZoomNumber:number = 100;
 
+  showIndex:boolean;
+
   constructor(private datastore:DatastoreService, private exportToExcel:ExportToExcelService, private ngZone:NgZone) {}
 
   ngOnInit() {
-    ipcRenderer.on('export-excel', (event, arg) => {
-      this.exportToExcel.export(arg);
+    this.showIndex = false;
+    ipcRenderer.on('export-excel', (event, arg) => this.exportToExcel.export(arg));
+    ipcRenderer.on('indextable', () => {
+      this.ngZone.run(() => {
+        this.showIndex = true
+      });
     });
     storage.has('zoom', (error, has) => {
       if (error) throw error;
@@ -62,6 +68,10 @@ export class AppComponent implements OnInit {
     this.actualZoomNumber = zoom;
     this.actualZoom = this.actualZoomNumber + '%';
     webFrame.setZoomFactor(this.actualZoomNumber / 100);
+  }
+
+  onClosedIndex() {
+    this.showIndex = false;
   }
 
 

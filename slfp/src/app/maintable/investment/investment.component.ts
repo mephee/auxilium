@@ -4,9 +4,11 @@ import {Category} from "../../data/model/category";
 import {Investment} from "../../data/model/investment";
 import {InvestmentYear} from "../../data/model/investmentYear";
 import {AggregationService} from "../aggregation/aggregation.service";
-import {forEach} from "@angular/router/src/utils/collection";
 import {GrantYear} from "../../data/model/grantYear";
 import {CommunicationService} from "../../communication/communication.service";
+import {MoneyPipe} from "../money.pipe";
+import {InvestmentService} from "./investment.service";
+import {IndexService} from "../../index/index.service";
 declare var $:any;
 
 @Component({
@@ -21,7 +23,15 @@ export class InvestmentComponent implements OnInit {
   @Output() closed = new EventEmitter<void>();
   selectedCategory: Category;
 
-  constructor(private dataStore: DatastoreService, private aggregation:AggregationService, private communicatrion:CommunicationService) { }
+  reinvestments:string[] = [];
+  reinvestmentsActive:boolean = false;
+
+  constructor(private dataStore: DatastoreService,
+              private aggregation:AggregationService,
+              private communicatrion:CommunicationService,
+              private money:MoneyPipe,
+              private investmentService:InvestmentService,
+              private indexService:IndexService) { }
 
   ngOnInit() {
     $('#investment').draggable({
@@ -33,13 +43,9 @@ export class InvestmentComponent implements OnInit {
   set investment(investment:Investment) {
     this._investment = investment;
     if (investment) {
-      this.selectedCategory = this.dataStore.getCategories().find(category => category.rate == this._investment.rate);
+      this.selectedCategory = this.dataStore.getCategories().find(category => category.id == this._investment.categoryId);
     }
-  }
-
-
-  changeCategory(): void {
-    this._investment.rate = this.selectedCategory.rate;
+    this.calculateReinvestments();
   }
 
   calcYears(): number {
@@ -99,6 +105,7 @@ export class InvestmentComponent implements OnInit {
 
   save(): void {
     this._investment.rate = this.selectedCategory.rate;
+    this._investment.categoryId = this.selectedCategory.id;
     this.dataStore.saveInvestment(this._investment);
     this.dataStore.save();
     this.aggregation.calculateBalances();
@@ -169,6 +176,7 @@ export class InvestmentComponent implements OnInit {
     } else {
       actualInvestYear.invest = event;
     }
+    this.calculateReinvestments();
   }
 
   getMoveOptions():string[] {
@@ -185,5 +193,32 @@ export class InvestmentComponent implements OnInit {
 
   selectMoveOption(index:number):void {
     this._investment.investmentYears.forEach(investmentYear => investmentYear.year += index + 1);
+  }
+
+  selectReinvestmentCount(count:number):void {
+    this._investment.reinvestCount = count;
+    this.calculateReinvestments();
+  }
+
+  calculateReinvestments():void {
+    let totalPlanned: number = this.investmentService.getTotalEffective(this._investment);
+    this.reinvestments = [];
+    this.reinvestmentsActive = false;
+    if (this.investmentService.isInvestmentComplete(this._investment)) {
+      this.reinvestmentsActive = true;
+      let taxoffYears = this.investmentService.getTaxoffYearsCount(this._investment);
+      let taxoffStartYear = this._investment.investmentYears[this._investment.investmentYears.length-1].year;
+      let investTimeSpan = this.investmentService.getInvestmentTimespan(this._investment);
+
+      let lastInvestmentYear = this.investmentService.getLastInvestmentYear(this._investment);
+      let indexToday:number = this.indexService.getIndexForYear(lastInvestmentYear);
+
+      for (let i=1;i<=this._investment.reinvestCount;i++) {
+        taxoffStartYear = taxoffStartYear + taxoffYears + investTimeSpan;
+        let indexRe:number = this.indexService.getIndexForYear(taxoffStartYear);
+        let indexedTotal = ~~((totalPlanned/indexToday)*indexRe);
+        this.reinvestments.push(i + '. Reinvestition im Jahr ' + taxoffStartYear + ':   ' + this.money.transform(indexedTotal, 1));
+      }
+    }
   }
 }

@@ -11,6 +11,7 @@ import { VersionsComponent } from './versions/versions.component';
 import { WizardComponent } from './versions/wizard/wizard.component';
 import {ExportToExcelService} from "./data/export/export-to-excel.service";
 import { SafeHtmlPipe } from './maintable/safe-html.pipe';
+import { IndexComponent } from './index/index.component';
 
 @NgModule({
   declarations: [
@@ -22,6 +23,7 @@ import { SafeHtmlPipe } from './maintable/safe-html.pipe';
     VersionsComponent,
     WizardComponent,
     SafeHtmlPipe,
+    IndexComponent,
   ],
   imports: [
     BrowserModule,

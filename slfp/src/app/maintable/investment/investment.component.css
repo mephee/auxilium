@@ -18,7 +18,13 @@ input[type=number]::-webkit-outer-spin-button {
 }
 
 .investperyear {
-  height: 244px;
+  height: 104px;
+  overflow-x: hidden;
+  overflow-y: scroll;
+}
+
+.reinvest {
+  height: 58px;
   overflow-x: hidden;
   overflow-y: scroll;
 }

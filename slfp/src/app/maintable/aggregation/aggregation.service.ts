@@ -2,15 +2,15 @@ import { Injectable } from '@angular/core';
 import {DatastoreService} from "../../data/datastore.service";
 import {Inoutcome} from "../../data/model/inoutcome";
 import {Investment} from "../../data/model/investment";
-import {InvestmentYear} from "../../data/model/investmentYear";
 import {InvestmentCategory} from "../../data/model/investmentCategory";
 import {Balance} from "../../data/model/balance";
 import {ForeignPayback} from "../../data/model/foreignPayback";
 import {ForeignContainer} from "../../data/model/foreignContainer";
-import {AdditionalTaxoff} from "../../data/model/additionalTaxoff";
 import {Reserve} from "../../data/model/reserve";
 import {GrantGUI} from "./model/grantGUI";
 import {MoneyPipe} from "../money.pipe";
+import {IndexService} from "../../index/index.service";
+import {InvestmentService} from "../investment/investment.service";
 
 @Injectable({
   providedIn: 'root'
@@ -29,7 +29,10 @@ export class AggregationService {
   balanceAfterInvestments: Balance[] = [];
   balanceAfterReserves: Balance[] = [];
 
-  constructor(private datastore: DatastoreService, private money:MoneyPipe) {
+  constructor(private datastore: DatastoreService,
+              private money:MoneyPipe,
+              private index:IndexService,
+              private investment:InvestmentService) {
     this.load();
   }
 
@@ -99,29 +102,15 @@ export class AggregationService {
   }
 
   // Investment
-  getInvestmentsByYear(investment: Investment): number[] {
-    let investments:number[] = [];
-    let investmentYears:InvestmentYear[] = investment.investmentYears;
-    for(let i:number = this.yearFrom;i<=this.yearTo;i++) {
-      let investmentYear:InvestmentYear = investmentYears.find(investmentYear => investmentYear.year === i);
-      if (investmentYear) {
-        investments.push(investmentYear.invest)
-      } else {
-        investments.push(0);
-      }
-    }
-    return investments;
-  }
-
   hasInvestmentsByRate(rate: number):boolean {
-    return this.datastore.getInvestments().find((element) => {
+    return this.datastore.getInvestmentsWithoutIndexed().find((element) => {
       return element.rate == rate;
     }) != undefined;
   }
 
   getInvestmentsByRate(rate: number): Investment[] {
     let investmnetsByRate: Investment[] = [];
-    this.datastore.getInvestments().forEach(investment => {
+    this.datastore.getInvestmentsWithoutIndexed().forEach(investment => {
       if (investment.rate === rate) {
         investmnetsByRate.push(investment);
       }
@@ -134,6 +123,7 @@ export class AggregationService {
     this.datastore.getInvestments().forEach(investment => {
       investment.investmentYears.forEach(investmentYear => {
           let index = investmentYear.year - this.yearFrom;
+          // todo tooltip
           if (investments[index] < 0) {
             investments[index] += -investmentYear.invest;
           } else {
@@ -166,14 +156,13 @@ export class AggregationService {
 
   getTaxoffsByYear(investment: Investment): number[] {
     let taxoffs:number[] = [];
-    let totalEff: number = investment.totalCorr > 0 ? investment.totalCorr : investment.total;
-    let investedEff = investment.investmentYears.reduce((total, investmentYear) => total + investmentYear.invest, 0);
+    let investedEff = this.investment.getTotalInvested(investment);
     let taxoffPerYear:number = 0;
     let taxoffStartYear:number = 0;
 
     // fertig investiert?
     let doTaxoff:boolean = false;
-    if (investedEff === totalEff && investedEff > 0) {
+    if (this.investment.isInvestmentComplete(investment)) {
       doTaxoff = true;
       taxoffPerYear = investedEff/(100/investment.rate);
       taxoffStartYear = investment.investmentYears[investment.investmentYears.length-1].year;
@@ -197,6 +186,17 @@ export class AggregationService {
       }
       this.datastore.updateVersionYearFromTo(this.yearFrom, this.yearTo);
     }
+
+    // add indexed reinvestments (caution, this is a recursion!)
+    let reinvestments:Investment[] = this.datastore.getInvestments().filter(reinvestment=> reinvestment.reinvestParentId === investment.id && reinvestment.reinvestParentId);
+    reinvestments.forEach(reinvestment=>{
+      let lastTaxoffs = taxoffs;
+      taxoffs = this.getTaxoffsByYear(reinvestment);
+      for(let i=0;i<lastTaxoffs.length;i++) {
+        taxoffs[i] += lastTaxoffs[i];
+      }
+    });
+
     return taxoffs;
   }
 
@@ -223,7 +223,7 @@ export class AggregationService {
   getTaxoffsTotal(): number[] {
     let taxoffs: number[] = new Array(this.yearTo - this.yearFrom + 1);
     let counter:number;
-    this.datastore.getInvestments().forEach(investment => {
+    this.datastore.getInvestmentsWithoutIndexed().forEach(investment => {
       counter = -1;
       this.getTaxoffsByYear(investment).forEach(taxoff => {
         counter++;
@@ -270,10 +270,9 @@ export class AggregationService {
       let hasGrantYearsFederal:boolean = (investment.grantYearsFederal.length > 0) && (investment.grantYearsFederal[0].grant > 0);
       let hasGrantYearsCanton:boolean = (investment.grantYearsCanton.length > 0) && (investment.grantYearsCanton[0].grant > 0);
       if ((investment.grantCanton > 0) || (investment.grantFederal > 0) || hasGrantYearsFederal || hasGrantYearsCanton) {
-        let totalEff: number = investment.totalCorr > 0 ? investment.totalCorr : investment.total;
-        let investedEff = investment.investmentYears.reduce((total, investmentYear) => total + investmentYear.invest, 0);
-        let taxoffStartYear:number = 0;
-        if (investedEff === totalEff) {
+        if (this.investment.isInvestmentComplete(investment)) {
+          let investedEff = this.investment.getTotalEffective(investment);
+          let taxoffStartYear:number = 0;
           taxoffStartYear = investment.investmentYears[investment.investmentYears.length-1].year+1;
           if (hasGrantYearsFederal) {
             investment.grantYearsFederal.forEach(grantYear => {
@@ -320,8 +319,6 @@ export class AggregationService {
    */
   // Balances
   calculateBalances(): void {
-
-    console.log('recalculate');
     this.yearFrom = this.datastore.getActualVersion().yearFrom;
     this.yearTo = this.datastore.getActualVersion().yearTo;
 
@@ -330,6 +327,8 @@ export class AggregationService {
     this.balanceAfterWriteoff = [];
     this.balanceAfterInvestments = [];
     this.balanceAfterReserves = [];
+
+    this.index.generateIndexedReinvestments();
 
     let taxoffs:number[] = this.getTaxoffsTotal();  // passt ggf yearTo an, deshalb zuoberst
     let inoutComes:Inoutcome[] = this.datastore.getInoutcomes();

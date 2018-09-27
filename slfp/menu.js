@@ -39,28 +39,53 @@ const {ipcMain, dialog} = require('electron');
         }
       ]
     },
-    // {
-    //   label: 'Ansicht',
-    //   submenu: [
-    //     {
-    //       label: 'Reload',
-    //       accelerator: 'CmdOrCtrl+R',
-    //       click (item, focusedWindow) {
-    //         if (focusedWindow) focusedWindow.reload()
-    //       }
-    //     },
-    //     {
-    //       label: 'Toggle Developer Tools',
-    //       accelerator: process.platform === 'darwin' ? 'Alt+Command+I' : 'Ctrl+Shift+I',
-    //       click (item, focusedWindow) {
-    //         if (focusedWindow) focusedWindow.webContents.toggleDevTools()
-    //       }
-    //     },
-    //     {
-    //       role: 'togglefullscreen'
-    //     }
-    //   ]
-    // },
+    {
+      label: 'Einstellungen',
+      submenu: [
+        // {
+        //   label: 'Kopie speichern',
+        //   click () {
+        //     let filename = dialog.showSaveDialog({
+        //       title:'Kopie speichern unter',
+        //       defaultPath: 'Kopie.aux',
+        //       filters: [
+        //         {name: 'Auxfina', extensions: ['aux']}
+        //       ]});
+        //     if (filename) {
+        //       mainWindow.webContents.send('export-aux', filename);
+        //     }
+        //   }
+        // },
+        {
+          label: 'Indextabelle',
+          click () {
+            mainWindow.webContents.send('indextable');
+          }
+        }
+      ]
+    },
+    {
+      label: 'Ansicht',
+      submenu: [
+        {
+          label: 'Reload',
+          accelerator: 'CmdOrCtrl+R',
+          click (item, focusedWindow) {
+            if (focusedWindow) focusedWindow.reload()
+          }
+        },
+        {
+          label: 'Toggle Developer Tools',
+          accelerator: process.platform === 'darwin' ? 'Alt+Command+I' : 'Ctrl+Shift+I',
+          click (item, focusedWindow) {
+            if (focusedWindow) focusedWindow.webContents.toggleDevTools()
+          }
+        },
+        {
+          role: 'togglefullscreen'
+        }
+      ]
+    },
     {
       label: 'Hilfe',
       role: 'help',
