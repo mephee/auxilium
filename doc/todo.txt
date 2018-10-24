@@ -1,1 +1,5 @@
-•	enter auf ok-button
+- enter auf ok-button
+- schützen durch lizenznummer
+
+- zusätzlicher excel-export -> alle Projekte mit name, investition, kategorie, projektnummer
+- bestehender excel-export erweitern um die jeweiligen projekte

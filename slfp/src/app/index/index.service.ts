@@ -66,7 +66,7 @@ export class IndexService {
         indexToday = this.datastore.getIndexes()[this.datastore.getIndexes().length-1];
       } else {
         indexToday = new Index();
-        indexToday.index = 1;
+        indexToday.index = 100;
       }
     }
     return indexToday.index;

@@ -23,12 +23,16 @@ export class AppComponent implements OnInit {
 
   ngOnInit() {
     this.showIndex = false;
+
+    // Menubefehle
     ipcRenderer.on('export-excel', (event, arg) => this.exportToExcel.export(arg));
     ipcRenderer.on('indextable', () => {
       this.ngZone.run(() => {
         this.showIndex = true
       });
     });
+
+    // Zoom wiederherstellen
     storage.has('zoom', (error, has) => {
       if (error) throw error;
       if (has) {

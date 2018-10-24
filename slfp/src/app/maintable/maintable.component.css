@@ -85,7 +85,7 @@ input {
   border: 1px solid #7b7b7b
 }
 
-.grantpopover {
+.dyntooltip {
   min-width: 400px;
   display: none;
 }

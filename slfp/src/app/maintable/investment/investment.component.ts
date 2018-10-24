@@ -28,7 +28,7 @@ export class InvestmentComponent implements OnInit {
 
   constructor(private dataStore: DatastoreService,
               private aggregation:AggregationService,
-              private communicatrion:CommunicationService,
+              private communication:CommunicationService,
               private money:MoneyPipe,
               private investmentService:InvestmentService,
               private indexService:IndexService) { }
@@ -104,8 +104,7 @@ export class InvestmentComponent implements OnInit {
   }
 
   save(): void {
-    this._investment.rate = this.selectedCategory.rate;
-    this._investment.categoryId = this.selectedCategory.id;
+    this.updateCategory();
     this.dataStore.saveInvestment(this._investment);
     this.dataStore.save();
     this.aggregation.calculateBalances();
@@ -118,7 +117,18 @@ export class InvestmentComponent implements OnInit {
     this.closed.emit();
   }
 
-
+  delete(): void {
+    this.communication.confirm({
+      message: "Wollen sie diese Investition wirklich löschen?",
+      callback: () => {
+        this.dataStore.deleteInvestment(this._investment);
+        this.dataStore.save();
+        this.aggregation.calculateBalances();
+        this.open = false;
+        this.closed.emit();
+      }
+    });
+  }
 
   getCategories(): Category[] {
     return this.dataStore.getCategories();
@@ -160,6 +170,13 @@ export class InvestmentComponent implements OnInit {
     grantYears.push(grantYear);
   }
 
+  changedProjectNr() {
+    if (this.dataStore.getInvestmentsWithoutIndexed().find(investment => (investment.projectNr === this._investment.projectNr) && (investment.id != this._investment.id)) != undefined) {
+      this.communication.alert('Eine Investition mit dieser Projekt-Nr. existiert bereits! Die Projekt-Nr. wurde angepasst.');
+      this._investment.projectNr += "_1";
+    }
+  }
+
   changedInvestValue(event, actualInvestYear:InvestmentYear) {
     let totalPlanned: number = this._investment.totalCorr > 0 ? this._investment.totalCorr : this._investment.total;
     let investTotal:number = this._investment.investmentYears.reduce(function(total, investmentYear) {
@@ -169,7 +186,7 @@ export class InvestmentComponent implements OnInit {
       return total;
     }, 0);
     if (investTotal + event > totalPlanned) {
-      this.communicatrion.alert('Teilzahlungen übersteigen Total Investitionen. Die Teilzahlung wurde automatisch angepasst.');
+      this.communication.alert('Teilzahlungen übersteigen Total Investitionen. Die Teilzahlung wurde automatisch angepasst.');
       setTimeout(()=>{
         actualInvestYear.invest = totalPlanned - investTotal;
       });
@@ -201,6 +218,7 @@ export class InvestmentComponent implements OnInit {
   }
 
   calculateReinvestments():void {
+    this.updateCategory();
     let totalPlanned: number = this.investmentService.getTotalEffective(this._investment);
     this.reinvestments = [];
     this.reinvestmentsActive = false;
@@ -221,4 +239,12 @@ export class InvestmentComponent implements OnInit {
       }
     }
   }
+
+  private updateCategory() {
+    if (this.selectedCategory) {
+      this._investment.rate = this.selectedCategory.rate;
+      this._investment.categoryId = this.selectedCategory.id;
+    }
+  }
+
 }

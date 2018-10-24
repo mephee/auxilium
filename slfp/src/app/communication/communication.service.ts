@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import {Subject} from "rxjs/index";
 import {Version} from "../data/model/version";
+import {Confirm} from "./model/confirm";
 
 @Injectable({
   providedIn: 'root'
@@ -13,6 +14,9 @@ export class CommunicationService {
   private alertSubject = new Subject<string>();
   alert$ = this.alertSubject.asObservable();
 
+  private confirmSubject = new Subject<Confirm>();
+  confirm$ = this.confirmSubject.asObservable();
+
   constructor() { }
 
   versionReady(value:Version) {
@@ -21,5 +25,9 @@ export class CommunicationService {
 
   alert(value:string) {
     this.alertSubject.next(value);
+  }
+
+  confirm(value:Confirm) {
+    this.confirmSubject.next(value);
   }
 }

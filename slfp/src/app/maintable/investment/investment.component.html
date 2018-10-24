@@ -13,7 +13,7 @@
             </div>
             <label for="project" class="col-2 col-form-label">Projekt-Nr.:</label>
             <div class="col-3">
-              <input type="text" class="form-control form-control-sm" id="project" [(ngModel)]="_investment.projectNr" name="proj">
+              <input type="text" class="form-control form-control-sm" id="project" [(ngModel)]="_investment.projectNr" name="proj" (blur)="changedProjectNr()">
             </div>
           </div>
 
@@ -26,7 +26,7 @@
             <label for="category" class="col-3 col-form-label">Anlagekategorie:</label>
             <div class="col-3">
               <select [(ngModel)]="selectedCategory" name="cat" class="form-control form-control-sm" id="category">
-                <option *ngFor="let category of getCategories()" [ngValue]="category">{{category.name}} {{category.rate}}%</option>
+                <option *ngFor="let category of getCategories()" [ngValue]="category" (click)="changeCategory(category)">{{category.name}} {{category.rate}}%</option>
               </select>
             </div>
           </div>
@@ -189,6 +189,7 @@
         </form>
       </div>
       <div class="modal-footer">
+        <button type="button" class="btn btn-secondary btn-sm mr-auto" (click)="delete()">Löschen</button>
         <button type="button" class="btn btn-secondary btn-sm" (click)="close()">Abbrechen</button>
         <button type="button" class="btn auxbutton btn-sm" (click)="save()">Speichern</button>
       </div>

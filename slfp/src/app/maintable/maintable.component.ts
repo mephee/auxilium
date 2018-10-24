@@ -13,6 +13,8 @@ import {AdditionalTaxoff} from "../data/model/additionalTaxoff";
 import {Reserve} from "../data/model/reserve";
 import {CommunicationService} from "../communication/communication.service";
 import {GrantGUI} from "./aggregation/model/grantGUI";
+import {InvestmentGUI} from "./aggregation/model/investmentGUI";
+import {Confirm} from "../communication/model/confirm";
 declare var $:any;
 
 @Component({
@@ -25,10 +27,11 @@ export class MaintableComponent implements OnInit {
   selectedInvestment: Investment = new Investment();
   showInvestment: boolean;
   alertText:string;
-  actualGrantTooltip:string;
-  actualGrantYear:string;
+  confirm:Confirm = {message:"",callback:null};
+  actualDynTooltip:string;
+  actualDynTooltipYear:string;
 
-  constructor(private dataStore: DatastoreService, private aggregation: AggregationService, private elementRef: ElementRef, private communication:CommunicationService) { }
+  constructor(public dataStore: DatastoreService, public aggregation: AggregationService, private elementRef: ElementRef, private communication:CommunicationService) { }
 
   ngOnInit() {
     this.showInvestment = false;
@@ -39,34 +42,28 @@ export class MaintableComponent implements OnInit {
       }
     );
 
+    this.communication.confirm$.subscribe(
+      value => {
+        this.showConfirm(value);
+      }
+    );
+
   }
 
-  getStartYear() {
-    return this.aggregation.yearFrom;
-  }
 
-  getYears(): number[] {
-    return this.aggregation.getYears();
-  }
-
-  getInoutcomes(): Inoutcome[] {
-    return this.dataStore.getInoutcomes();
-  }
-
-  calculateTaxVolume(inoutcome: Inoutcome): void {
-    this.aggregation.calculateTaxIncome(inoutcome);
-  }
-
+  /*
+  Edits
+   */
   changedTaxrate(event, inoutcome:Inoutcome) {
     inoutcome.taxrate = event;
-    this.calculateTaxVolume(inoutcome);
+    this.aggregation.calculateTaxIncome(inoutcome);
     this.copyTaxrate(inoutcome.year);
     this.dataStore.save();
   }
 
   changedTaxVolume(event, inoutcome:Inoutcome) {
     inoutcome.taxvolume = event;
-    this.calculateTaxVolume(inoutcome);
+    this.aggregation.calculateTaxIncome(inoutcome);
     this.copyTaxvolume(inoutcome.year);
     this.dataStore.save();
   }
@@ -80,7 +77,7 @@ export class MaintableComponent implements OnInit {
       }
       if (inoutcomes[i].year>year) {
         inoutcomes[i].taxvolume = taxvolumeToCopy;
-        this.calculateTaxVolume(inoutcomes[i]);
+        this.aggregation.calculateTaxIncome(inoutcomes[i]);
       }
     }
   }
@@ -94,7 +91,7 @@ export class MaintableComponent implements OnInit {
       }
       if (inoutcomes[i].year>year) {
         inoutcomes[i].taxrate = taxrateToCopy;
-        this.calculateTaxVolume(inoutcomes[i]);
+        this.aggregation.calculateTaxIncome(inoutcomes[i]);
       }
     }
   }
@@ -137,38 +134,15 @@ export class MaintableComponent implements OnInit {
     }
   }
 
-  getBalanceAfterOutcome(): Balance[] {
-    return this.aggregation.getBalanceAfterOutcome();
+  toggleInvestmentCategory(investmentCategory: InvestmentCategory): void {
+    investmentCategory.show = !investmentCategory.show;
   }
 
-  getBalanceBeforeWriteoff(): Balance[] {
-    return this.aggregation.getBalanceBeforeWriteoff();
-  }
 
-  getBalanceAfterWriteoff(): Balance[] {
-    return this.aggregation.getBalanceAfterWriteoff();
-  }
 
-  getTaxoffsTotal(): number[] {
-    return this.aggregation.getTaxoffsTotal();
-  }
-
-  getInvestmentsTotal(): number[] {
-    return this.aggregation.getInvestmentsTotal();
-  }
-
-  getBalanceAfterInvestments(): Balance[] {
-    return this.aggregation.getBalanceAfterInvestments();
-  }
-
-  getBalanceAfterReserves(): Balance[] {
-    return this.aggregation.getBalanceAfterReserves();
-  }
-
-  getForeignContainer(): ForeignContainer {
-    return this.aggregation.getForeignContainer();
-  }
-
+  /*
+  Getter
+   */
   getForeignOK():string {
     let foreignTot = this.aggregation.getForeignContainer().foreignPayback.reduce((total, foreign) => total + foreign.payback, 0);
     if (foreignTot + this.aggregation.getForeignContainer().foreignValue != 0) {
@@ -178,118 +152,86 @@ export class MaintableComponent implements OnInit {
     }
   }
 
-  hasInvestmentsForRate(rate:number):boolean {
-    return this.aggregation.hasInvestmentsByRate(rate);
-  }
 
-  getInvestmentsByRate(rate: number): Investment[] {
-    return this.aggregation.getInvestmentsByRate(rate);
-  }
-
-  getTaxoffsByCategory(investmentCategory: InvestmentCategory): number[] {
-    return this.aggregation.getTaxoffsByCategory(investmentCategory);
-  }
-
-  getTaxoffsByYear(investment: Investment): number[] {
-    return this.aggregation.getTaxoffsByYear(investment);
-  }
-
-  getLiquidityStart(): LiquidityStart {
-    return this.dataStore.getLiquidityStart();
-  }
-
-  getLiquidityOfLastYear(): number[] {
-    return this.aggregation.getLiquidityOfLastYear();
-  }
-
-  isVersionInitialized(): boolean {
-    return this.dataStore.isVersionInitialized();
-  }
-
-  getInvestmentHRM1Container(): InvestmentHRM1Container {
-    return this.dataStore.getInvestmentHRM1Container();
-  }
-
-  getTaxoffsHRM1ByYear(): number[] {
-    return this.aggregation.getTaxoffsHRM1ByYear();
-  }
-
-  getGrants(): GrantGUI[] {
-    return this.aggregation.getGrants();
-  }
-
-  getAdditionalTaxoffs(): AdditionalTaxoff[] {
-    return this.dataStore.getAdditionalTaxoffs();
-  }
-
-  getReserves(): Reserve[] {
-    return this.dataStore.getReserves();
-  }
-
-
-  // Edit
+  /*
+  Investmentdetail
+   */
   newInvestment(): void {
-    this.hideGrantPopup();
+    this.hideDynTooltip();
     this.selectedInvestment = new Investment();
     this.showInvestment = true;
 
   }
 
   editInvestment(investment: Investment): void {
-    this.hideGrantPopup();
+    this.hideDynTooltip();
     this.selectedInvestment = investment;
     this.showInvestment = true;
-  }
-
-  getInvestmentCategories(): InvestmentCategory[] {
-    return this.aggregation.getInvestmentCategories();
   }
 
   onClosed(): void {
     this.showInvestment = false;
   }
 
-  toggleInvestmentCategory(investmentCategory: InvestmentCategory): void {
-    investmentCategory.show = !investmentCategory.show;
-  }
 
-  mouseEnter(event, grant:GrantGUI) {
-    this.actualGrantTooltip = grant.tooltip;
-    this.actualGrantYear = grant.year + '';
-    if (this.actualGrantTooltip != '') {
+  /*
+  Dynamic Tooltip
+   */
+  mouseEnterTT(event, tooltip:string, year:string) {
+    this.actualDynTooltip = tooltip;
+    this.actualDynTooltipYear = year;
+    if (this.actualDynTooltip != '') {
       let left = $(event.target).offset().left;
       let top = $(event.target).offset().top;
-      let grantPopover = $('.grantpopover');
-      grantPopover.show();
+      let dyntooltip = $('.dyntooltip');
+      dyntooltip.show();
       setTimeout(()=>{
-        let actualHeight = grantPopover.height();
-        grantPopover.css('left', left+'px');
-        grantPopover.css('top', (top-actualHeight-5)+'px');
+        let actualHeight = dyntooltip.height();
+        dyntooltip.css('left', left+'px');
+        dyntooltip.css('top', (top-actualHeight-5)+'px');
       },20);
     } else {
-      this.hideGrantPopup();
+      this.hideDynTooltip();
     }
   }
 
-  mouseLeave(grant:GrantGUI) {
-    this.hideGrantPopup();
-    this.actualGrantTooltip = "";
+  mouseLeaveTT() {
+    this.hideDynTooltip();
+    this.actualDynTooltip = "";
   }
 
-  hideGrantPopup() {
-    $('.grantpopover').hide();
+  hideDynTooltip() {
+    $('.dyntooltip').hide();
   }
 
 
+  /*
+  Alert
+   */
   // This is somewhat ugly -> Alerts can be used through communicationservice fronm other components
   showAlert(text:string):void {
     this.alertText = text;
-    $('.floatalert').show();
+    $('.customalert').show();
   }
 
   closeAlert():void {
-    $('.floatalert').hide();
+    $('.customalert').hide();
   }
 
+  showConfirm(confirm:Confirm):void {
+    this.confirm = confirm;
+    $('.customconfirm').show();
+  }
+
+  cancelConfirm():void {
+    $('.customconfirm').hide();
+  }
+
+  acceptConfirm(): void {
+    this.cancelConfirm();
+    if (this.confirm.callback) {
+      this.confirm.callback();
+    }
+  }
 
 }

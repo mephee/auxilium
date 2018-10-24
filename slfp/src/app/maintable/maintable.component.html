@@ -1,11 +1,11 @@
-<div *ngIf="isVersionInitialized()" class="table-wrapper">
+<div *ngIf="dataStore.isVersionInitialized()" class="table-wrapper">
   <table id="maintable" class="table table-sm">
     <thead>
       <!-- Jahr -->
       <tr>
         <th class="sticky-col1 sticky-header">Jahr</th>
         <th class="sticky-col2 sticky-header">Bestände Planung</th>
-        <th class="text-center" style="min-width: 100px" *ngFor="let year of getYears()">{{year}}</th>
+        <th class="text-center" style="min-width: 100px" *ngFor="let year of aggregation.getYears()">{{year}}</th>
       </tr>
     </thead>
     <tbody>
@@ -13,27 +13,27 @@
       <tr>
         <td class="sticky-col1">Steuervolumen</td>
         <td class="sticky-col2">&#xa0;</td>
-        <td *ngFor="let inoutcome of getInoutcomes()">
+        <td *ngFor="let inoutcome of dataStore.getInoutcomes()">
           <inlineedit [value]="inoutcome.taxvolume" (valueChange)="changedTaxVolume($event, inoutcome)"></inlineedit>
         </td>
       </tr>
       <tr>
         <td class="sticky-col1">Steueranlage</td>
         <td class="sticky-col2">&#xa0;</td>
-        <td *ngFor="let inoutcome of getInoutcomes()">
+        <td *ngFor="let inoutcome of dataStore.getInoutcomes()">
           <inlineedit [value]="inoutcome.taxrate" (valueChange)="changedTaxrate($event, inoutcome)" [inThousand]="false"></inlineedit>
         </td>
       </tr>
       <tr>
         <td class="sticky-col1">Steuereinkommen</td>
         <td class="sticky-col2">&#xa0;</td>
-        <td *ngFor="let inoutcome of getInoutcomes()" class="text-right">{{inoutcome.income | money}}</td>
+        <td *ngFor="let inoutcome of dataStore.getInoutcomes()" class="text-right">{{inoutcome.income | money}}</td>
       </tr>
       <!-- Ordentliche Ausgaben -->
       <tr>
         <td class="sticky-col1">Betriebsaufwände</td>
         <td class="sticky-col2">&#xa0;</td>
-        <td *ngFor="let inoutcome of getInoutcomes()">
+        <td *ngFor="let inoutcome of dataStore.getInoutcomes()">
           <inlineedit [value]="inoutcome.outcome" (valueChange)="editOutcome($event, inoutcome)"></inlineedit>
         </td>
       </tr>
@@ -41,24 +41,24 @@
       <tr class="balance">
         <th class="sticky-col1">Überschuss/Fehlbetrag aus laufender Rechnung</th>
         <td class="sticky-col2">&#xa0;</td>
-        <td class="text-right" [ngClass]="{'negative-value': balance.value<0}" *ngFor="let balance of getBalanceAfterOutcome()">{{balance.value | money }}</td>
+        <td class="text-right" [ngClass]="{'negative-value': balance.value<0}" *ngFor="let balance of aggregation.getBalanceAfterOutcome()">{{balance.value | money }}</td>
       </tr>
       <!-- Flüssige Mittel aus Vorjahr -->
       <tr>
         <td class="sticky-col1">Bestand flüssige Mittel aus ende Vorjahr (31.12.XXXX)</td>
         <td class="sticky-col2">&#xa0;</td>
-        <td class="text-right table-info" data-toggle="popover" data-trigger="hover" data-placement="top" attr.data-content="Übertragen sie hier ihren Saldo Liquiditätsbestand per 31.12.{{getStartYear()-1}}">
-          <inlineedit [(value)]="getLiquidityStart().liquidity"></inlineedit>
+        <td class="text-right table-info" data-toggle="popover" data-trigger="hover" data-placement="top" attr.data-content="Übertragen sie hier ihren Saldo Liquiditätsbestand per 31.12.{{aggregation.yearFrom-1}}">
+          <inlineedit [(value)]="dataStore.getLiquidityStart().liquidity"></inlineedit>
         </td>
-        <td class="text-right" [ngClass]="{'negative-value': liquidity<0}" *ngFor="let liquidity of getLiquidityOfLastYear()">{{liquidity | money}}</td>
+        <td class="text-right" [ngClass]="{'negative-value': liquidity<0}" *ngFor="let liquidity of aggregation.getLiquidityOfLastYear()">{{liquidity | money}}</td>
       </tr>
       <!-- Fremdkapital -->
       <tr>
         <td class="sticky-col1">Aufnahme / Rückzahlung Fremdkapital<span style="position: absolute;right: 0px; color: red">{{getForeignOK()}}</span></td>
-        <td class="sticky-col2" data-toggle="popover" data-trigger="hover" data-placement="top" attr.data-content="Übertragen sie hier ihr Total an Fremdkapital per 31.12.{{getStartYear()-1}}">
-          <inlineedit [(value)]="getForeignContainer().foreignValue"></inlineedit>
+        <td class="sticky-col2" data-toggle="popover" data-trigger="hover" data-placement="top" attr.data-content="Übertragen sie hier ihr Total an Fremdkapital per 31.12.{{aggregation.yearFrom-1}}">
+          <inlineedit [(value)]="aggregation.getForeignContainer().foreignValue"></inlineedit>
         </td>
-        <td class="text-right" *ngFor="let payback of getForeignContainer().foreignPayback">
+        <td class="text-right" *ngFor="let payback of aggregation.getForeignContainer().foreignPayback">
           <inlineedit [value]="payback.payback" (valueChange)="editPayback($event, payback)"></inlineedit>
         </td>
       </tr>
@@ -67,7 +67,7 @@
       <tr class="balance">
         <th class="sticky-col1">Total Liquiditätsbestand vor Abschreibungen</th>
         <td class="sticky-col2">&#xa0;</td>
-        <td class="text-right" [ngClass]="{'negative-value': balance.value<0}" *ngFor="let balance of getBalanceBeforeWriteoff()">{{balance.value | money}}</td>
+        <td class="text-right" [ngClass]="{'negative-value': balance.value<0}" *ngFor="let balance of aggregation.getBalanceBeforeWriteoff()">{{balance.value | money}}</td>
       </tr>
 
       <!-- Investitionen Abschreibungen -->
@@ -77,15 +77,15 @@
           <button type="button" class="btn btn-secondary btn-sm new-button" (click)="newInvestment()"
                   data-toggle="popover" data-trigger="hover" data-placement="top" data-content="neue Investition erfassen">+</button>
         </td>
-        <td class="text-right" *ngFor="let inoutcome of getInoutcomes()"></td>
+        <td class="text-right" *ngFor="let inoutcome of dataStore.getInoutcomes()"></td>
       </tr>
 
-      <ng-container *ngFor="let investmentCategory of getInvestmentCategories()">
+      <ng-container *ngFor="let investmentCategory of aggregation.getInvestmentCategories()">
         <tr>
           <td class="sticky-col1" (click)="toggleInvestmentCategory(investmentCategory)">
             <div class="row">
               <div class="col-11">
-                <ng-container *ngIf='hasInvestmentsForRate(investmentCategory.rate); else elseBlock'>
+                <ng-container *ngIf='aggregation.hasInvestmentsByRate(investmentCategory.rate); else elseBlock'>
                   <span>
                     <span *ngIf="!investmentCategory.show" style="width: 12px">&#x2BC8;</span>
                     <span *ngIf="investmentCategory.show" style="width: 12px">&#x2BC6;</span>
@@ -110,16 +110,16 @@
             </div>
           </td>
           <td class="sticky-col2">&#xa0;</td>
-          <td class="text-right" *ngFor="let taxoff of getTaxoffsByCategory(investmentCategory)">{{taxoff | money}}</td>
+          <td class="text-right" *ngFor="let taxoff of aggregation.getTaxoffsByCategory(investmentCategory)">{{taxoff | money}}</td>
         </tr>
         <ng-container *ngIf="investmentCategory.show">
-          <tr *ngFor="let investment of getInvestmentsByRate(investmentCategory.rate)">
+          <tr *ngFor="let investment of aggregation.getInvestmentsByRate(investmentCategory.rate)">
             <td class="sticky-col1"><span style="margin-left: 25px">{{investment.name}}    (Projekt-Nr: {{investment.projectNr}})</span></td>
             <td class="sticky-col2">
               <button type="button" class="btn btn-secondary btn-sm edit-button" (click)="editInvestment(investment)"
                       data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Investition bearbeiten">&#x270E;</button>
             </td>
-            <td class="text-right" *ngFor="let taxoff of getTaxoffsByYear(investment)">{{taxoff | money}}</td>
+            <td class="text-right" *ngFor="let taxoff of aggregation.getTaxoffsByYear(investment)">{{taxoff | money}}</td>
           </tr>
         </ng-container>
       </ng-container>
@@ -128,9 +128,9 @@
       <tr>
         <td class="sticky-col1"><span><i>HRM1 Verwaltungsvermögen per 31.12.2017</i> <span class="text-right" style="right: 5px;position: absolute"><b>10%</b></span></span></td>
         <td class="sticky-col2" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Übertragen sie hier ihr Total an Investitionen nach HRM1 per 31.12.2017">
-          <inlineedit [(value)]="getInvestmentHRM1Container().value"></inlineedit>
+          <inlineedit [(value)]="dataStore.getInvestmentHRM1Container().value"></inlineedit>
         </td>
-        <td class="text-right" *ngFor="let taxoff of getTaxoffsHRM1ByYear()">{{taxoff | money}}</td>
+        <td class="text-right" *ngFor="let taxoff of aggregation.getTaxoffsHRM1ByYear()">{{taxoff | money}}</td>
       </tr>
 
 
@@ -138,7 +138,7 @@
       <tr>
         <td class="sticky-col1">zusätzliche Abschreibungen nach HRM2 (finanzpolitische Reserve)</td>
         <td class="sticky-col2">&#xa0;</td>
-        <td *ngFor="let addTaxoff of getAdditionalTaxoffs()">
+        <td *ngFor="let addTaxoff of dataStore.getAdditionalTaxoffs()">
           <inlineedit [(value)]="addTaxoff.taxoff"></inlineedit>
         </td>
       </tr>
@@ -147,38 +147,41 @@
       <tr class="balance">
         <th class="sticky-col1">Total Abschreibungen pro Jahr</th>
         <td class="sticky-col2">&#xa0;</td>
-        <td class="text-right" [ngClass]="{'negative-value': taxoff<0}" *ngFor="let taxoff of getTaxoffsTotal()">{{taxoff | money}}</td>
+        <td class="text-right" [ngClass]="{'negative-value': taxoff<0}" *ngFor="let taxoff of aggregation.getTaxoffsTotal()">{{taxoff | money}}</td>
       </tr>
 
       <!-- Total Liquiditätszufluss -Abfluss aus Rechnung (Cash flow) -->
       <tr class="balance">
         <th class="sticky-col1">Total Liquiditätszufluss -Abfluss aus Rechnung (Cash flow)</th>
         <td class="sticky-col2">&#xa0;</td>
-        <td class="text-right" [ngClass]="{'negative-value': balance.value<0}" *ngFor="let balance of getBalanceAfterWriteoff()">{{balance.value | money}}</td>
+        <td class="text-right" [ngClass]="{'negative-value': balance.value<0}" *ngFor="let balance of aggregation.getBalanceAfterWriteoff()">{{balance.value | money}}</td>
       </tr>
 
       <!-- Total Ausgaben Investitionen (Liquiditätsabfluss) -->
       <tr class="balance">
         <th class="sticky-col1">Total Ausgaben Investitionen (Liquiditätsabfluss)</th>
         <td class="sticky-col2">&#xa0;</td>
-        <td class="text-right" [ngClass]="{'negative-value': investment<0}" *ngFor="let investment of getInvestmentsTotal()">{{investment | money}}</td>
+        <td class="text-right" [ngClass]="{'negative-value': investment<0}" *ngFor="let investment of aggregation.getInvestmentsTotal()"
+            (mouseenter)="mouseEnterTT($event, investment.tooltip, 'Investitionen Jahr ' + investment.year)"
+            (mouseleave)="mouseLeaveTT()"
+            (mouseout)="mouseLeaveTT()">{{investment.investmentTotal | money}}</td>
       </tr>
 
       <!-- Subventionen -->
       <tr class>
         <th class="sticky-col1">Subventionen</th>
         <td class="sticky-col2">&#xa0;</td>
-        <td class="text-right" *ngFor="let grant of getGrants()"
-            (mouseenter)="mouseEnter($event, grant)"
-            (mouseleave)="mouseLeave(grant)"
-            (mouseout)="mouseLeave(grant)">{{grant.grantTotal | money}}</td>
+        <td class="text-right" *ngFor="let grant of aggregation.getGrants()"
+            (mouseenter)="mouseEnterTT($event, grant.tooltip, 'Subventionen Jahr ' + grant.year)"
+            (mouseleave)="mouseLeaveTT()"
+            (mouseout)="mouseLeaveTT()">{{grant.grantTotal | money}}</td>
       </tr>
 
       <!-- Liquiditätsbestand Total Ende Jahr -->
       <tr class="balance">
         <th class="sticky-col1">Liquiditätsbestand Total Ende Jahr</th>
         <td class="sticky-col2">&#xa0;</td>
-        <th class="text-right" [ngClass]="{'negative-value': balance.value<0, 'positive-value': balance.value>=0}" *ngFor="let balance of getBalanceAfterInvestments()">{{balance.value | money}}</th>
+        <th class="text-right" [ngClass]="{'negative-value': balance.value<0, 'positive-value': balance.value>=0}" *ngFor="let balance of aggregation.getBalanceAfterInvestments()">{{balance.value | money}}</th>
       </tr>
 
 
@@ -186,7 +189,7 @@
       <tr>
         <td class="sticky-col1">Abzüglich zweckgebundene Reserve (finanzpolitische Reserve)</td>
         <td class="sticky-col2">&#xa0;</td>
-        <td *ngFor="let reserve of getReserves()">
+        <td *ngFor="let reserve of dataStore.getReserves()">
           <inlineedit [(value)]="reserve.reserve"></inlineedit>
         </td>
       </tr>
@@ -195,7 +198,7 @@
       <tr class="balance">
         <th class="sticky-col1">Verfügbare Liquidität</th>
         <td class="sticky-col2">&#xa0;</td>
-        <th class="text-right" [ngClass]="{'negative-value': balance.value<0, 'positive-value': balance.value>=0}" *ngFor="let balance of getBalanceAfterReserves()">{{balance.value | money}}</th>
+        <th class="text-right" [ngClass]="{'negative-value': balance.value<0, 'positive-value': balance.value>=0}" *ngFor="let balance of aggregation.getBalanceAfterReserves()">{{balance.value | money}}</th>
       </tr>
 
     </tbody>
@@ -204,7 +207,7 @@
   <app-investment (closed)="onClosed()" [open]="showInvestment" [investment]="selectedInvestment"></app-investment>
 
 
-  <div class="floatalert alert alert-danger">
+  <div class="customalert floatalert alert alert-danger">
     <h4 class="alert-heading">Achtung!</h4>
     <p>{{alertText}}</p>
     <hr>
@@ -213,13 +216,23 @@
     </div>
   </div>
 
+  <div class="customconfirm floatalert alert alert-danger">
+    <h4 class="alert-heading">Achtung!</h4>
+    <p>{{confirm.message}}</p>
+    <hr>
+    <div class="text-center">
+      <button type="submit" class="btn btn-secondary btn-sm alertbutton mr-3" (click)="cancelConfirm()">Abbrechen</button>
+      <button type="submit" class="btn btn-secondary btn-sm alertbutton" (click)="acceptConfirm()">OK</button>
+    </div>
+  </div>
 
-  <div class="grantpopover popover" role="tooltip">
-    <button type="button" class="close" (click)="hideGrantPopup()">
+
+  <div class="dyntooltip popover" role="tooltip">
+    <button type="button" class="close" (click)="hideDynTooltip()">
       <span style="margin-right: 5px" aria-hidden="true">&times;</span>
     </button>
-    <h4 class="popover-header">Subventionen Jahr {{actualGrantYear}}</h4>
-    <div class="popover-body" [innerHTML]="actualGrantTooltip | safeHtml">
+    <h4 class="popover-header">{{actualDynTooltipYear}}</h4>
+    <div class="popover-body" [innerHTML]="actualDynTooltip | safeHtml">
     </div>
   </div>
 

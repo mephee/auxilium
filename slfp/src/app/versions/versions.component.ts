@@ -47,8 +47,13 @@ export class VersionsComponent implements OnInit {
   }
 
   deleteVersion() {
-    this.dataStore.deleteVersion(this.dataStore.getActualVersion());
-    this.dataStore.save();
+    this.communication.confirm({
+      message: "Wollen sie diese Variante wirklich löschen?",
+      callback: () => {
+        this.dataStore.deleteVersion(this.dataStore.getActualVersion());
+        this.dataStore.save();
+      }
+    });
   }
 
   onCloseVersion() {

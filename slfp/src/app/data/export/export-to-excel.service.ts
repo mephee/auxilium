@@ -193,7 +193,7 @@ export class ExportToExcelService {
         rowCounter++;
 
         // Investitionen Total
-        sheet[XLSX.utils.encode_cell({c:colCounter,r:rowCounter})] = this.getNumCell1000(investmentsTotal[colCounter-2]);
+        sheet[XLSX.utils.encode_cell({c:colCounter,r:rowCounter})] = this.getNumCell1000(investmentsTotal[colCounter-2].investmentTotal);
         rowCounter++;
 
         // Subventionen

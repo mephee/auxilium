@@ -134,8 +134,8 @@ export class DatastoreService {
 
   deleteVersion(version:Version):void {
     let index = this.versions.indexOf(version);
-    if (index !== -1) {
-      this.versions.splice(index);
+    if (index > -1) {
+      this.versions.splice(index, 1);
     }
     if (this.versions.length > 0) {
       this.actualVersion = this.versions[0];
@@ -210,7 +210,7 @@ export class DatastoreService {
   }
 
   getInvestmentsWithoutIndexed(): Investment[] {
-    return this.getInvestments().filter(investment => !(investment.reinvestParentId))
+    return this.getInvestments().filter(investment => !(investment.reinvestParentId));
   }
 
   getForeignContainer(): ForeignContainer {
@@ -251,9 +251,16 @@ export class DatastoreService {
   }
 
   deleteInvestment(investment: Investment) {
-    let index = this.actualVersion.investments.indexOf(investment);
+    let reinvestments:Investment[] = this.getInvestments().filter(reinvestment => (reinvestment.reinvestParentId === investment.id));
+    reinvestments.forEach(reinvestment => {
+      let index = this.getInvestments().indexOf(investment);
+      if (index > -1) {
+        this.getInvestments().splice(index, 1);
+      }
+    });
+    let index = this.getInvestments().indexOf(investment);
     if (index > -1) {
-      this.actualVersion.investments.splice(index, 1);
+      this.getInvestments().splice(index, 1);
     }
   }
 
