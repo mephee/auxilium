@@ -1,8 +1,47 @@
 .sticky-col1 {
-  position: absolute;
-  top: auto;
-  width: 410px;
-  left: 25px;
+  position: sticky;
+  left: 0;
+  background: #f5f5f5;
+}
+
+.sticky-col2 {
+  position: sticky;
+  left: 410px;
+  background: #f5f5f5;
+  box-shadow: inset -1px 0 0 lightgrey;
+}
+
+.sticky-header {
+  height: 32px;
+  box-shadow: inset -1px 0 0 lightgrey;
+}
+
+thead th {
+  position: sticky;
+  top: 0;
+  background: #f5f5f5;
+}
+
+thead th:first-child {
+  left: 0;
+  z-index: 1;
+}
+
+thead th:nth-child(2) {
+  position: sticky;
+  left: 410px;
+  z-index: 1;
+}
+
+table tbody:nth-of-type(1) tr:nth-of-type(1) td {
+  border-top: none !important;
+}
+
+table thead th {
+  border-top: none !important;
+  border-bottom: none !important;
+  box-shadow: inset 0 1px 0 lightgrey,
+  inset 0 -1px 0 lightgrey;
 }
 
 .copybutton {
@@ -11,21 +50,9 @@
   left: 90px;
 }
 
-.sticky-col2 {
-  position: absolute;
-  top: auto;
-  width: 120px;
-  left: 435px;
-  border-right: solid 1px lightgrey;
-}
-
-.sticky-header {
-  height: 32px;
-}
-
 .table-wrapper {
-  margin-left: 540px;
-  overflow-x: auto;
+  overflow: scroll;
+  height: calc(100% - 156px);
 }
 
 .negative-value {
@@ -37,16 +64,12 @@
 }
 
 .balance > th, .balance > td {
-  background-color: rgba(199,0,42,0.15);
-}
-
-table {
-  /*margin-left: -10px;*/
+  /*background-color: rgba(199,0,42,0.15);*/
+  background-color: rgb(238, 208, 214);
 }
 
 td, th {
   height: 30px;
-  /*padding: 0;*/
 }
 
 input[type=number]::-webkit-inner-spin-button,

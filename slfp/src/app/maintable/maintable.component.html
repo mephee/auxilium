@@ -1,10 +1,10 @@
-<div *ngIf="dataStore.isVersionInitialized()" class="table-wrapper">
+<div *ngIf="dataStore.isVersionInitialized()" class="table-wrapper tablecont">
   <table id="maintable" class="table table-sm">
     <thead>
       <!-- Jahr -->
       <tr>
-        <th class="sticky-col1 sticky-header">Jahr</th>
-        <th class="sticky-col2 sticky-header">Bestände Planung</th>
+        <th class="sticky-header" style="min-width: 410px">Jahr</th>
+        <th class="sticky-header" style="min-width: 120px">Bestände Planung</th>
         <th class="text-center" style="min-width: 100px" *ngFor="let year of aggregation.getYears()">{{year}}</th>
       </tr>
     </thead>
