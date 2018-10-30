@@ -1,5 +1,14 @@
 - enter auf ok-button
 - schützen durch lizenznummer
+- reinvestition sollte erst möglich sein, wenn Rate angegeben (-> Default-Rate?)
 
 - zusätzlicher excel-export -> alle Projekte mit name, investition, kategorie, projektnummer
 - bestehender excel-export erweitern um die jeweiligen projekte
+- Jahrzahl (Tabellenheader) fix in layout, soll nicht scrollen
+- finanzkennzahlen:
+    - selbstfinanzierungsanteil
+    - selbstfinanzierungsgrad
+
+
+- Zoom testen:
+    - verhaut mir das Layout manchmal:-(

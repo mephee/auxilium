@@ -154,7 +154,7 @@
       <tr class="balance">
         <th class="sticky-col1">Total Liquiditätszufluss -Abfluss aus Rechnung (Cash flow)</th>
         <td class="sticky-col2">&#xa0;</td>
-        <td class="text-right" [ngClass]="{'negative-value': balance.value<0}" *ngFor="let balance of aggregation.getBalanceAfterWriteoff()">{{balance.value | money}}</td>
+        <td class="text-right" [ngClass]="{'negative-value': balance.value<0}" *ngFor="let balance of aggregation.getCashflowAfterWriteoff()">{{balance.value | money}}</td>
       </tr>
 
       <!-- Total Ausgaben Investitionen (Liquiditätsabfluss) -->

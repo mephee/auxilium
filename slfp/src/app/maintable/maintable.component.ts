@@ -187,7 +187,7 @@ export class MaintableComponent implements OnInit {
       dyntooltip.show();
       setTimeout(()=>{
         let actualHeight = dyntooltip.height();
-        dyntooltip.css('left', left+'px');
+        dyntooltip.css('left', (left-300)+'px');
         dyntooltip.css('top', (top-actualHeight-5)+'px');
       },20);
     } else {

@@ -5,6 +5,26 @@ const {ipcMain, dialog} = require('electron');
 
   let mainWindow;
   let splashWindow;
+  const developer = {
+    label: 'Ansicht',
+    submenu: [
+      {
+        label: 'Reload',
+        accelerator: 'CmdOrCtrl+R',
+        click (item, focusedWindow) {
+          if (focusedWindow) focusedWindow.reload()
+        }
+      },
+      {
+        label: 'Toggle Developer Tools',
+        accelerator: process.platform === 'darwin' ? 'Alt+Command+I' : 'Ctrl+Shift+I',
+        click (item, focusedWindow) {
+          if (focusedWindow) focusedWindow.webContents.toggleDevTools()
+        }
+      }
+    ]
+  };
+
   const template = [
     {
       label: 'Datei',
@@ -65,28 +85,6 @@ const {ipcMain, dialog} = require('electron');
       ]
     },
     {
-      label: 'Ansicht',
-      submenu: [
-        {
-          label: 'Reload',
-          accelerator: 'CmdOrCtrl+R',
-          click (item, focusedWindow) {
-            if (focusedWindow) focusedWindow.reload()
-          }
-        },
-        {
-          label: 'Toggle Developer Tools',
-          accelerator: process.platform === 'darwin' ? 'Alt+Command+I' : 'Ctrl+Shift+I',
-          click (item, focusedWindow) {
-            if (focusedWindow) focusedWindow.webContents.toggleDevTools()
-          }
-        },
-        {
-          role: 'togglefullscreen'
-        }
-      ]
-    },
-    {
       label: 'Hilfe',
       role: 'help',
       submenu: [
@@ -103,6 +101,29 @@ const {ipcMain, dialog} = require('electron');
             });
             about.loadURL(`file://${__dirname}/splash.html`);
           }
+        },
+        {
+          type: 'separator'
+        },
+        {
+          label: 'Developer...',
+          type: 'submenu',
+          submenu: [
+            {
+              label: 'Reload',
+              accelerator: 'CmdOrCtrl+R',
+              click (item, focusedWindow) {
+                if (focusedWindow) focusedWindow.reload()
+              }
+            },
+            {
+              label: 'Toggle Developer Tools',
+              accelerator: process.platform === 'darwin' ? 'Alt+Command+I' : 'Ctrl+Shift+I',
+              click (item, focusedWindow) {
+                if (focusedWindow) focusedWindow.webContents.toggleDevTools()
+              }
+            }
+          ]
         }
       ]
     }
