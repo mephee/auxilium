@@ -8,13 +8,5 @@
     - selbstfinanzierungsanteil
     - selbstfinanzierungsgrad
 
-
-- HRM1
-    - Prozentsatz einstellbar zwischen 8 und 12%, default 10%
-
-- Variante kopieren
-- Reiter in Excel mit Variante anschreiben
-
-
 - Zoom testen:
     - verhaut mir das Layout manchmal:-(

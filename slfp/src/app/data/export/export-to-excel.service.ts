@@ -103,6 +103,12 @@ export class ExportToExcelService {
       let taxoffsTotal = this.aggregation.getTaxoffsTotal();
       rowCounter++;
 
+      // Total Deinvestitionen
+      sheet[XLSX.utils.encode_cell({c:0,r:rowCounter})] = this.getTextCell('Total Deinvestitionen pro Jahr');
+      sheet[XLSX.utils.encode_cell({c:1,r:rowCounter})] = this.getTextCell('');
+      let deinvestmentsTotal = this.aggregation.getDeinvestmentsTotal();
+      rowCounter++;
+
       // Total Liquiditätszufluss -Abfluss aus Rechnung (Cash flow)
       sheet[XLSX.utils.encode_cell({c:0,r:rowCounter})] = this.getTextCell('Total Liquiditätszufluss -Abfluss aus Rechnung (Cash flow)');
       sheet[XLSX.utils.encode_cell({c:1,r:rowCounter})] = this.getTextCell('');
@@ -198,8 +204,12 @@ export class ExportToExcelService {
         sheet[XLSX.utils.encode_cell({c:colCounter,r:rowCounter})] = this.getNumCell1000(taxoffsTotal[colCounter-2]);
         rowCounter++;
 
+        // Deinvestitionen Total
+        sheet[XLSX.utils.encode_cell({c:colCounter,r:rowCounter})] = this.getNumCell1000(deinvestmentsTotal[colCounter-2].investmentTotal);
+        rowCounter++;
+
         // Summe 3
-        sheet[XLSX.utils.encode_cell({c:colCounter,r:rowCounter})] = this.getNumCell1000(this.aggregation.getBalanceAfterWriteoff()[colCounter-2].value);
+        sheet[XLSX.utils.encode_cell({c:colCounter,r:rowCounter})] = this.getNumCell1000(this.aggregation.getCashflowAfterWriteoff()[colCounter-2].value);
         rowCounter++;
 
         // Investitionen Total

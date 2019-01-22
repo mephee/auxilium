@@ -12,6 +12,7 @@ import {ForeignPayback} from "./model/foreignPayback";
 import {AdditionalTaxoff} from "./model/additionalTaxoff";
 import {Reserve} from "./model/reserve";
 import {Index} from "./model";
+import {MigrationService} from "../migration/migration.service";
 
 declare var storage:any;
 declare var fs:any;
@@ -29,7 +30,7 @@ export class DatastoreService {
   private versionInitialized:boolean = false;
   private appVersion:number = 1;
 
-  constructor(private ngZone:NgZone, private communication:CommunicationService) {
+  constructor(private ngZone:NgZone, private communication:CommunicationService, private migration:MigrationService) {
     this.categories = MOCK.categories.sort((a,b)=>a.name.localeCompare(b.name));
     this.versions = [];
 
@@ -55,7 +56,9 @@ export class DatastoreService {
               throw error;
             } else if (versions) {
               this.versions = versions;
-              this.migrate();
+              if (this.migration.migrate(this.versions)) {
+                this.save();
+              }
               this.actualVersion = versions[0];
               this.communication.versionReady(this.actualVersion);
             }
@@ -84,31 +87,6 @@ export class DatastoreService {
         this.loadVersions();
       }
     });
-  }
-
-  private migrate(): void {
-    let migrated:boolean = false;
-    for (let i=0;i<this.versions.length;i++) {
-      if (this.versions[i].version == undefined) {
-        console.log('migrate data from undefined to 1');
-        for (let j=0;j<this.versions[i].inoutComes.length;j++) {
-          this.versions[i].inoutComes[j].additionalOutcome = 0;
-          this.versions[i].inoutComes[j].additionalIncome = 0;
-        }
-        this.versions[i].version = 1;
-        migrated = true;
-      }
-      if (this.versions[i].version == 1) {
-
-      }
-      if (this.versions[i].version == 2) {  // etc
-
-      }
-
-      if (migrated) {
-        this.save();
-      }
-    }
   }
 
   /*

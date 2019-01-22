@@ -22,6 +22,9 @@ export class Investment {
   // Indexbereinigte Reinvestition
   reinvestCount:number;
 
+  // Deinvestition / Wert bei Verkauf
+  deinvestment:number;
+
 
   constructor() {
     this.id = uuid();
@@ -36,5 +39,6 @@ export class Investment {
     this.grantCanton = 0;
     this.grantFederal = 0;
     this.reinvestCount = 0;
+    this.deinvestment = 0;
   }
 }

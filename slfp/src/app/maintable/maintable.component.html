@@ -178,7 +178,17 @@
       <tr class="balance">
         <th class="sticky-col1">Total Abschreibungen pro Jahr</th>
         <td class="sticky-col2">&#xa0;</td>
-        <td class="text-right" [ngClass]="{'negative-value': taxoff<0}" *ngFor="let taxoff of aggregation.getTaxoffsTotal();trackBy:tracker">{{taxoff | money}}</td>
+        <td class="text-right" *ngFor="let taxoff of aggregation.getTaxoffsTotal();trackBy:tracker">{{taxoff | money}}</td>
+      </tr>
+
+      <!-- Total Deinvestitionen -->
+      <tr class="balance">
+        <th class="sticky-col1">Total Deinvestitionen pro Jahr</th>
+        <td class="sticky-col2">&#xa0;</td>
+        <td class="text-right" *ngFor="let deinvestment of aggregation.getDeinvestmentsTotal();trackBy:tracker"
+            (mouseenter)="mouseEnterTT($event, deinvestment.tooltip, 'Deinvestitionen Jahr ' + deinvestment.year)"
+            (mouseleave)="mouseLeaveTT()"
+            (mouseout)="mouseLeaveTT()">{{deinvestment.investmentTotal | money}}</td>
       </tr>
 
       <!-- Total Liquiditätszufluss -Abfluss aus Rechnung (Cash flow) -->
@@ -192,7 +202,7 @@
       <tr class="balance">
         <th class="sticky-col1">Total Ausgaben Investitionen (Liquiditätsabfluss)</th>
         <td class="sticky-col2">&#xa0;</td>
-        <td class="text-right" [ngClass]="{'negative-value': investment<0}" *ngFor="let investment of aggregation.getInvestmentsTotal()"
+        <td class="text-right" [ngClass]="{'negative-value': investment<0}" *ngFor="let investment of aggregation.getInvestmentsTotal();trackBy:tracker"
             (mouseenter)="mouseEnterTT($event, investment.tooltip, 'Investitionen Jahr ' + investment.year)"
             (mouseleave)="mouseLeaveTT()"
             (mouseout)="mouseLeaveTT()">{{investment.investmentTotal | money}}</td>

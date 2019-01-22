@@ -12,6 +12,7 @@ import {MoneyPipe} from "../money.pipe";
 import {IndexService} from "../../index/index.service";
 import {InvestmentService} from "../investment/investment.service";
 import {InvestmentGUI} from "./model/investmentGUI";
+import {count} from "rxjs/operators";
 
 @Injectable({
   providedIn: 'root'
@@ -27,6 +28,7 @@ export class AggregationService {
   balanceAfterOutcome: Balance[];
   balanceBeforeWriteoff: Balance[];
   balanceAfterWriteoff: Balance[];
+  deinvestmentYears: InvestmentGUI[];
   cashFlowAfterWriteoff: Balance[];
   balanceAfterInvestments: Balance[] = [];
   balanceAfterReserves: Balance[] = [];
@@ -145,6 +147,29 @@ export class AggregationService {
     return investments;
   }
 
+  // Deinvestment
+  getDeinvestmentsTotal(): InvestmentGUI[] {
+    let deinvestments: InvestmentGUI[] = new Array(this.yearTo - this.yearFrom + 1);
+    for(let i = 0;i<deinvestments.length;i++) {
+      deinvestments[i] = new InvestmentGUI();
+      deinvestments[i].year = this.yearFrom + i;
+    }
+    this.datastore.getInvestments().forEach(investment => {
+      if (this.investment.isInvestmentComplete(investment)) {
+        let taxoffYears = this.investment.getTaxoffYearsCount(investment);
+        let taxoffStartYear = investment.investmentYears[investment.investmentYears.length-1].year;
+        let index = taxoffStartYear + taxoffYears - this.yearFrom;
+        if (deinvestments[index].investmentTotal > 0) {
+          deinvestments[index].investmentTotal += investment.deinvestment;
+        } else {
+          deinvestments[index].investmentTotal = investment.deinvestment;
+        }
+        deinvestments[index].tooltip += this.getTooltipLine(investment,investment.deinvestment, '');
+      }
+    });
+    return deinvestments;
+  }
+
   // Taxoffs
   getTaxoffsByCategory(investmentCategory: InvestmentCategory): number[] {
     let taxoffs: number[] = new Array(this.yearTo - this.yearFrom + 1);
@@ -182,7 +207,7 @@ export class AggregationService {
       if (doTaxoff && (taxoffStartYear <= i) && (taxoffTotal < investedEff)) {
         taxoffTotal += taxoffPerYear;
         if (taxoffTotal > investedEff) {  // letztes Jahr kann einen kleineren Betrag haben weil eventuell Rate nicht aufgeht mit Jahren
-          taxoffPerYear = (taxoffPerYear - taxoffTotal + investedEff)
+          taxoffPerYear = (taxoffPerYear - taxoffTotal + investedEff);
           taxoffTotal = investedEff;
         }
         taxoffs.push(taxoffPerYear);
@@ -355,6 +380,7 @@ export class AggregationService {
     let taxoffs:number[] = this.getTaxoffsTotal();  // passt ggf yearTo an, deshalb zuoberst
     let inoutComes:Inoutcome[] = this.datastore.getInoutcomes();
     let investments:InvestmentGUI[] = this.getInvestmentsTotal();
+    let deinvestments:InvestmentGUI[] = this.getDeinvestmentsTotal();
     let foreignContainer: ForeignContainer = this.getForeignContainer();
     let grants:GrantGUI[] = this.getGrants();
     let reserves:Reserve[] = this.datastore.getReserves();
@@ -394,7 +420,7 @@ export class AggregationService {
       balance = new Balance();
       balance.year = i;
       balance.type = 'cashflow';
-      balance.value = this.balanceAfterOutcome[counter].value + taxoffs[counter];
+      balance.value = this.balanceAfterOutcome[counter].value + taxoffs[counter] + deinvestments[counter].investmentTotal;
       this.cashFlowAfterWriteoff.push(balance);
 
 
