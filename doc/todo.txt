@@ -4,10 +4,16 @@
 
 - zusätzlicher excel-export -> alle Projekte mit name, investition, kategorie, projektnummer
 - bestehender excel-export erweitern um die jeweiligen projekte
-- Jahrzahl (Tabellenheader) fix in layout, soll nicht scrollen
 - finanzkennzahlen:
     - selbstfinanzierungsanteil
     - selbstfinanzierungsgrad
+
+
+- HRM1
+    - Prozentsatz einstellbar zwischen 8 und 12%, default 10%
+
+- Variante kopieren
+- Reiter in Excel mit Variante anschreiben
 
 
 - Zoom testen:

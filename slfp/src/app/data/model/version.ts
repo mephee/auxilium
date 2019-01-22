@@ -17,4 +17,6 @@ export class Version {
   investmentHRM1Container: InvestmentHRM1Container;
   additionalTaxoffs: AdditionalTaxoff[];
   reserves: Reserve[];
+
+  version:number;  // Version der version, siehe datastore.migrate
 }

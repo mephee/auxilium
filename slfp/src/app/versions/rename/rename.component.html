@@ -1,0 +1,23 @@
+<div id="rename" class="modal" tabindex="-1" role="dialog" aria-labelledby="renameModalLabel" aria-hidden="true" [ngClass]="{'visible': _open}">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="renameModalLabel">aktuelle Version umbenennen</h5>
+      </div>
+      <div class="modal-body">
+        <form>
+          <div class="row mb-2">
+            <label for="name" class="col-4 col-form-label">neue Bezeichnung:</label>
+            <div class="col-8">
+              <input type="text" class="form-control form-control-sm" id="name" [(ngModel)]="version.name" name="name">
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary btn-sm" (click)="close()">Abbrechen</button>
+        <button type="button" class="btn auxbutton btn-sm" (click)="save()">Erstellen</button>
+      </div>
+    </div>
+  </div>
+</div>

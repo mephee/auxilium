@@ -12,6 +12,7 @@ import {AggregationService} from "../maintable/aggregation/aggregation.service";
 export class VersionsComponent implements OnInit {
 
   showVersion:boolean;
+  showRename:boolean;
 
   constructor(private dataStore: DatastoreService, private communication:CommunicationService, private ngZone:NgZone, private aggregation:AggregationService) {
     this.communication.versionReady$.subscribe(
@@ -46,18 +47,33 @@ export class VersionsComponent implements OnInit {
     this.showVersion = true;
   }
 
+  renameVersion() {
+    this.showRename = true;
+  }
+
+  copyVersion() {
+    this.dataStore.copyActualVersion();
+    this.renameVersion();
+  }
+
   deleteVersion() {
     this.communication.confirm({
       message: "Wollen sie diese Variante wirklich löschen?",
       callback: () => {
-        this.dataStore.deleteVersion(this.dataStore.getActualVersion());
-        this.dataStore.save();
+        this.ngZone.run(() => {
+          this.dataStore.deleteVersion(this.dataStore.getActualVersion());
+          this.dataStore.save();
+        });
       }
     });
   }
 
   onCloseVersion() {
     this.showVersion = false;
+  }
+
+  onCloseRename() {
+    this.showRename = false;
   }
 
   getActualVersionName():string {

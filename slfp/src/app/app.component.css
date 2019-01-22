@@ -22,3 +22,7 @@ input:focus {
 .set-height {
   height: 100%;
 }
+
+.zoombtn {
+  width: 28px;
+}

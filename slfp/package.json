@@ -4,7 +4,7 @@
     "email": "mail@auxiliumag.ch",
     "url": "https://auxiliumag.ch/"
   },
-  "name": "Auxfina",
+  "name": "auxfina",
   "description": "Auxfina - Langfristige Liquiditätsplanung",
   "version": "2.6.1",
   "main": "main.js",
@@ -16,8 +16,8 @@
     "lint": "ng lint",
     "e2e": "ng e2e",
     "electron": "electron .",
-    "electron-build": "ng build --prod && electron .",
-    "installer": "electron-installer-windows --src Auxfina-win32-x64/ --dest installers/"
+    "electron-build-prod": "ng build --prod && electron .",
+    "electron-build": "ng build && electron ."
   },
   "private": true,
   "dependencies": {

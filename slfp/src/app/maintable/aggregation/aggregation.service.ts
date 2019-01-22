@@ -180,8 +180,12 @@ export class AggregationService {
     let taxoffTotal:number = 0;
     for(let i:number = this.yearFrom;i<=this.yearTo;i++) {
       if (doTaxoff && (taxoffStartYear <= i) && (taxoffTotal < investedEff)) {
-        taxoffs.push(taxoffPerYear);
         taxoffTotal += taxoffPerYear;
+        if (taxoffTotal > investedEff) {  // letztes Jahr kann einen kleineren Betrag haben weil eventuell Rate nicht aufgeht mit Jahren
+          taxoffPerYear = (taxoffPerYear - taxoffTotal + investedEff)
+          taxoffTotal = investedEff;
+        }
+        taxoffs.push(taxoffPerYear);
       } else {
         taxoffs.push(0);
       }
@@ -213,7 +217,9 @@ export class AggregationService {
   getTaxoffsHRM1ByYear() {
     let taxoffs:number[] = [];
     let total:number = this.datastore.getInvestmentHRM1Container().value;
-    let taxoffPerYear:number = total/(100/this.datastore.getInvestmentHRM1Container().rate);
+    let rate:number = Math.ceil(this.datastore.getInvestmentHRM1Container().rate * 100)/100;  // Aufrunden nötig, sonst wird bei ungerader Menge Jahren ein Jahr zu viel abgeschrieben
+    console.log('hrm1 rate is: ' + rate);
+    let taxoffPerYear:number = total/(100/rate);
     let taxoffTotal:number = 0;
     for(let i:number = 2018;i<=this.yearTo;i++) {
       if (taxoffTotal < total) {
@@ -359,7 +365,7 @@ export class AggregationService {
       let balance = new Balance();
       balance.year = inoutComes[counter].year;
       balance.type = 'inoutcome';
-      balance.value = inoutComes[counter].income + inoutComes[counter].outcome;
+      balance.value = inoutComes[counter].income + inoutComes[counter].additionalIncome + inoutComes[counter].outcome + inoutComes[counter].additionalOutcome;
       this.balanceAfterOutcome.push(balance);
 
       // before writeoff

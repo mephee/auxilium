@@ -4,4 +4,6 @@ export class Inoutcome {
   taxvolume: number;
   income: number;
   outcome: number;
+  additionalIncome: number;
+  additionalOutcome: number;
 }

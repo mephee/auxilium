@@ -23,6 +23,10 @@ export class IndexComponent implements OnInit {
     });
   }
 
+  tracker(index:number, item:any):number {
+    return index;
+  }
+
   save(): void {
     this.datastore.saveIndexes();
     this.aggregation.calculateBalances();

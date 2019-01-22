@@ -7,7 +7,7 @@
       <div class="modal-body pb-0">
         <form>
           <div class="scrollpane">
-            <div class="row mb-2" *ngFor="let index of getIndexes()">
+            <div class="row mb-2" *ngFor="let index of getIndexes();trackBy:tracker">
               <div class="col-6">{{index.year}}:</div>
               <div class="col-6">
                 <inlineedit [(value)]="index.index" [inThousand]="false" [tableStyle]="false"></inlineedit>

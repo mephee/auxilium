@@ -5,7 +5,7 @@
       <tr>
         <th class="sticky-header" style="min-width: 410px">Jahr</th>
         <th class="sticky-header" style="min-width: 120px">Bestände Planung</th>
-        <th class="text-center" style="min-width: 100px" *ngFor="let year of aggregation.getYears()">{{year}}</th>
+        <th class="text-center" style="min-width: 100px" *ngFor="let year of aggregation.getYears();trackBy:tracker">{{year}}</th>
       </tr>
     </thead>
     <tbody>
@@ -13,35 +13,51 @@
       <tr>
         <td class="sticky-col1">Steuervolumen</td>
         <td class="sticky-col2">&#xa0;</td>
-        <td *ngFor="let inoutcome of dataStore.getInoutcomes()">
+        <td *ngFor="let inoutcome of dataStore.getInoutcomes();trackBy:tracker">
           <inlineedit [value]="inoutcome.taxvolume" (valueChange)="changedTaxVolume($event, inoutcome)"></inlineedit>
         </td>
       </tr>
       <tr>
         <td class="sticky-col1">Steueranlage</td>
         <td class="sticky-col2">&#xa0;</td>
-        <td *ngFor="let inoutcome of dataStore.getInoutcomes()">
+        <td *ngFor="let inoutcome of dataStore.getInoutcomes();trackBy:tracker">
           <inlineedit [value]="inoutcome.taxrate" (valueChange)="changedTaxrate($event, inoutcome)" [inThousand]="false"></inlineedit>
         </td>
       </tr>
       <tr>
         <td class="sticky-col1">Steuereinkommen</td>
         <td class="sticky-col2">&#xa0;</td>
-        <td *ngFor="let inoutcome of dataStore.getInoutcomes()" class="text-right">{{inoutcome.income | money}}</td>
+        <td *ngFor="let inoutcome of dataStore.getInoutcomes();trackBy:tracker">
+          <inlineedit [value]="inoutcome.income" (valueChange)="changedIncome($event, inoutcome)"></inlineedit>
+        </td>
+      </tr>
+      <tr>
+        <td class="sticky-col1">Übrige Erträge</td>
+        <td class="sticky-col2">&#xa0;</td>
+        <td *ngFor="let inoutcome of dataStore.getInoutcomes();trackBy:tracker">
+          <inlineedit [value]="inoutcome.additionalIncome" (valueChange)="changedAddIncome($event, inoutcome)"></inlineedit>
+        </td>
       </tr>
       <!-- Ordentliche Ausgaben -->
       <tr>
         <td class="sticky-col1">Betriebsaufwände</td>
         <td class="sticky-col2">&#xa0;</td>
-        <td *ngFor="let inoutcome of dataStore.getInoutcomes()">
-          <inlineedit [value]="inoutcome.outcome" (valueChange)="editOutcome($event, inoutcome)"></inlineedit>
+        <td *ngFor="let inoutcome of dataStore.getInoutcomes();trackBy:tracker">
+          <inlineedit [value]="inoutcome.outcome" (valueChange)="changedOutcome($event, inoutcome)"></inlineedit>
+        </td>
+      </tr>
+      <tr>
+        <td class="sticky-col1">Übrige Aufwände</td>
+        <td class="sticky-col2">&#xa0;</td>
+        <td *ngFor="let inoutcome of dataStore.getInoutcomes();trackBy:tracker">
+          <inlineedit [value]="inoutcome.additionalOutcome" (valueChange)="changedAddOutcome($event, inoutcome)"></inlineedit>
         </td>
       </tr>
       <!-- Balance -->
       <tr class="balance">
         <th class="sticky-col1">Überschuss/Fehlbetrag aus laufender Rechnung</th>
         <td class="sticky-col2">&#xa0;</td>
-        <td class="text-right" [ngClass]="{'negative-value': balance.value<0}" *ngFor="let balance of aggregation.getBalanceAfterOutcome()">{{balance.value | money }}</td>
+        <td class="text-right" [ngClass]="{'negative-value': balance.value<0}" *ngFor="let balance of aggregation.getBalanceAfterOutcome();trackBy:tracker">{{balance.value | money }}</td>
       </tr>
       <!-- Flüssige Mittel aus Vorjahr -->
       <tr>
@@ -50,7 +66,7 @@
         <td class="text-right table-info" data-toggle="popover" data-trigger="hover" data-placement="top" attr.data-content="Übertragen sie hier ihren Saldo Liquiditätsbestand per 31.12.{{aggregation.yearFrom-1}}">
           <inlineedit [(value)]="dataStore.getLiquidityStart().liquidity"></inlineedit>
         </td>
-        <td class="text-right" [ngClass]="{'negative-value': liquidity<0}" *ngFor="let liquidity of aggregation.getLiquidityOfLastYear()">{{liquidity | money}}</td>
+        <td class="text-right" [ngClass]="{'negative-value': liquidity<0}" *ngFor="let liquidity of aggregation.getLiquidityOfLastYear();trackBy:tracker">{{liquidity | money}}</td>
       </tr>
       <!-- Fremdkapital -->
       <tr>
@@ -67,7 +83,7 @@
       <tr class="balance">
         <th class="sticky-col1">Total Liquiditätsbestand vor Abschreibungen</th>
         <td class="sticky-col2">&#xa0;</td>
-        <td class="text-right" [ngClass]="{'negative-value': balance.value<0}" *ngFor="let balance of aggregation.getBalanceBeforeWriteoff()">{{balance.value | money}}</td>
+        <td class="text-right" [ngClass]="{'negative-value': balance.value<0}" *ngFor="let balance of aggregation.getBalanceBeforeWriteoff();trackBy:tracker">{{balance.value | money}}</td>
       </tr>
 
       <!-- Investitionen Abschreibungen -->
@@ -77,10 +93,10 @@
           <button type="button" class="btn btn-secondary btn-sm new-button" (click)="newInvestment()"
                   data-toggle="popover" data-trigger="hover" data-placement="top" data-content="neue Investition erfassen">+</button>
         </td>
-        <td class="text-right" *ngFor="let inoutcome of dataStore.getInoutcomes()"></td>
+        <td class="text-right" *ngFor="let inoutcome of dataStore.getInoutcomes();trackBy:tracker"></td>
       </tr>
 
-      <ng-container *ngFor="let investmentCategory of aggregation.getInvestmentCategories()">
+      <ng-container *ngFor="let investmentCategory of aggregation.getInvestmentCategories();trackBy:tracker">
         <tr>
           <td class="sticky-col1" (click)="toggleInvestmentCategory(investmentCategory)">
             <div class="row">
@@ -126,19 +142,34 @@
 
       <!-- Abschreibungen HRM 1-->
       <tr>
-        <td class="sticky-col1"><span><i>HRM1 Verwaltungsvermögen per 31.12.2017</i> <span class="text-right" style="right: 5px;position: absolute"><b>10%</b></span></span></td>
+        <td class="sticky-col1">
+          <div class="row">
+            <div class="col-8" style="padding-right: 0">
+              <i>HRM1 Verwaltungsvermögen per 31.12.2017</i>
+            </div>
+            <div class="col-1" style="padding: 0;">
+              <inlineedit [value]="dataStore.getInvestmentHRM1Container().yearCount" (valueChange)="changedHRM1Years($event)" [inThousand]="false" class="hrm1years"></inlineedit>
+            </div>
+            <div class="col-3" style="padding-left: 5px">
+              <span class="ml-1">Jahre  =</span>
+              <span class="text-right" style="right: 16px;position: absolute">
+                <b>{{dataStore.getInvestmentHRM1Container().rate | number:'0.0-2'}}%</b>
+              </span>
+            </div>
+          </div>
+        </td>
         <td class="sticky-col2" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Übertragen sie hier ihr Total an Investitionen nach HRM1 per 31.12.2017">
           <inlineedit [(value)]="dataStore.getInvestmentHRM1Container().value"></inlineedit>
         </td>
-        <td class="text-right" *ngFor="let taxoff of aggregation.getTaxoffsHRM1ByYear()">{{taxoff | money}}</td>
+        <td class="text-right" *ngFor="let taxoff of aggregation.getTaxoffsHRM1ByYear();trackBy:tracker">{{taxoff | money}}</td>
       </tr>
 
 
       <!--zusätzliche Abschreibungen nach HRM2 (finanzpolitische Reserve)-->
       <tr>
-        <td class="sticky-col1">zusätzliche Abschreibungen nach HRM2 (finanzpolitische Reserve)</td>
+        <td class="sticky-col1">Wertberichtigung Abschreibungen (auch finanzpolitische Reserve)</td>
         <td class="sticky-col2">&#xa0;</td>
-        <td *ngFor="let addTaxoff of dataStore.getAdditionalTaxoffs()">
+        <td *ngFor="let addTaxoff of dataStore.getAdditionalTaxoffs();trackBy:tracker">
           <inlineedit [(value)]="addTaxoff.taxoff"></inlineedit>
         </td>
       </tr>
@@ -147,14 +178,14 @@
       <tr class="balance">
         <th class="sticky-col1">Total Abschreibungen pro Jahr</th>
         <td class="sticky-col2">&#xa0;</td>
-        <td class="text-right" [ngClass]="{'negative-value': taxoff<0}" *ngFor="let taxoff of aggregation.getTaxoffsTotal()">{{taxoff | money}}</td>
+        <td class="text-right" [ngClass]="{'negative-value': taxoff<0}" *ngFor="let taxoff of aggregation.getTaxoffsTotal();trackBy:tracker">{{taxoff | money}}</td>
       </tr>
 
       <!-- Total Liquiditätszufluss -Abfluss aus Rechnung (Cash flow) -->
       <tr class="balance">
         <th class="sticky-col1">Total Liquiditätszufluss -Abfluss aus Rechnung (Cash flow)</th>
         <td class="sticky-col2">&#xa0;</td>
-        <td class="text-right" [ngClass]="{'negative-value': balance.value<0}" *ngFor="let balance of aggregation.getCashflowAfterWriteoff()">{{balance.value | money}}</td>
+        <td class="text-right" [ngClass]="{'negative-value': balance.value<0}" *ngFor="let balance of aggregation.getCashflowAfterWriteoff();trackBy:tracker">{{balance.value | money}}</td>
       </tr>
 
       <!-- Total Ausgaben Investitionen (Liquiditätsabfluss) -->
@@ -181,7 +212,7 @@
       <tr class="balance">
         <th class="sticky-col1">Liquiditätsbestand Total Ende Jahr</th>
         <td class="sticky-col2">&#xa0;</td>
-        <th class="text-right" [ngClass]="{'negative-value': balance.value<0, 'positive-value': balance.value>=0}" *ngFor="let balance of aggregation.getBalanceAfterInvestments()">{{balance.value | money}}</th>
+        <th class="text-right" [ngClass]="{'negative-value': balance.value<0, 'positive-value': balance.value>=0}" *ngFor="let balance of aggregation.getBalanceAfterInvestments();trackBy:tracker">{{balance.value | money}}</th>
       </tr>
 
 
@@ -189,7 +220,7 @@
       <tr>
         <td class="sticky-col1">Abzüglich zweckgebundene Reserve (finanzpolitische Reserve)</td>
         <td class="sticky-col2">&#xa0;</td>
-        <td *ngFor="let reserve of dataStore.getReserves()">
+        <td *ngFor="let reserve of dataStore.getReserves();trackBy:tracker">
           <inlineedit [(value)]="reserve.reserve"></inlineedit>
         </td>
       </tr>
@@ -198,7 +229,7 @@
       <tr class="balance">
         <th class="sticky-col1">Verfügbare Liquidität</th>
         <td class="sticky-col2">&#xa0;</td>
-        <th class="text-right" [ngClass]="{'negative-value': balance.value<0, 'positive-value': balance.value>=0}" *ngFor="let balance of aggregation.getBalanceAfterReserves()">{{balance.value | money}}</th>
+        <th class="text-right" [ngClass]="{'negative-value': balance.value<0, 'positive-value': balance.value>=0}" *ngFor="let balance of aggregation.getBalanceAfterReserves();trackBy:tracker">{{balance.value | money}}</th>
       </tr>
 
     </tbody>

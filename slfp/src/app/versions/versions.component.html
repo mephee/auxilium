@@ -1,14 +1,19 @@
 <div class="dropdown" align="center">
-  <button class="btn btn-secondary btn-sm dropdown-toggle versionsDropdown" type="button" id="dropdownMenuButton"
+  <button class="btn btn-secondary btn-sm dropdown-toggle versionsDropdown mx-3" type="button" id="dropdownMenuButton"
           data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
     {{getActualVersionName()}}
   </button>
-  <button type="button" class="btn btn-secondary btn-sm mx-2" (click)="deleteVersion()"
+  <button type="button" class="btn btn-secondary btn-sm mx-1 editbutton" (click)="deleteVersion()"
           data-toggle="popover" data-trigger="hover" data-placement="top" data-content="aktuelle Variante löschen">-</button>
-  <button type="button" class="btn btn-secondary btn-sm" (click)="addVersion()"
+  <button type="button" class="btn btn-secondary btn-sm mx-1 editbutton" (click)="addVersion()"
           data-toggle="popover" data-trigger="hover" data-placement="top" data-content="neue Variante hinzufügen">+</button>
+  <button type="button" class="btn btn-secondary btn-sm mx-1 editbutton rename" (click)="copyVersion()"
+          data-toggle="popover" data-trigger="hover" data-placement="top" data-content="aktuelle Variante kopieren">
+    <img src="assets/img/Copy.svg" width="16" height="16" >
+  </button>
   <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
     <a *ngFor="let version of getVersions()" class="dropdown-item" (click)="setActualVersion(version)">{{version.name}}</a>
   </div>
   <app-wizard (closed)="onCloseVersion()" [open]="showVersion"></app-wizard>
+  <app-rename (closed)="onCloseRename()" [open]="showRename"></app-rename>
 </div>

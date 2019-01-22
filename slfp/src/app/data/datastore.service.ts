@@ -27,6 +27,7 @@ export class DatastoreService {
   private actualVersion: Version;
   private versions: Version[];
   private versionInitialized:boolean = false;
+  private appVersion:number = 1;
 
   constructor(private ngZone:NgZone, private communication:CommunicationService) {
     this.categories = MOCK.categories.sort((a,b)=>a.name.localeCompare(b.name));
@@ -41,6 +42,9 @@ export class DatastoreService {
     }
   }
 
+  /*
+  Load from file
+   */
   private loadVersions(){
     storage.has('versions', (error, has) => {
       if (error) throw error;
@@ -51,6 +55,7 @@ export class DatastoreService {
               throw error;
             } else if (versions) {
               this.versions = versions;
+              this.migrate();
               this.actualVersion = versions[0];
               this.communication.versionReady(this.actualVersion);
             }
@@ -81,6 +86,31 @@ export class DatastoreService {
     });
   }
 
+  private migrate(): void {
+    let migrated:boolean = false;
+    for (let i=0;i<this.versions.length;i++) {
+      if (this.versions[i].version == undefined) {
+        console.log('migrate data from undefined to 1');
+        for (let j=0;j<this.versions[i].inoutComes.length;j++) {
+          this.versions[i].inoutComes[j].additionalOutcome = 0;
+          this.versions[i].inoutComes[j].additionalIncome = 0;
+        }
+        this.versions[i].version = 1;
+        migrated = true;
+      }
+      if (this.versions[i].version == 1) {
+
+      }
+      if (this.versions[i].version == 2) {  // etc
+
+      }
+
+      if (migrated) {
+        this.save();
+      }
+    }
+  }
+
   /*
   Versions
    */
@@ -100,6 +130,7 @@ export class DatastoreService {
     version.investmentHRM1Container = new InvestmentHRM1Container();
     version.investmentHRM1Container.value = 0;
     version.investmentHRM1Container.rate = 10;
+    version.investmentHRM1Container.yearCount = 10;
     version.investments = [];
     version.liquidityStart = new LiquidityStart();
     version.liquidityStart.liquidity = 0;
@@ -132,6 +163,16 @@ export class DatastoreService {
     this.updateVersionYearFromTo(version.yearFrom, version.yearTo);
   }
 
+  renameVersion(newName:string):void {
+    this.getActualVersion().name = newName;
+  }
+
+  copyActualVersion():void {
+    this.versions.push(JSON.parse(JSON.stringify(this.actualVersion)));
+    this.versions[this.versions.length-1].name = "Kopie von " +this.versions[this.versions.length-1].name;
+    this.actualVersion = this.versions[this.versions.length-1];
+  }
+
   deleteVersion(version:Version):void {
     let index = this.versions.indexOf(version);
     if (index > -1) {
@@ -150,7 +191,9 @@ export class DatastoreService {
     this.actualVersion.yearTo = yearTo;
     let lastInoutcome:Inoutcome = new Inoutcome();
     lastInoutcome.outcome = 0;
+    lastInoutcome.additionalOutcome = 0;
     lastInoutcome.income = 0;
+    lastInoutcome.additionalIncome = 0;
     lastInoutcome.taxrate = 0;
     lastInoutcome.taxvolume = 0;
     for(let i = yearFrom; i <= yearTo; i++) {
@@ -161,7 +204,9 @@ export class DatastoreService {
         inoutcome.taxvolume = lastInoutcome.taxvolume;
         inoutcome.taxrate = lastInoutcome.taxrate;
         inoutcome.income = lastInoutcome.income;
+        inoutcome.additionalIncome = lastInoutcome.additionalIncome;
         inoutcome.outcome = lastInoutcome.outcome;
+        inoutcome.additionalOutcome = lastInoutcome.additionalOutcome;
         this.actualVersion.inoutComes.push(inoutcome);
       } else {
         lastInoutcome = inoutcome;

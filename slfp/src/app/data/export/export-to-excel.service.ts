@@ -42,9 +42,15 @@ export class ExportToExcelService {
       sheet[XLSX.utils.encode_cell({c:0,r:rowCounter})] = this.getTextCell('Steuereinkommen');
       sheet[XLSX.utils.encode_cell({c:1,r:rowCounter})] = this.getTextCell('');
       rowCounter++;
+      sheet[XLSX.utils.encode_cell({c:0,r:rowCounter})] = this.getTextCell('Übrige Erträge');
+      sheet[XLSX.utils.encode_cell({c:1,r:rowCounter})] = this.getTextCell('');
+      rowCounter++;
 
       // Aufwände
       sheet[XLSX.utils.encode_cell({c:0,r:rowCounter})] = this.getTextCell('Betriebsaufände');
+      sheet[XLSX.utils.encode_cell({c:1,r:rowCounter})] = this.getTextCell('');
+      rowCounter++;
+      sheet[XLSX.utils.encode_cell({c:0,r:rowCounter})] = this.getTextCell('Übrige Aufwände');
       sheet[XLSX.utils.encode_cell({c:1,r:rowCounter})] = this.getTextCell('');
       rowCounter++;
 
@@ -87,7 +93,7 @@ export class ExportToExcelService {
       rowCounter++;
 
       // zusätzliche Abschreibungen nach HRM2 (finanzpolitische Reserve)
-      sheet[XLSX.utils.encode_cell({c:0,r:rowCounter})] = this.getTextCell('zusätzliche Abschreibungen nach HRM2 (finanzpolitische Reserve)');
+      sheet[XLSX.utils.encode_cell({c:0,r:rowCounter})] = this.getTextCell('Wertberichtigung Abschreibungen (auch finanzpolitische Reserve)');
       sheet[XLSX.utils.encode_cell({c:1,r:rowCounter})] = this.getTextCell('');
       rowCounter++;
 
@@ -144,9 +150,13 @@ export class ExportToExcelService {
         rowCounter++;
         sheet[XLSX.utils.encode_cell({c:colCounter,r:rowCounter})] = this.getNumCell1000(version.inoutComes[colCounter-2].income);
         rowCounter++;
+        sheet[XLSX.utils.encode_cell({c:colCounter,r:rowCounter})] = this.getNumCell1000(version.inoutComes[colCounter-2].additionalIncome);
+        rowCounter++;
 
         // Aufwände
         sheet[XLSX.utils.encode_cell({c:colCounter,r:rowCounter})] = this.getNumCell1000(version.inoutComes[colCounter-2].outcome);
+        rowCounter++;
+        sheet[XLSX.utils.encode_cell({c:colCounter,r:rowCounter})] = this.getNumCell1000(version.inoutComes[colCounter-2].additionalOutcome);
         rowCounter++;
 
         // Summe 1

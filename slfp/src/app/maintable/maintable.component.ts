@@ -50,6 +50,10 @@ export class MaintableComponent implements OnInit {
 
   }
 
+  tracker(index:number, item:any):number {
+    return index;
+  }
+
 
   /*
   Edits
@@ -66,6 +70,32 @@ export class MaintableComponent implements OnInit {
     this.aggregation.calculateTaxIncome(inoutcome);
     this.copyTaxvolume(inoutcome.year);
     this.dataStore.save();
+  }
+
+  changedIncome(event, inoutcome:Inoutcome) {
+    inoutcome.income = event;
+    this.copyIncome(inoutcome.year);
+    this.dataStore.save();
+  }
+
+  changedAddIncome(event, inoutcome:Inoutcome) {
+    inoutcome.additionalIncome = event;
+    this.copyAddIncome(inoutcome.year);
+    this.dataStore.save();
+  }
+
+  changedAddOutcome(event, inoutcome:Inoutcome) {
+    if (event>0) {
+      event = -1*event;
+    }
+    inoutcome.additionalOutcome = event;
+    this.copyAddOutcome(inoutcome.year);
+    this.dataStore.save();
+  }
+
+  changedHRM1Years(event) {
+    this.dataStore.getInvestmentHRM1Container().yearCount = event;
+    this.dataStore.getInvestmentHRM1Container().rate = 100/event;
   }
 
   copyTaxvolume(year:number): void {
@@ -96,23 +126,46 @@ export class MaintableComponent implements OnInit {
     }
   }
 
-  editPayback(event, payback:ForeignPayback): void {
-    let saldo:number = 0;
-    for (let i = this.aggregation.yearFrom;i<payback.year;i++) {
-      saldo+=this.aggregation.getForeignContainer().foreignPayback[i-this.aggregation.yearFrom].payback;
+  copyIncome(year:number): void {
+    let inoutcomes:Inoutcome[] = this.dataStore.getInoutcomes();
+    let incomeToCopy:number;
+    for (let i = 0;i<inoutcomes.length;i++){
+      if (inoutcomes[i].year == year) {
+        incomeToCopy = inoutcomes[i].income;
+      }
+      if (inoutcomes[i].year>year) {
+        inoutcomes[i].income = incomeToCopy;
+      }
     }
-    if ((saldo + event + this.dataStore.getForeignContainer().foreignValue) < 0) {
-      this.showAlert('Rückzahlungen übesteigen das Total Fremdkapital. Die Rückzahlung wurde automatisch angepasst.');
-      setTimeout(()=>{
-        payback.payback = -(saldo + this.dataStore.getForeignContainer().foreignValue);
-      });
-    } else {
-      payback.payback = event;
-    }
-    this.dataStore.save();
   }
 
-  editOutcome(event, inoutcome:Inoutcome): void {
+  copyAddIncome(year:number): void {
+    let inoutcomes:Inoutcome[] = this.dataStore.getInoutcomes();
+    let incomeToCopy:number;
+    for (let i = 0;i<inoutcomes.length;i++){
+      if (inoutcomes[i].year == year) {
+        incomeToCopy = inoutcomes[i].additionalIncome;
+      }
+      if (inoutcomes[i].year>year) {
+        inoutcomes[i].additionalIncome = incomeToCopy;
+      }
+    }
+  }
+
+  copyAddOutcome(year:number): void {
+    let inoutcomes:Inoutcome[] = this.dataStore.getInoutcomes();
+    let outcomeToCopy:number;
+    for (let i = 0;i<inoutcomes.length;i++){
+      if (inoutcomes[i].year == year) {
+        outcomeToCopy = inoutcomes[i].additionalOutcome;
+      }
+      if (inoutcomes[i].year>year) {
+        inoutcomes[i].additionalOutcome = outcomeToCopy;
+      }
+    }
+  }
+
+  changedOutcome(event, inoutcome:Inoutcome): void {
     if (event>0) {
       event = -1*event;
     }
@@ -132,6 +185,22 @@ export class MaintableComponent implements OnInit {
         inoutcomes[i].outcome = outcomeToCopy;
       }
     }
+  }
+
+  editPayback(event, payback:ForeignPayback): void {
+    let saldo:number = 0;
+    for (let i = this.aggregation.yearFrom;i<payback.year;i++) {
+      saldo+=this.aggregation.getForeignContainer().foreignPayback[i-this.aggregation.yearFrom].payback;
+    }
+    if ((saldo + event + this.dataStore.getForeignContainer().foreignValue) < 0) {
+      this.showAlert('Rückzahlungen übesteigen das Total Fremdkapital. Die Rückzahlung wurde automatisch angepasst.');
+      setTimeout(()=>{
+        payback.payback = -(saldo + this.dataStore.getForeignContainer().foreignValue);
+      });
+    } else {
+      payback.payback = event;
+    }
+    this.dataStore.save();
   }
 
   toggleInvestmentCategory(investmentCategory: InvestmentCategory): void {
