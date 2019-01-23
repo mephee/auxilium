@@ -1,7 +1,8 @@
 import {Component, ElementRef, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {MoneyPipe} from "../money.pipe";
+import {MoneyPipe} from "../../utility/money.pipe";
 import {DatastoreService} from "../../data/datastore.service";
 import {AggregationService} from "../aggregation/aggregation.service";
+import {SumcalculatorService} from "../sumcalc/sumcalculator.service";
 declare var $:any;
 
 @Component({
@@ -20,7 +21,10 @@ export class InlineeditComponent implements OnInit {
   @Input() tableStyle:boolean = true;
   @Input() inThousand:boolean = true;
 
-  constructor(private moneyPipe: MoneyPipe, private elementRef:ElementRef, private datastore:DatastoreService, private aggregation:AggregationService) {
+  constructor(private moneyPipe: MoneyPipe,
+              private elementRef:ElementRef,
+              private datastore:DatastoreService,
+              private sumcalculator:SumcalculatorService) {
   }
 
   @Input()
@@ -53,7 +57,7 @@ export class InlineeditComponent implements OnInit {
     // save on every change
     if (this.tableStyle) {
       this.datastore.save();
-      this.aggregation.calculateBalances();
+      this.sumcalculator.calculateBalances();
     }
   }
 
@@ -87,8 +91,6 @@ export class InlineeditComponent implements OnInit {
         let pos = td[0].cellIndex;
         let moveToRow = null;
         if (event.which == this.key.down) {
-
-          // TODO clean code
           moveToRow = tr.nextAll('tr:has(input)').each((i, tr)=>{
             $(tr.cells[pos]).find('input').each((i, input) => {
               moveToInput = input;

@@ -2,6 +2,7 @@ import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {DatastoreService} from "../data/datastore.service";
 import {Index} from "../data/model";
 import {AggregationService} from "../maintable/aggregation/aggregation.service";
+import {SumcalculatorService} from "../maintable/sumcalc/sumcalculator.service";
 declare var $:any;
 
 @Component({
@@ -15,7 +16,7 @@ export class IndexComponent implements OnInit {
   @Output() closed = new EventEmitter<void>();
 
   constructor(private datastore:DatastoreService,
-              private aggregation:AggregationService) { }
+              private sumcalculator:SumcalculatorService) { }
 
   ngOnInit() {
     $('#index').draggable({
@@ -29,7 +30,7 @@ export class IndexComponent implements OnInit {
 
   save(): void {
     this.datastore.saveIndexes();
-    this.aggregation.calculateBalances();
+    this.sumcalculator.calculateBalances();
     this.open = false;
     this.closed.emit();
   }

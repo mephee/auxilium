@@ -6,9 +6,10 @@ import {InvestmentYear} from "../../data/model/investmentYear";
 import {AggregationService} from "../aggregation/aggregation.service";
 import {GrantYear} from "../../data/model/grantYear";
 import {CommunicationService} from "../../communication/communication.service";
-import {MoneyPipe} from "../money.pipe";
+import {MoneyPipe} from "../../utility/money.pipe";
 import {InvestmentService} from "./investment.service";
 import {IndexService} from "../../index/index.service";
+import {SumcalculatorService} from "../sumcalc/sumcalculator.service";
 declare var $:any;
 
 @Component({
@@ -31,7 +32,8 @@ export class InvestmentComponent implements OnInit {
               private communication:CommunicationService,
               private money:MoneyPipe,
               private investmentService:InvestmentService,
-              private indexService:IndexService) { }
+              private indexService:IndexService,
+              private sumcalculator:SumcalculatorService) { }
 
   ngOnInit() {
     $('#investment').draggable({
@@ -107,7 +109,7 @@ export class InvestmentComponent implements OnInit {
     this.updateCategory();
     this.dataStore.saveInvestment(this._investment);
     this.dataStore.save();
-    this.aggregation.calculateBalances();
+    this.sumcalculator.calculateBalances();
     this.open = false;
     this.closed.emit();
   }
@@ -123,7 +125,7 @@ export class InvestmentComponent implements OnInit {
       callback: () => {
         this.dataStore.deleteInvestment(this._investment);
         this.dataStore.save();
-        this.aggregation.calculateBalances();
+        this.sumcalculator.calculateBalances();
         this.open = false;
         this.closed.emit();
       }
@@ -146,7 +148,7 @@ export class InvestmentComponent implements OnInit {
     if (this._investment.investmentYears.length > 0) {
       investYear.year = this._investment.investmentYears[this._investment.investmentYears.length-1].year+1;
     } else {
-      investYear.year = this.aggregation.yearFrom;
+      investYear.year = this.dataStore.getActualVersion().yearFrom;
     }
     this._investment.investmentYears.push(investYear);
   }
@@ -165,7 +167,7 @@ export class InvestmentComponent implements OnInit {
     if (grantYears.length > 0) {
       grantYear.year = grantYears[grantYears.length-1].year+1;
     } else {
-      grantYear.year = this.aggregation.yearFrom;
+      grantYear.year = this.dataStore.getActualVersion().yearFrom;
     }
     grantYears.push(grantYear);
   }

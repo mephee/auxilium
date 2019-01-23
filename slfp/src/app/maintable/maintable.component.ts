@@ -15,6 +15,7 @@ import {CommunicationService} from "../communication/communication.service";
 import {GrantGUI} from "./aggregation/model/grantGUI";
 import {InvestmentGUI} from "./aggregation/model/investmentGUI";
 import {Confirm} from "../communication/model/confirm";
+import {SumcalculatorService} from "./sumcalc/sumcalculator.service";
 declare var $:any;
 
 @Component({
@@ -31,7 +32,11 @@ export class MaintableComponent implements OnInit {
   actualDynTooltip:string;
   actualDynTooltipYear:string;
 
-  constructor(public dataStore: DatastoreService, public aggregation: AggregationService, private elementRef: ElementRef, private communication:CommunicationService) { }
+  constructor(public dataStore: DatastoreService,
+              public aggregation: AggregationService,
+              public sumcalculator: SumcalculatorService,
+              private elementRef: ElementRef,
+              private communication:CommunicationService) { }
 
   ngOnInit() {
     this.showInvestment = false;
@@ -60,14 +65,14 @@ export class MaintableComponent implements OnInit {
    */
   changedTaxrate(event, inoutcome:Inoutcome) {
     inoutcome.taxrate = event;
-    this.aggregation.calculateTaxIncome(inoutcome);
+    this.sumcalculator.calculateTaxIncome(inoutcome);
     this.copyTaxrate(inoutcome.year);
     this.dataStore.save();
   }
 
   changedTaxVolume(event, inoutcome:Inoutcome) {
     inoutcome.taxvolume = event;
-    this.aggregation.calculateTaxIncome(inoutcome);
+    this.sumcalculator.calculateTaxIncome(inoutcome);
     this.copyTaxvolume(inoutcome.year);
     this.dataStore.save();
   }
@@ -107,7 +112,7 @@ export class MaintableComponent implements OnInit {
       }
       if (inoutcomes[i].year>year) {
         inoutcomes[i].taxvolume = taxvolumeToCopy;
-        this.aggregation.calculateTaxIncome(inoutcomes[i]);
+        this.sumcalculator.calculateTaxIncome(inoutcomes[i]);
       }
     }
   }
@@ -121,7 +126,7 @@ export class MaintableComponent implements OnInit {
       }
       if (inoutcomes[i].year>year) {
         inoutcomes[i].taxrate = taxrateToCopy;
-        this.aggregation.calculateTaxIncome(inoutcomes[i]);
+        this.sumcalculator.calculateTaxIncome(inoutcomes[i]);
       }
     }
   }
@@ -189,8 +194,8 @@ export class MaintableComponent implements OnInit {
 
   editPayback(event, payback:ForeignPayback): void {
     let saldo:number = 0;
-    for (let i = this.aggregation.yearFrom;i<payback.year;i++) {
-      saldo+=this.aggregation.getForeignContainer().foreignPayback[i-this.aggregation.yearFrom].payback;
+    for (let i = this.dataStore.getActualVersion().yearFrom;i<payback.year;i++) {
+      saldo+=this.aggregation.getForeignContainer().foreignPayback[i-this.dataStore.getActualVersion().yearFrom].payback;
     }
     if ((saldo + event + this.dataStore.getForeignContainer().foreignValue) < 0) {
       this.showAlert('Rückzahlungen übesteigen das Total Fremdkapital. Die Rückzahlung wurde automatisch angepasst.');

@@ -57,7 +57,7 @@
       <tr class="balance">
         <th class="sticky-col1">Überschuss/Fehlbetrag aus laufender Rechnung</th>
         <td class="sticky-col2">&#xa0;</td>
-        <td class="text-right" [ngClass]="{'negative-value': balance.value<0}" *ngFor="let balance of aggregation.getBalanceAfterOutcome();trackBy:tracker">{{balance.value | money }}</td>
+        <td class="text-right" [ngClass]="{'negative-value': balance.value<0}" *ngFor="let balance of sumcalculator.getBalanceAfterOutcome();trackBy:tracker">{{balance.value | money }}</td>
       </tr>
       <!-- Flüssige Mittel aus Vorjahr -->
       <tr>
@@ -66,7 +66,7 @@
         <td class="text-right table-info" data-toggle="popover" data-trigger="hover" data-placement="top" attr.data-content="Übertragen sie hier ihren Saldo Liquiditätsbestand per 31.12.{{aggregation.yearFrom-1}}">
           <inlineedit [(value)]="dataStore.getLiquidityStart().liquidity"></inlineedit>
         </td>
-        <td class="text-right" [ngClass]="{'negative-value': liquidity<0}" *ngFor="let liquidity of aggregation.getLiquidityOfLastYear();trackBy:tracker">{{liquidity | money}}</td>
+        <td class="text-right" [ngClass]="{'negative-value': liquidity<0}" *ngFor="let liquidity of sumcalculator.getLiquidityOfLastYear();trackBy:tracker">{{liquidity | money}}</td>
       </tr>
       <!-- Fremdkapital -->
       <tr>
@@ -83,7 +83,7 @@
       <tr class="balance">
         <th class="sticky-col1">Total Liquiditätsbestand vor Abschreibungen</th>
         <td class="sticky-col2">&#xa0;</td>
-        <td class="text-right" [ngClass]="{'negative-value': balance.value<0}" *ngFor="let balance of aggregation.getBalanceBeforeWriteoff();trackBy:tracker">{{balance.value | money}}</td>
+        <td class="text-right" [ngClass]="{'negative-value': balance.value<0}" *ngFor="let balance of sumcalculator.getBalanceBeforeWriteoff();trackBy:tracker">{{balance.value | money}}</td>
       </tr>
 
       <!-- Investitionen Abschreibungen -->
@@ -195,7 +195,7 @@
       <tr class="balance">
         <th class="sticky-col1">Total Liquiditätszufluss -Abfluss aus Rechnung (Cash flow)</th>
         <td class="sticky-col2">&#xa0;</td>
-        <td class="text-right" [ngClass]="{'negative-value': balance.value<0}" *ngFor="let balance of aggregation.getCashflowAfterWriteoff();trackBy:tracker">{{balance.value | money}}</td>
+        <td class="text-right" [ngClass]="{'negative-value': balance.value<0}" *ngFor="let balance of sumcalculator.getCashflowAfterWriteoff();trackBy:tracker">{{balance.value | money}}</td>
       </tr>
 
       <!-- Total Ausgaben Investitionen (Liquiditätsabfluss) -->
@@ -222,7 +222,7 @@
       <tr class="balance">
         <th class="sticky-col1">Liquiditätsbestand Total Ende Jahr</th>
         <td class="sticky-col2">&#xa0;</td>
-        <th class="text-right" [ngClass]="{'negative-value': balance.value<0, 'positive-value': balance.value>=0}" *ngFor="let balance of aggregation.getBalanceAfterInvestments();trackBy:tracker">{{balance.value | money}}</th>
+        <th class="text-right" [ngClass]="{'negative-value': balance.value<0, 'positive-value': balance.value>=0}" *ngFor="let balance of sumcalculator.getBalanceAfterInvestments();trackBy:tracker">{{balance.value | money}}</th>
       </tr>
 
 
@@ -239,7 +239,7 @@
       <tr class="balance">
         <th class="sticky-col1">Verfügbare Liquidität</th>
         <td class="sticky-col2">&#xa0;</td>
-        <th class="text-right" [ngClass]="{'negative-value': balance.value<0, 'positive-value': balance.value>=0}" *ngFor="let balance of aggregation.getBalanceAfterReserves();trackBy:tracker">{{balance.value | money}}</th>
+        <th class="text-right" [ngClass]="{'negative-value': balance.value<0, 'positive-value': balance.value>=0}" *ngFor="let balance of sumcalculator.getBalanceAfterReserves();trackBy:tracker">{{balance.value | money}}</th>
       </tr>
 
     </tbody>

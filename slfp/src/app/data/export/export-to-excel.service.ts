@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
 import {DatastoreService} from "../datastore.service";
 import {AggregationService} from "../../maintable/aggregation/aggregation.service";
-import {MoneyPipe} from "../../maintable/money.pipe";
+import {MoneyPipe} from "../../utility/money.pipe";
 import {Version} from "../model/version";
+import {SumcalculatorService} from "../../maintable/sumcalc/sumcalculator.service";
 
 declare var XLSX:any;
 declare var storage:any;
@@ -12,7 +13,10 @@ declare var storage:any;
 })
 export class ExportToExcelService {
 
-  constructor(private datastore:DatastoreService, private aggregation:AggregationService, private money:MoneyPipe) {}
+  constructor(private datastore:DatastoreService,
+              private aggregation:AggregationService,
+              private money:MoneyPipe,
+              private sumcalculator:SumcalculatorService) {}
 
   export(fileName:string):void {
     let workbook = {
@@ -22,7 +26,7 @@ export class ExportToExcelService {
     let actualVersion:Version = this.datastore.getActualVersion();
     this.datastore.getVersions().forEach(version=>{
       this.datastore.setActualVersion(version);
-      this.aggregation.calculateBalances();
+      this.sumcalculator.calculateBalances();
       workbook.SheetNames.push(version.name);
       let sheet = {};
       let rowCounter = 0;
@@ -166,14 +170,14 @@ export class ExportToExcelService {
         rowCounter++;
 
         // Summe 1
-        sheet[XLSX.utils.encode_cell({c:colCounter,r:rowCounter})] = this.getNumCell1000(this.aggregation.getBalanceAfterOutcome()[colCounter-2].value);
+        sheet[XLSX.utils.encode_cell({c:colCounter,r:rowCounter})] = this.getNumCell1000(this.sumcalculator.getBalanceAfterOutcome()[colCounter-2].value);
         rowCounter++;
 
         // flüssige Mittel aus Vorjahr
         if (colCounter == 2) {
           sheet[XLSX.utils.encode_cell({c:colCounter,r:rowCounter})] = this.getNumCell1000(version.liquidityStart.liquidity);
         } else {
-          sheet[XLSX.utils.encode_cell({c:colCounter,r:rowCounter})] = this.getNumCell1000(this.aggregation.getLiquidityOfLastYear()[colCounter-3]);
+          sheet[XLSX.utils.encode_cell({c:colCounter,r:rowCounter})] = this.getNumCell1000(this.sumcalculator.getLiquidityOfLastYear()[colCounter-3]);
         }
         rowCounter++;
 
@@ -182,7 +186,7 @@ export class ExportToExcelService {
         rowCounter++;
 
         // Summe 2
-        sheet[XLSX.utils.encode_cell({c:colCounter,r:rowCounter})] = this.getNumCell1000(this.aggregation.getBalanceBeforeWriteoff()[colCounter-2].value);
+        sheet[XLSX.utils.encode_cell({c:colCounter,r:rowCounter})] = this.getNumCell1000(this.sumcalculator.getBalanceBeforeWriteoff()[colCounter-2].value);
         rowCounter++;
 
         // Investitionen und Abschreibungen
@@ -209,7 +213,7 @@ export class ExportToExcelService {
         rowCounter++;
 
         // Summe 3
-        sheet[XLSX.utils.encode_cell({c:colCounter,r:rowCounter})] = this.getNumCell1000(this.aggregation.getCashflowAfterWriteoff()[colCounter-2].value);
+        sheet[XLSX.utils.encode_cell({c:colCounter,r:rowCounter})] = this.getNumCell1000(this.sumcalculator.getCashflowAfterWriteoff()[colCounter-2].value);
         rowCounter++;
 
         // Investitionen Total
@@ -221,7 +225,7 @@ export class ExportToExcelService {
         rowCounter++;
 
         // Liquiditätsbestand Total Ende Jahr
-        sheet[XLSX.utils.encode_cell({c:colCounter,r:rowCounter})] = this.getNumCell1000(this.aggregation.getBalanceAfterInvestments()[colCounter-2].value);
+        sheet[XLSX.utils.encode_cell({c:colCounter,r:rowCounter})] = this.getNumCell1000(this.sumcalculator.getBalanceAfterInvestments()[colCounter-2].value);
         rowCounter++;
 
         // Reserve
@@ -229,7 +233,7 @@ export class ExportToExcelService {
         rowCounter++;
 
         // Verfügbare Liquidität
-        sheet[XLSX.utils.encode_cell({c:colCounter,r:rowCounter})] = this.getNumCell1000(this.aggregation.getBalanceAfterReserves()[colCounter-2].value);
+        sheet[XLSX.utils.encode_cell({c:colCounter,r:rowCounter})] = this.getNumCell1000(this.sumcalculator.getBalanceAfterReserves()[colCounter-2].value);
         rowCounter++;
 
         colCounter++;
@@ -245,7 +249,7 @@ export class ExportToExcelService {
     XLSX.writeFile(workbook, fileName);
 
     this.datastore.setActualVersion(actualVersion);
-    this.aggregation.calculateBalances();
+    this.sumcalculator.calculateBalances();
   }
 
   private getTextCell(text:string) {

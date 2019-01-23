@@ -5,12 +5,12 @@ import { FormsModule } from '@angular/forms';
 import { AppComponent } from './app.component';
 import { MaintableComponent } from './maintable/maintable.component';
 import { InvestmentComponent } from './maintable/investment/investment.component';
-import { MoneyPipe } from './maintable/money.pipe';
+import { MoneyPipe } from './utility/money.pipe';
 import { InlineeditComponent } from './maintable/inlineedit/inlineedit.component';
 import { VersionsComponent } from './versions/versions.component';
 import { WizardComponent } from './versions/wizard/wizard.component';
 import {ExportToExcelService} from "./data/export/export-to-excel.service";
-import { SafeHtmlPipe } from './maintable/safe-html.pipe';
+import { SafeHtmlPipe } from './utility/safe-html.pipe';
 import { IndexComponent } from './index/index.component';
 import { RenameComponent } from './versions/rename/rename.component';
 

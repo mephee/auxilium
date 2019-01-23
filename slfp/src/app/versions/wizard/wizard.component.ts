@@ -2,6 +2,7 @@ import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {Version} from "../../data/model/version";
 import {DatastoreService} from "../../data/datastore.service";
 import {AggregationService} from "../../maintable/aggregation/aggregation.service";
+import {SumcalculatorService} from "../../maintable/sumcalc/sumcalculator.service";
 declare var $:any;
 
 @Component({
@@ -14,7 +15,8 @@ export class WizardComponent implements OnInit {
   version: Version = new Version();
   _open: boolean;
   @Output() closed = new EventEmitter<void>();
-  constructor(private dataStore:DatastoreService, private aggregation:AggregationService) { }
+  constructor(private dataStore:DatastoreService,
+              private sumcalculator:SumcalculatorService) { }
 
   ngOnInit() {
     $('#wizard').draggable({
@@ -49,7 +51,7 @@ export class WizardComponent implements OnInit {
   save(): void {
     this.dataStore.saveVersion(this.version);
     this.dataStore.save();
-    this.aggregation.calculateBalances();
+    this.sumcalculator.calculateBalances();
     this.dataStore.setVersionInitialized();
     this.open = false;
     this.closed.emit();

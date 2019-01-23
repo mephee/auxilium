@@ -3,6 +3,7 @@ import {Version} from "../data/model/version";
 import {DatastoreService} from "../data/datastore.service";
 import {CommunicationService} from "../communication/communication.service";
 import {AggregationService} from "../maintable/aggregation/aggregation.service";
+import {SumcalculatorService} from "../maintable/sumcalc/sumcalculator.service";
 
 @Component({
   selector: 'app-versions',
@@ -14,14 +15,17 @@ export class VersionsComponent implements OnInit {
   showVersion:boolean;
   showRename:boolean;
 
-  constructor(private dataStore: DatastoreService, private communication:CommunicationService, private ngZone:NgZone, private aggregation:AggregationService) {
+  constructor(private dataStore: DatastoreService,
+              private communication:CommunicationService,
+              private ngZone:NgZone,
+              private sumcalculator:SumcalculatorService) {
     this.communication.versionReady$.subscribe(
       value => {
         ngZone.run(()=> {
           if (!value) {
             this.addVersion();
           } else {
-            this.aggregation.calculateBalances();
+            this.sumcalculator.calculateBalances();
             this.dataStore.setVersionInitialized();
           }
         });
@@ -35,7 +39,7 @@ export class VersionsComponent implements OnInit {
   setActualVersion(version:Version) {
     this.dataStore.setActualVersion(version);
     this.dataStore.save();
-    this.aggregation.calculateBalances();
+    this.sumcalculator.calculateBalances();
     this.dataStore.setVersionInitialized();
   }
 
