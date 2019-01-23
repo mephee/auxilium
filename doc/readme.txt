@@ -1,6 +1,10 @@
+Version:
+- edit in package.json
+- edit in splash.html
+
 build an run:
 - switch to folder slfp
-- npm electron-build
+- npm electron-build-prod
 
 package for current platform:
 - switch to folder slfp
@@ -11,11 +15,5 @@ package to asar archive
 - asar pack app app.asar
 - delete app folder
 
-
 build installer
 - run installerscript.js
-
-
-Version:
-- edit in package.json
-- edit in splash.html

@@ -7,7 +7,7 @@ import {retry} from "rxjs/internal/operators";
 })
 export class InvestmentService {
 
-  constructor() { }
+  constructor() {}
 
   isInvestmentComplete(investment:Investment):boolean {
     let totalPlanned:number = investment.totalCorr > 0 ? investment.totalCorr : investment.total;
@@ -34,5 +34,4 @@ export class InvestmentService {
   getLastInvestmentYear(investment:Investment) {
     return investment.investmentYears[investment.investmentYears.length-1].year;
   }
-
 }
