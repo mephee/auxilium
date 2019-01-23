@@ -4,11 +4,11 @@ Version:
 
 build an run:
 - switch to folder slfp
-- npm electron-build-prod
+- npm run electron-build-prod
 
 package for current platform:
 - switch to folder slfp
-- electron-packager . --overwrite
+- electron-packager . --overwrite --ignore "(\e2e|\installer|\src|\.editorconfig|\.gitignore|\installerscript.js|\angular.json|\package-lock.json|\README.md|\tsconfig.json|\tslint.json)"
 
 package to asar archive
 - switch to folder slfp/Auxfina-plattform/resources
