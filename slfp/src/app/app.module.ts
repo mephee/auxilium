@@ -14,6 +14,9 @@ import { SafeHtmlPipe } from './utility/safe-html.pipe';
 import { IndexComponent } from './index/index.component';
 import { RenameComponent } from './versions/rename/rename.component';
 
+import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
+import {ScrollingModule} from '@angular/cdk/scrolling';
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -29,7 +32,12 @@ import { RenameComponent } from './versions/rename/rename.component';
   ],
   imports: [
     BrowserModule,
-    FormsModule
+    FormsModule,
+    BrowserAnimationsModule,
+    ScrollingModule
+  ],
+  exports: [
+    ScrollingModule
   ],
   providers: [MoneyPipe, ExportToExcelService],
   bootstrap: [AppComponent]
