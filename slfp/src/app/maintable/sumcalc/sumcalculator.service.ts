@@ -9,6 +9,7 @@ import {Reserve} from "../../data/model/reserve";
 import {DatastoreService} from "../../data/datastore.service";
 import {IndexService} from "../../index/index.service";
 import {MemoizerService} from "../../utility/memoizer.service";
+import {ColumnGUI} from "./columnGUI";
 
 @Injectable({
   providedIn: 'root'
@@ -22,6 +23,7 @@ export class SumcalculatorService {
   cashFlowAfterWriteoff: Balance[];
   balanceAfterInvestments: Balance[] = [];
   balanceAfterReserves: Balance[] = [];
+  dataColumns: ColumnGUI[] = [];
 
   constructor(private aggregation:AggregationService,
               private datastore:DatastoreService,
@@ -53,6 +55,10 @@ export class SumcalculatorService {
 
   getBalanceAfterReserves(): Balance[] {
     return this.balanceAfterReserves;
+  }
+
+  getDataColumns(): ColumnGUI[] {
+    return this.dataColumns;
   }
 
   /*
@@ -141,8 +147,30 @@ export class SumcalculatorService {
       balance.value = this.balanceAfterInvestments[counter].value + reserves[counter].reserve;
       this.balanceAfterReserves.push(balance);
 
+
+      // data Column
+      let dataColumn = new ColumnGUI();
+      dataColumn.year = i;
+      dataColumn.inoutcome = inoutComes[counter];
+      dataColumn.balanceAfterOutcome = this.balanceAfterOutcome[counter].value;
+      dataColumn.foreignPayback = foreignContainer.foreignPayback[counter];
+      dataColumn.balanceBeforeWriteoff = this.balanceBeforeWriteoff[counter].value;
+      dataColumn.taxoffTotal = taxoffs[counter];
+      dataColumn.deinvestment = deinvestments[counter].investmentTotal;
+      dataColumn.cashflow = this.cashFlowAfterWriteoff[counter].value;
+      dataColumn.investment = investments[counter].investmentTotal;
+      dataColumn.grant = grants[counter].grantTotal;
+      dataColumn.balanceAfterInvestment = this.balanceAfterInvestments[counter].value;
+      dataColumn.balanceAfterReserve = this.balanceAfterReserves[counter].value;
+      this.dataColumns.push(dataColumn);
+
       counter++;
     }
+
+    // fill the rest of dataColumns
+
+
+
     this.datastore.enableTooltips();  // wegen Subventionen-Tooltips..
   }
 

@@ -1,4 +1,4 @@
-import {Component, ElementRef, OnInit} from '@angular/core';
+import {Component, ElementRef, OnInit, ViewEncapsulation} from '@angular/core';
 import {Inoutcome} from "../data/model/inoutcome";
 import {DatastoreService} from "../data/datastore.service";
 import {Investment} from "../data/model/investment";
@@ -13,7 +13,8 @@ declare var $:any;
 @Component({
   selector: 'app-maintable',
   templateUrl: './maintable.component.html',
-  styleUrls: ['./maintable.component.css']
+  styleUrls: ['./maintable.component.css'],
+  encapsulation: ViewEncapsulation.None,
 })
 export class MaintableComponent implements OnInit {
 
