@@ -33,7 +33,6 @@ export class MaintableComponent implements OnInit {
 
   ngOnInit() {
     this.showInvestment = false;
-
     this.communication.alert$.subscribe(
       value => {
         this.showAlert(value);
@@ -45,6 +44,10 @@ export class MaintableComponent implements OnInit {
         this.showConfirm(value);
       }
     );
+
+    setTimeout(() => {
+      this.setupScroller();
+    }, 2000);
 
   }
 
@@ -299,6 +302,16 @@ export class MaintableComponent implements OnInit {
     if (this.confirm.callback) {
       this.confirm.callback();
     }
+  }
+
+
+  private setupScroller() {
+    let fixedTable = document.getElementById('fixedDivTable');
+    let scrollableTable = document.getElementById('scrolledDivTable');
+    function select_scroll_fixedTable(e) { scrollableTable.scrollTop = fixedTable.scrollTop; }
+    function select_scroll_scrollableTable(e) { fixedTable.scrollTop = scrollableTable.scrollTop; }
+    fixedTable.addEventListener('scroll', select_scroll_fixedTable, false);
+    scrollableTable.addEventListener('scroll', select_scroll_scrollableTable, false);
   }
 
 }

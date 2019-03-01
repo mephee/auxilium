@@ -1,5 +1,7 @@
 import {Inoutcome} from "../../data/model/inoutcome";
 import {ForeignPayback} from "../../data/model/foreignPayback";
+import {InvestmentGUI} from "../aggregation/model/investmentGUI";
+import {GrantGUI} from "../aggregation/model/grantGUI";
 
 export class ColumnGUI {
   year: number;
@@ -23,11 +25,12 @@ export class ColumnGUI {
   taxoffAdditional: number;
   taxoffTotal: number;
 
-  deinvestment: number;
+  deinvestment: InvestmentGUI;
   cashflow: number;
-  investment: number;
-  grant: number;
+  investment: InvestmentGUI;
+  grant: GrantGUI;
   balanceAfterInvestment: number;
+  reserve: number;
   balanceAfterReserve: number;
 
   constructor() {

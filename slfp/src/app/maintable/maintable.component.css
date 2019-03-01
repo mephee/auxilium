@@ -16,36 +16,44 @@
 
 .scrollable-columns-container {
   width: calc(100% - 530px);
+  height: calc(100% + 17px);
 }
 
 .scrollable-columns-container .cdk-virtual-scroll-content-wrapper {
   display: flex;
 }
 
-.sticky-col1 {
+.sticky-header {
+  top: 0;
+  position: sticky;
+  padding: .25rem;
+  height: 32px;
+  vertical-align: bottom;
+  box-shadow: inset 0 1px 0 lightgrey,
+  inset 0 -1px 0 lightgrey;
   background: #f5f5f5;
 }
 
 .sticky-col2 {
-  background: #f5f5f5;
   box-shadow: inset -1px 0 0 lightgrey;
 }
 
-.sticky-header {
-  top: 0;
-  height: 32px;
-  /*box-shadow: inset -1px 0 0 lightgrey;*/
-  text-align: center;
-  font-weight: bold;
-  background: #f5f5f5;
-  border-top: none !important;
-  border-bottom: none !important;
-  box-shadow: inset 0 1px 0 lightgrey,
-  inset 0 -1px 0 lightgrey;
+.column1 {
+  width: 410px;
 }
 
-table tbody:nth-of-type(1) tr:nth-of-type(1) td {
-  border-top: none !important;
+.column2 {
+  width: 120px;
+}
+
+.column {
+  width: 100px;
+}
+
+.cell {
+  height: 30px;
+  padding: .25rem;
+  border-top: 1px solid #dee2e6;
 }
 
 .copybutton {
@@ -69,14 +77,6 @@ table tbody:nth-of-type(1) tr:nth-of-type(1) td {
 input[type=number]::-webkit-inner-spin-button,
 input[type=number]::-webkit-outer-spin-button {
   -webkit-appearance: none;
-}
-
-input {
-  border: none;
-  padding: 0;
-  margin: 0;
-  width: 100%;
-  background-color: transparent;
 }
 
 .new-button {
@@ -117,20 +117,4 @@ input {
 
 inlineedit[hrm1years] input {
   width: 35px;
-}
-
-.column1 {
-  width: 410px;
-}
-
-.column2 {
-  width: 120px;
-}
-
-.column {
-  width: 100px;
-}
-
-.cell {
-  height: 30px;
 }

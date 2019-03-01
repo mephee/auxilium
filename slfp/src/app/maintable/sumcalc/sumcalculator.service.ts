@@ -78,6 +78,7 @@ export class SumcalculatorService {
     this.cashFlowAfterWriteoff = [];
     this.balanceAfterInvestments = [];
     this.balanceAfterReserves = [];
+    this.dataColumns = [];
 
     this.index.generateIndexedReinvestments();
 
@@ -156,11 +157,12 @@ export class SumcalculatorService {
       dataColumn.foreignPayback = foreignContainer.foreignPayback[counter];
       dataColumn.balanceBeforeWriteoff = this.balanceBeforeWriteoff[counter].value;
       dataColumn.taxoffTotal = taxoffs[counter];
-      dataColumn.deinvestment = deinvestments[counter].investmentTotal;
+      dataColumn.deinvestment = deinvestments[counter];
       dataColumn.cashflow = this.cashFlowAfterWriteoff[counter].value;
-      dataColumn.investment = investments[counter].investmentTotal;
-      dataColumn.grant = grants[counter].grantTotal;
+      dataColumn.investment = investments[counter];
+      dataColumn.grant = grants[counter];
       dataColumn.balanceAfterInvestment = this.balanceAfterInvestments[counter].value;
+      dataColumn.reserve = reserves[counter].reserve;
       dataColumn.balanceAfterReserve = this.balanceAfterReserves[counter].value;
       this.dataColumns.push(dataColumn);
 
@@ -168,6 +170,7 @@ export class SumcalculatorService {
     }
 
     // fill the rest of dataColumns
+
 
 
 

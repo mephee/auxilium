@@ -1,25 +1,25 @@
 <ng-container *ngIf="dataStore.isVersionInitialized()">
   <div class="maintable-container table table-sm">
 
-    <div class="fixed-coluumns-container">
-
+    <!-- Fixed Columns -->
+    <div id="fixedDivTable" class="fixed-coluumns-container">
       <div class="column1">
-        <div class="sticky-header">Jahr</div>
-        <div class="cell sticky-col1">Steuervolumen</div>
-        <div class="cell sticky-col1">Steueranlage</div>
-        <div class="cell sticky-col1">Steuereinkommen</div>
-        <div class="cell sticky-col1">Übrige Erträge</div>
-        <div class="cell sticky-col1">Betriebsaufwände</div>
-        <div class="cell sticky-col1">Übrige Aufwände</div>
-        <div class="cell sticky-col1 balance">Überschuss/Fehlbetrag aus laufender Rechnung</div>
-        <div class="cell sticky-col1">Bestand flüssige Mittel aus ende Vorjahr (31.12.XXXX)</div>
-        <div class="sticky-col1">Aufnahme / Rückzahlung Fremdkapital<span style="position: absolute;right: 0px; color: red">{{getForeignOK()}}</span></div>
-        <div class="cell sticky-col1 balance">Total Liquiditätsbestand vor Abschreibungen</div>
-        <div class="cell sticky-col1 bg-secondary">Investitionen und Abschreibungen</div>
+        <div class="sticky-header font-weight-bold">Jahr</div>
+        <div class="cell">Steuervolumen</div>
+        <div class="cell">Steueranlage</div>
+        <div class="cell">Steuereinkommen</div>
+        <div class="cell">Übrige Erträge</div>
+        <div class="cell">Betriebsaufwände</div>
+        <div class="cell">Übrige Aufwände</div>
+        <div class="cell balance font-weight-bold">Überschuss/Fehlbetrag aus laufender Rechnung</div>
+        <div class="cell ">Bestand flüssige Mittel aus ende Vorjahr (31.12.XXXX)</div>
+        <div class="cell">Aufnahme / Rückzahlung Fremdkapital<span style="position: absolute;left: 303px; color: red">{{getForeignOK()}}</span></div>
+        <div class="cell balance font-weight-bold">Total Liquiditätsbestand vor Abschreibungen</div>
+        <div class="cell font-weight-bold">Investitionen und Abschreibungen</div>
 
         <!-- Investments -->
         <ng-container *ngFor="let investmentCategory of aggregation.getInvestmentCategories();trackBy:tracker">
-          <div class="cell sticky-col1" (click)="toggleInvestmentCategory(investmentCategory)">
+          <div class="cell" (click)="toggleInvestmentCategory(investmentCategory)">
             <div class="row">
               <div class="col-11">
                 <ng-container *ngIf='aggregation.hasInvestmentsByRate(investmentCategory.rate); else elseBlock'>
@@ -47,8 +47,9 @@
             </div>
           </div>
           <ng-container *ngIf="investmentCategory.show">
-            <div *ngFor="let investment of aggregation.getInvestmentsByRate(investmentCategory.rate);trackBy:tracker"
-                 class="cell sticky-col1"><span style="margin-left: 25px">{{investment.name}}    (Projekt-Nr: {{investment.projectNr}})</span></div>
+            <div class="cell" *ngFor="let investment of aggregation.getInvestmentsByRate(investmentCategory.rate);trackBy:tracker">
+              <span style="margin-left: 25px">{{investment.name}}    (Projekt-Nr: {{investment.projectNr}})</span>
+            </div>
           </ng-container>
         </ng-container>
 
@@ -70,19 +71,18 @@
           </div>
         </div>
 
-        <div class="cell sticky-col1">Wertberichtigung Abschreibungen (auch finanzpolitische Reserve)</div>
-        <div class="cell sticky-col1 balance">Total Abschreibungen pro Jahr</div>
-        <div class="cell sticky-col1 balance">Total Deinvestitionen pro Jahr</div>
-        <div class="cell sticky-col1 balance">Total Liquiditätszufluss -Abfluss aus Rechnung (Cash flow)</div>
-        <div class="cell sticky-col1 balance">Total Ausgaben Investitionen (Liquiditätsabfluss)</div>
-        <div class="cell sticky-col1">Subventionen</div>
-        <div class="cell sticky-col1 balance">Liquiditätsbestand Total Ende Jahr</div>
-        <div class="cell sticky-col1">Abzüglich zweckgebundene Reserve (finanzpolitische Reserve)</div>
-        <div class="cell sticky-col1 balance">Verfügbare Liquidität</div>
+        <div class="cell">Wertberichtigung Abschreibungen (auch finanzpolitische Reserve)</div>
+        <div class="cell balance font-weight-bold">Total Abschreibungen pro Jahr</div>
+        <div class="cell balance font-weight-bold">Total Deinvestitionen pro Jahr</div>
+        <div class="cell balance font-weight-bold">Total Liquiditätszufluss -Abfluss aus Rechnung (Cash flow)</div>
+        <div class="cell balance font-weight-bold">Total Ausgaben Investitionen (Liquiditätsabfluss)</div>
+        <div class="cell font-weight-bold">Subventionen</div>
+        <div class="cell balance font-weight-bold">Liquiditätsbestand Total Ende Jahr</div>
+        <div class="cell">Abzüglich zweckgebundene Reserve (finanzpolitische Reserve)</div>
+        <div class="cell balance font-weight-bold">Verfügbare Liquidität</div>
       </div>
-
       <div class="column2">
-        <div class="sticky-header">Bestände Planung</div>
+        <div class="sticky-header font-weight-bold">Bestände Planung</div>
         <div class="cell sticky-col2">&#xa0;</div>
         <div class="cell sticky-col2">&#xa0;</div>
         <div class="cell sticky-col2">&#xa0;</div>
@@ -95,7 +95,7 @@
              attr.data-content="Übertragen sie hier ihr Total an Fremdkapital per 31.12.{{aggregation.yearFrom-1}}">
           <inlineedit [(value)]="aggregation.getForeignContainer().foreignValue"></inlineedit>
         </div>
-        <div class="cell sticky-col2">&#xa0;</div>
+        <div class="cell sticky-col2 balance">&#xa0;</div>
         <div class="cell sticky-col2">
           <button type="button" class="btn btn-secondary btn-sm new-button" (click)="newInvestment()"
                   data-toggle="popover" data-trigger="hover" data-placement="top" data-content="neue Investition erfassen">+</button>
@@ -130,11 +130,10 @@
       </div>
     </div>
 
-    <cdk-virtual-scroll-viewport orientation="horizontal" itemSize="100" class="scrollable-columns-container">
-
-      <!-- loop columns -->
-      <div *cdkVirtualFor="let column of sumcalculator.getDataColumns()" class="column">
-        <div class="sticky-header">
+    <!-- Scrollable Columns (infinite scroll) -->
+    <cdk-virtual-scroll-viewport id="scrolledDivTable" orientation="horizontal" itemSize="100" class="scrollable-columns-container">
+      <div class="column" *cdkVirtualFor="let column of sumcalculator.getDataColumns()">
+        <div class="sticky-header font-weight-bold text-center">
           {{column.year}}
         </div>
         <div class="cell">
@@ -158,158 +157,65 @@
         <div class="cell text-right" [ngClass]="{'negative-value': column.balanceAfterOutcome<0}">
           {{column.balanceAfterOutcome | money }}
         </div>
+        <div class="cell text-right" [ngClass]="{'negative-value': column.liquidityOfLastYear<0}">
+          {{column.liquidityOfLastYear | money}}
+        </div>
+        <div class="cell text-right">
+          <inlineedit [value]="column.foreignPayback.payback" (valueChange)="editPayback($event, column.foreignPayback)"></inlineedit>
+        </div>
+        <div class="cell text-right" [ngClass]="{'negative-value': column.balanceBeforeWriteoff<0}">
+          {{column.balanceBeforeWriteoff | money}}
+        </div>
+        <div class="cell text-right">&nbsp;</div>
 
-        <div class="cell">
-
+        <!-- Investments -->
+        <ng-container *ngFor="let investmentCategory of aggregation.getInvestmentCategories();trackBy:tracker">
+          <div class="cell text-right">todo</div>
+          <ng-container *ngIf="investmentCategory.show">
+            <div class="cell text-right"*ngFor="let investment of aggregation.getInvestmentsByRate(investmentCategory.rate);trackBy:tracker">todo</div>
+          </ng-container>
+        </ng-container>
+        <div class="cell text-right">
+          {{ column.taxoffHRM1 | money }}
+        </div>
+        <div class="cell text-right">
+          <inlineedit [(value)]="column.taxoffAdditional"></inlineedit>
+        </div>
+        <div class="cell text-right">
+          {{ column.taxoffTotal | money }}
+        </div>
+        <div class="cell text-right"
+          (mouseenter)="mouseEnterTT($event, column.deinvestment.tooltip, 'Deinvestitionen Jahr ' + column.deinvestment.year)"
+          (mouseleave)="mouseLeaveTT()"
+          (mouseout)="mouseLeaveTT()">{{column.deinvestment.investmentTotal | money}}
+        </div>
+        <div class="cell text-right" [ngClass]="{'negative-value': column.cashflow<0}">
+          {{ column.cashflow | money }}
+        </div>
+        <div class="cell text-right" [ngClass]="{'negative-value': column.investment.investmentTotal<0}"
+          (mouseenter)="mouseEnterTT($event, column.investment.tooltip, 'Investitionen Jahr ' + column.investment.year)"
+          (mouseleave)="mouseLeaveTT()"
+          (mouseout)="mouseLeaveTT()">{{column.investment.investmentTotal | money}}
+        </div>
+        <div class="cell text-right"
+          (mouseenter)="mouseEnterTT($event, column.grant.tooltip, 'Subventionen Jahr ' + column.grant.year)"
+          (mouseleave)="mouseLeaveTT()"
+          (mouseout)="mouseLeaveTT()">{{column.grant.grantTotal | money}}
+        </div>
+        <div class="cell text-right font-weight-bold" [ngClass]="{'negative-value': column.balanceAfterInvestment<0, 'positive-value': column.balanceAfterInvestment>=0}">
+          {{column.balanceAfterInvestment | money}}
         </div>
         <div class="cell">
-
+          <inlineedit [(value)]="column.reserve"></inlineedit>
         </div>
-        <div class="cell">
-
-        </div>
-        <div class="cell">
-
-        </div>
-        <div class="cell">
-
-        </div>
-        <div class="cell">
-
-        </div>
-        <div class="cell">
-
+        <div class="cell text-right" [ngClass]="{'negative-value': column.balanceAfterReserve<0, 'positive-value': column.balanceAfterReserve>=0}">
+          {{column.balanceAfterReserve  | money}}
         </div>
       </div>
-
-
-
-      <!--<table id="other" class="table table-sm">-->
-        <!--&lt;!&ndash; Flüssige Mittel aus Vorjahr &ndash;&gt;-->
-        <!--<tr>-->
-          <!--<td class="text-right" [ngClass]="{'negative-value': liquidity<0}" *cdkVirtualFor="let liquidity of sumcalculator.getLiquidityOfLastYear()">{{liquidity | money}}</td>-->
-        <!--</tr>-->
-        <!--&lt;!&ndash; Fremdkapital &ndash;&gt;-->
-        <!--<tr>-->
-          <!--<td class="text-right" *cdkVirtualFor="let payback of aggregation.getForeignContainer().foreignPayback">-->
-            <!--<inlineedit [value]="payback.payback" (valueChange)="editPayback($event, payback)"></inlineedit>-->
-          <!--</td>-->
-        <!--</tr>-->
-
-        <!--&lt;!&ndash; Total Liq vor Abschreibung &ndash;&gt;-->
-        <!--<tr class="balance">-->
-          <!--<td class="text-right" [ngClass]="{'negative-value': balance.value<0}" *cdkVirtualFor="let balance of sumcalculator.getBalanceBeforeWriteoff()">{{balance.value | money}}</td>-->
-        <!--</tr>-->
-
-        <!--&lt;!&ndash; Investitionen Abschreibungen &ndash;&gt;-->
-        <!--<tr class="table-secondary">-->
-          <!--<td class="text-right" *cdkVirtualFor="let inoutcome of dataStore.getInoutcomes()"></td>-->
-        <!--</tr>-->
-
-        <!--<ng-container *cdkVirtualFor="let investmentCategory of aggregation.getInvestmentCategories()">-->
-          <!--<tr>-->
-            <!--<td class="text-right" *cdkVirtualFor="let taxoff of aggregation.getTaxoffsByCategory(investmentCategory)">{{taxoff | money}}</td>-->
-          <!--</tr>-->
-          <!--<ng-container *ngIf="investmentCategory.show">-->
-            <!--<tr *cdkVirtualFor="let investment of aggregation.getInvestmentsByRate(investmentCategory.rate)">-->
-              <!--<td class="text-right" *cdkVirtualFor="let taxoff of aggregation.getTaxoffsByYear(investment)">{{taxoff | money}}</td>-->
-            <!--</tr>-->
-          <!--</ng-container>-->
-        <!--</ng-container>-->
-
-        <!--&lt;!&ndash; Abschreibungen HRM 1&ndash;&gt;-->
-        <!--<tr>-->
-          <!--<td class="text-right" *cdkVirtualFor="let taxoff of aggregation.getTaxoffsHRM1ByYear()">{{taxoff | money}}</td>-->
-        <!--</tr>-->
-
-
-        <!--&lt;!&ndash;zusätzliche Abschreibungen nach HRM2 (finanzpolitische Reserve)&ndash;&gt;-->
-        <!--<tr>-->
-          <!--<td *cdkVirtualFor="let addTaxoff of dataStore.getAdditionalTaxoffs()">-->
-            <!--<inlineedit [(value)]="addTaxoff.taxoff"></inlineedit>-->
-          <!--</td>-->
-        <!--</tr>-->
-
-        <!--&lt;!&ndash; Total Abschreibung &ndash;&gt;-->
-        <!--<tr class="balance">-->
-          <!--<td class="text-right" *cdkVirtualFor="let taxoff of aggregation.getTaxoffsTotal()">{{taxoff | money}}</td>-->
-        <!--</tr>-->
-
-        <!--&lt;!&ndash; Total Deinvestitionen &ndash;&gt;-->
-        <!--<tr class="balance">-->
-          <!--<td class="text-right" *cdkVirtualFor="let deinvestment of aggregation.getDeinvestmentsTotal()"-->
-              <!--(mouseenter)="mouseEnterTT($event, deinvestment.tooltip, 'Deinvestitionen Jahr ' + deinvestment.year)"-->
-              <!--(mouseleave)="mouseLeaveTT()"-->
-              <!--(mouseout)="mouseLeaveTT()">{{deinvestment.investmentTotal | money}}</td>-->
-        <!--</tr>-->
-
-        <!--&lt;!&ndash; Total Liquiditätszufluss -Abfluss aus Rechnung (Cash flow) &ndash;&gt;-->
-        <!--<tr class="balance">-->
-          <!--<td class="text-right" [ngClass]="{'negative-value': balance.value<0}" *cdkVirtualFor="let balance of sumcalculator.getCashflowAfterWriteoff()">{{balance.value | money}}</td>-->
-        <!--</tr>-->
-
-        <!--&lt;!&ndash; Total Ausgaben Investitionen (Liquiditätsabfluss) &ndash;&gt;-->
-        <!--<tr class="balance">-->
-          <!--<td class="text-right" [ngClass]="{'negative-value': investment<0}" *cdkVirtualFor="let investment of aggregation.getInvestmentsTotal()"-->
-              <!--(mouseenter)="mouseEnterTT($event, investment.tooltip, 'Investitionen Jahr ' + investment.year)"-->
-              <!--(mouseleave)="mouseLeaveTT()"-->
-              <!--(mouseout)="mouseLeaveTT()">{{investment.investmentTotal | money}}</td>-->
-        <!--</tr>-->
-
-        <!--&lt;!&ndash; Subventionen &ndash;&gt;-->
-        <!--<tr class>-->
-          <!--<td class="text-right" *cdkVirtualFor="let grant of aggregation.getGrants()"-->
-              <!--(mouseenter)="mouseEnterTT($event, grant.tooltip, 'Subventionen Jahr ' + grant.year)"-->
-              <!--(mouseleave)="mouseLeaveTT()"-->
-              <!--(mouseout)="mouseLeaveTT()">{{grant.grantTotal | money}}</td>-->
-        <!--</tr>-->
-
-        <!--&lt;!&ndash; Liquiditätsbestand Total Ende Jahr &ndash;&gt;-->
-        <!--<tr class="balance">-->
-          <!--<th class="text-right" [ngClass]="{'negative-value': balance.value<0, 'positive-value': balance.value>=0}" *cdkVirtualFor="let balance of sumcalculator.getBalanceAfterInvestments()">{{balance.value | money}}</th>-->
-        <!--</tr>-->
-
-
-        <!--&lt;!&ndash;Abzüglich zweckgebundene Reserve (finanzpolitische Reserve&ndash;&gt;-->
-        <!--<tr>-->
-          <!--<td *cdkVirtualFor="let reserve of dataStore.getReserves()">-->
-            <!--<inlineedit [(value)]="reserve.reserve"></inlineedit>-->
-          <!--</td>-->
-        <!--</tr>-->
-
-        <!--&lt;!&ndash; Verfügbare Liquidität &ndash;&gt;-->
-        <!--<tr class="balance">-->
-          <!--<th class="text-right" [ngClass]="{'negative-value': balance.value<0, 'positive-value': balance.value>=0}" *cdkVirtualFor="let balance of sumcalculator.getBalanceAfterReserves()">{{balance.value | money}}</th>-->
-        <!--</tr>-->
-
-      <!--</table>-->
     </cdk-virtual-scroll-viewport>
-
   </div>
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
   <app-investment (closed)="onClosed()" [open]="showInvestment" [investment]="selectedInvestment"></app-investment>
-
 
   <div class="customalert floatalert alert alert-danger">
     <h4 class="alert-heading">Achtung!</h4>
@@ -329,7 +235,6 @@
       <button type="submit" class="btn btn-secondary btn-sm alertbutton" (click)="acceptConfirm()">OK</button>
     </div>
   </div>
-
 
   <div class="dyntooltip popover" role="tooltip">
     <button type="button" class="close" (click)="hideDynTooltip()">
