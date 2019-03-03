@@ -18,11 +18,11 @@
         <div class="cell font-weight-bold">Investitionen und Abschreibungen</div>
 
         <!-- Investments -->
-        <ng-container *ngFor="let investmentCategory of aggregation.getInvestmentCategories();trackBy:tracker">
+        <ng-container *ngFor="let investmentCategory of investmentCategories.getInvestmentCategories();trackBy:tracker">
           <div class="cell" (click)="toggleInvestmentCategory(investmentCategory)">
             <div class="row">
               <div class="col-11">
-                <ng-container *ngIf='aggregation.hasInvestmentsByRate(investmentCategory.rate); else elseBlock'>
+                <ng-container *ngIf='investmentCategory.investments.length > 0; else elseBlock'>
                   <span>
                     <span *ngIf="!investmentCategory.show" style="width: 12px">&#x2BC8;</span>
                     <span *ngIf="investmentCategory.show" style="width: 12px">&#x2BC6;</span>
@@ -47,7 +47,7 @@
             </div>
           </div>
           <ng-container *ngIf="investmentCategory.show">
-            <div class="cell" *ngFor="let investment of aggregation.getInvestmentsByRate(investmentCategory.rate);trackBy:tracker">
+            <div class="cell" *ngFor="let investment of investmentCategory.investments;trackBy:tracker">
               <span style="margin-left: 25px">{{investment.name}}    (Projekt-Nr: {{investment.projectNr}})</span>
             </div>
           </ng-container>
@@ -92,8 +92,8 @@
         <div class="cell sticky-col2 balance">&#xa0;</div>
         <div class="cell sticky-col2">&#xa0;</div>
         <div class="cell sticky-col2" data-toggle="popover" data-trigger="hover" data-placement="top"
-             attr.data-content="Übertragen sie hier ihr Total an Fremdkapital per 31.12.{{aggregation.yearFrom-1}}">
-          <inlineedit [(value)]="aggregation.getForeignContainer().foreignValue"></inlineedit>
+             attr.data-content="Übertragen sie hier ihr Total an Fremdkapital per 31.12.{{dataStore.getActualVersion().yearFrom-1}}">
+          <inlineedit [(value)]="calculator.getForeignContainer().foreignValue"></inlineedit>
         </div>
         <div class="cell sticky-col2 balance">&#xa0;</div>
         <div class="cell sticky-col2">
@@ -102,10 +102,10 @@
         </div>
 
         <!-- Investments -->
-        <ng-container *ngFor="let investmentCategory of aggregation.getInvestmentCategories();trackBy:tracker">
+        <ng-container *ngFor="let investmentCategory of investmentCategories.getInvestmentCategories();trackBy:tracker">
           <div class="cell sticky-col2">&#xa0;</div>
           <ng-container *ngIf="investmentCategory.show">
-            <div *ngFor="let investment of aggregation.getInvestmentsByRate(investmentCategory.rate);trackBy:tracker"
+            <div *ngFor="let investment of investmentCategory.investments;trackBy:tracker"
                  class="cell sticky-col2">
               <button type="button" class="btn btn-secondary btn-sm edit-button" (click)="editInvestment(investment)"
                       data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Investition bearbeiten">&#x270E;</button>
@@ -131,8 +131,8 @@
     </div>
 
     <!-- Scrollable Columns (infinite scroll) -->
-    <cdk-virtual-scroll-viewport id="scrolledDivTable" orientation="horizontal" itemSize="100" class="scrollable-columns-container">
-      <div class="column" *cdkVirtualFor="let column of sumcalculator.getDataColumns()">
+    <cdk-virtual-scroll-viewport id="scrolledDivTable" orientation="horizontal" itemSize="100" class="scrollable-columns-container" minBufferPx="300" maxBufferPx="600">
+      <div class="column" *cdkVirtualFor="let column of calculator.getDataColumns();let idx = index">
         <div class="sticky-header font-weight-bold text-center">
           {{column.year}}
         </div>
@@ -157,7 +157,10 @@
         <div class="cell text-right" [ngClass]="{'negative-value': column.balanceAfterOutcome<0}">
           {{column.balanceAfterOutcome | money }}
         </div>
-        <div class="cell text-right" [ngClass]="{'negative-value': column.liquidityOfLastYear<0}">
+        <div *ngIf="idx == 0" class="cell text-right table-info" data-toggle="popover" data-trigger="hover" data-placement="top" attr.data-content="Übertragen sie hier ihren Saldo Liquiditätsbestand per 31.12.{{column.year-1}}">
+            <inlineedit [(value)]="dataStore.getLiquidityStart().liquidity"></inlineedit>
+        </div>
+        <div *ngIf="idx != 0" class="cell text-right" [ngClass]="{'negative-value': column.liquidityOfLastYear<0}">
           {{column.liquidityOfLastYear | money}}
         </div>
         <div class="cell text-right">
@@ -169,12 +172,13 @@
         <div class="cell text-right">&nbsp;</div>
 
         <!-- Investments -->
-        <ng-container *ngFor="let investmentCategory of aggregation.getInvestmentCategories();trackBy:tracker">
-          <div class="cell text-right">todo</div>
-          <ng-container *ngIf="investmentCategory.show">
-            <div class="cell text-right"*ngFor="let investment of aggregation.getInvestmentsByRate(investmentCategory.rate);trackBy:tracker">todo</div>
+        <ng-container *ngFor="let taxoffForRate of column.taxoffForRate;trackBy:tracker;let idx = index">
+          <div class="cell text-right">{{ taxoffForRate.taxoffTotal | money }}</div>
+          <ng-container *ngIf="investmentCategories.getInvestmentCategories()[idx].show">
+            <div class="cell text-right" *ngFor="let taxoff of taxoffForRate.taxoffs;trackBy:tracker">{{ taxoff | money }}</div>
           </ng-container>
         </ng-container>
+
         <div class="cell text-right">
           {{ column.taxoffHRM1 | money }}
         </div>

@@ -3,13 +3,12 @@ import {DatastoreService} from "../../data/datastore.service";
 import {Category} from "../../data/model/category";
 import {Investment} from "../../data/model/investment";
 import {InvestmentYear} from "../../data/model/investmentYear";
-import {AggregationService} from "../aggregation/aggregation.service";
 import {GrantYear} from "../../data/model/grantYear";
 import {CommunicationService} from "../../communication/communication.service";
 import {MoneyPipe} from "../../utility/money.pipe";
 import {InvestmentService} from "./investment.service";
 import {IndexService} from "../../index/index.service";
-import {SumcalculatorService} from "../sumcalc/sumcalculator.service";
+import {CalculatorService} from "../calc/calculator.service";
 declare var $:any;
 
 @Component({
@@ -28,12 +27,11 @@ export class InvestmentComponent implements OnInit {
   reinvestmentsActive:boolean = false;
 
   constructor(private dataStore: DatastoreService,
-              private aggregation:AggregationService,
               private communication:CommunicationService,
               private money:MoneyPipe,
               private investmentService:InvestmentService,
               private indexService:IndexService,
-              private sumcalculator:SumcalculatorService) { }
+              private calculator:CalculatorService) { }
 
   ngOnInit() {
     $('#investment').draggable({
@@ -109,7 +107,7 @@ export class InvestmentComponent implements OnInit {
     this.updateCategory();
     this.dataStore.saveInvestment(this._investment);
     this.dataStore.save();
-    this.sumcalculator.calculateBalances();
+    this.calculator.calculateBalances();
     this.open = false;
     this.closed.emit();
   }
@@ -125,7 +123,7 @@ export class InvestmentComponent implements OnInit {
       callback: () => {
         this.dataStore.deleteInvestment(this._investment);
         this.dataStore.save();
-        this.sumcalculator.calculateBalances();
+        this.calculator.calculateBalances();
         this.open = false;
         this.closed.emit();
       }

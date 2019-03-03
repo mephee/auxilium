@@ -2,12 +2,12 @@ import {Component, ElementRef, OnInit, ViewEncapsulation} from '@angular/core';
 import {Inoutcome} from "../data/model/inoutcome";
 import {DatastoreService} from "../data/datastore.service";
 import {Investment} from "../data/model/investment";
-import {AggregationService} from "./aggregation/aggregation.service";
-import {InvestmentCategory} from "../data/model/investmentCategory";
+import {InvestmentCategories} from "./investmentcategories/investment-categories.service";
+import {InvestmentCategory} from "./investmentcategories/model/investmentCategory";
 import {ForeignPayback} from "../data/model/foreignPayback";
 import {CommunicationService} from "../communication/communication.service";
 import {Confirm} from "../communication/model/confirm";
-import {SumcalculatorService} from "./sumcalc/sumcalculator.service";
+import {CalculatorService} from "./calc/calculator.service";
 declare var $:any;
 
 @Component({
@@ -25,9 +25,12 @@ export class MaintableComponent implements OnInit {
   actualDynTooltip:string;
   actualDynTooltipYear:string;
 
+  syncLeftTableScroll:boolean = false;
+  syncRightTableScroll:boolean = false;
+
   constructor(public dataStore: DatastoreService,
-              public aggregation: AggregationService,
-              public sumcalculator: SumcalculatorService,
+              public investmentCategories: InvestmentCategories,
+              public calculator: CalculatorService,
               private elementRef: ElementRef,
               private communication:CommunicationService) { }
 
@@ -61,14 +64,14 @@ export class MaintableComponent implements OnInit {
    */
   changedTaxrate(event, inoutcome:Inoutcome) {
     inoutcome.taxrate = event;
-    this.sumcalculator.calculateTaxIncome(inoutcome);
+    this.calculateTaxIncome(inoutcome);
     this.copyTaxrate(inoutcome.year);
     this.dataStore.save();
   }
 
   changedTaxVolume(event, inoutcome:Inoutcome) {
     inoutcome.taxvolume = event;
-    this.sumcalculator.calculateTaxIncome(inoutcome);
+    this.calculateTaxIncome(inoutcome);
     this.copyTaxvolume(inoutcome.year);
     this.dataStore.save();
   }
@@ -108,7 +111,7 @@ export class MaintableComponent implements OnInit {
       }
       if (inoutcomes[i].year>year) {
         inoutcomes[i].taxvolume = taxvolumeToCopy;
-        this.sumcalculator.calculateTaxIncome(inoutcomes[i]);
+        this.calculateTaxIncome(inoutcomes[i]);
       }
     }
   }
@@ -122,7 +125,7 @@ export class MaintableComponent implements OnInit {
       }
       if (inoutcomes[i].year>year) {
         inoutcomes[i].taxrate = taxrateToCopy;
-        this.sumcalculator.calculateTaxIncome(inoutcomes[i]);
+        this.calculateTaxIncome(inoutcomes[i]);
       }
     }
   }
@@ -191,7 +194,7 @@ export class MaintableComponent implements OnInit {
   editPayback(event, payback:ForeignPayback): void {
     let saldo:number = 0;
     for (let i = this.dataStore.getActualVersion().yearFrom;i<payback.year;i++) {
-      saldo+=this.aggregation.getForeignContainer().foreignPayback[i-this.dataStore.getActualVersion().yearFrom].payback;
+      saldo+=this.calculator.getForeignContainer().foreignPayback[i-this.dataStore.getActualVersion().yearFrom].payback;
     }
     if ((saldo + event + this.dataStore.getForeignContainer().foreignValue) < 0) {
       this.showAlert('Rückzahlungen übesteigen das Total Fremdkapital. Die Rückzahlung wurde automatisch angepasst.');
@@ -208,14 +211,18 @@ export class MaintableComponent implements OnInit {
     investmentCategory.show = !investmentCategory.show;
   }
 
+  private calculateTaxIncome(inoutcome: Inoutcome): void {
+    inoutcome.income = inoutcome.taxvolume/(100/inoutcome.taxrate);
+  }
+
 
 
   /*
   Getter
    */
   getForeignOK():string {
-    let foreignTot = this.aggregation.getForeignContainer().foreignPayback.reduce((total, foreign) => total + foreign.payback, 0);
-    if (foreignTot + this.aggregation.getForeignContainer().foreignValue != 0) {
+    let foreignTot = this.calculator.getForeignContainer().foreignPayback.reduce((total, foreign) => total + foreign.payback, 0);
+    if (foreignTot + this.calculator.getForeignContainer().foreignValue != 0) {
       return 'Fremdkapital prüfen!';
     } else {
       return '';
@@ -304,14 +311,22 @@ export class MaintableComponent implements OnInit {
     }
   }
 
-
   private setupScroller() {
-    let fixedTable = document.getElementById('fixedDivTable');
-    let scrollableTable = document.getElementById('scrolledDivTable');
-    function select_scroll_fixedTable(e) { scrollableTable.scrollTop = fixedTable.scrollTop; }
-    function select_scroll_scrollableTable(e) { fixedTable.scrollTop = scrollableTable.scrollTop; }
-    fixedTable.addEventListener('scroll', select_scroll_fixedTable, false);
-    scrollableTable.addEventListener('scroll', select_scroll_scrollableTable, false);
+    let leftDiv = document.getElementById('fixedDivTable');
+    let rightDiv = document.getElementById('scrolledDivTable');
+    leftDiv.onscroll = () => {
+      if (!this.syncLeftTableScroll) {
+        this.syncRightTableScroll = true;
+        rightDiv.scrollTop = leftDiv.scrollTop;
+      }
+      this.syncLeftTableScroll = false;
+    };
+    rightDiv.onscroll = () => {
+      if (!this.syncRightTableScroll) {
+        this.syncLeftTableScroll = true;
+        leftDiv.scrollTop = rightDiv.scrollTop;
+      }
+      this.syncRightTableScroll = false;
+    };
   }
-
 }
