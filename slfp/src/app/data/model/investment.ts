@@ -11,6 +11,7 @@ export class Investment {
   totalCorr: number;
   rate: number;
   categoryId: number;
+  specialId: number;
 
   grantFederal:number;
   grantCanton:number;

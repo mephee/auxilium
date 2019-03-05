@@ -154,7 +154,7 @@
         <div class="cell">
           <inlineedit [value]="column.inoutcome.additionalOutcome" (valueChange)="changedAddOutcome($event, column.inoutcome)"></inlineedit>
         </div>
-        <div class="cell text-right" [ngClass]="{'negative-value': column.balanceAfterOutcome<0}">
+        <div class="cell text-right balance" [ngClass]="{'negative-value': column.balanceAfterOutcome<0}">
           {{column.balanceAfterOutcome | money }}
         </div>
         <div *ngIf="idx == 0" class="cell text-right table-info" data-toggle="popover" data-trigger="hover" data-placement="top" attr.data-content="Übertragen sie hier ihren Saldo Liquiditätsbestand per 31.12.{{column.year-1}}">
@@ -166,7 +166,7 @@
         <div class="cell text-right">
           <inlineedit [value]="column.foreignPayback.payback" (valueChange)="editPayback($event, column.foreignPayback)"></inlineedit>
         </div>
-        <div class="cell text-right" [ngClass]="{'negative-value': column.balanceBeforeWriteoff<0}">
+        <div class="cell text-right balance" [ngClass]="{'negative-value': column.balanceBeforeWriteoff<0}">
           {{column.balanceBeforeWriteoff | money}}
         </div>
         <div class="cell text-right">&nbsp;</div>
@@ -185,18 +185,18 @@
         <div class="cell text-right">
           <inlineedit [(value)]="column.taxoffAdditional"></inlineedit>
         </div>
-        <div class="cell text-right">
+        <div class="cell text-right balance">
           {{ column.taxoffTotal | money }}
         </div>
-        <div class="cell text-right"
+        <div class="cell text-right balance"
           (mouseenter)="mouseEnterTT($event, column.deinvestment.tooltip, 'Deinvestitionen Jahr ' + column.deinvestment.year)"
           (mouseleave)="mouseLeaveTT()"
           (mouseout)="mouseLeaveTT()">{{column.deinvestment.investmentTotal | money}}
         </div>
-        <div class="cell text-right" [ngClass]="{'negative-value': column.cashflow<0}">
+        <div class="cell text-right balance" [ngClass]="{'negative-value': column.cashflow<0}">
           {{ column.cashflow | money }}
         </div>
-        <div class="cell text-right" [ngClass]="{'negative-value': column.investment.investmentTotal<0}"
+        <div class="cell text-right balance" [ngClass]="{'negative-value': column.investment.investmentTotal<0}"
           (mouseenter)="mouseEnterTT($event, column.investment.tooltip, 'Investitionen Jahr ' + column.investment.year)"
           (mouseleave)="mouseLeaveTT()"
           (mouseout)="mouseLeaveTT()">{{column.investment.investmentTotal | money}}
@@ -206,13 +206,13 @@
           (mouseleave)="mouseLeaveTT()"
           (mouseout)="mouseLeaveTT()">{{column.grant.grantTotal | money}}
         </div>
-        <div class="cell text-right font-weight-bold" [ngClass]="{'negative-value': column.balanceAfterInvestment<0, 'positive-value': column.balanceAfterInvestment>=0}">
+        <div class="cell text-right balance font-weight-bold" [ngClass]="{'negative-value': column.balanceAfterInvestment<0, 'positive-value': column.balanceAfterInvestment>=0}">
           {{column.balanceAfterInvestment | money}}
         </div>
         <div class="cell">
           <inlineedit [(value)]="column.reserve"></inlineedit>
         </div>
-        <div class="cell text-right" [ngClass]="{'negative-value': column.balanceAfterReserve<0, 'positive-value': column.balanceAfterReserve>=0}">
+        <div class="cell text-right balance font-weight-bold" [ngClass]="{'negative-value': column.balanceAfterReserve<0, 'positive-value': column.balanceAfterReserve>=0}">
           {{column.balanceAfterReserve  | money}}
         </div>
       </div>

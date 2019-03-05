@@ -1,4 +1,3 @@
-import {InvestmentGUI} from "../../calc/model/investmentGUI";
 import {Investment} from "../../../data/model/investment";
 
 export class InvestmentCategory {

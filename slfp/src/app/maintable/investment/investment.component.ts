@@ -9,6 +9,8 @@ import {MoneyPipe} from "../../utility/money.pipe";
 import {InvestmentService} from "./investment.service";
 import {IndexService} from "../../index/index.service";
 import {CalculatorService} from "../calc/calculator.service";
+import {Special} from "../special/model/special";
+import {SpecialService} from "../special/special.service";
 declare var $:any;
 
 @Component({
@@ -22,6 +24,7 @@ export class InvestmentComponent implements OnInit {
   @Input()  open: boolean;
   @Output() closed = new EventEmitter<void>();
   selectedCategory: Category;
+  selectedSpecial: Special;
 
   reinvestments:string[] = [];
   reinvestmentsActive:boolean = false;
@@ -31,7 +34,8 @@ export class InvestmentComponent implements OnInit {
               private money:MoneyPipe,
               private investmentService:InvestmentService,
               private indexService:IndexService,
-              private calculator:CalculatorService) { }
+              private calculator:CalculatorService,
+              private specialService:SpecialService) { }
 
   ngOnInit() {
     $('#investment').draggable({
@@ -44,6 +48,7 @@ export class InvestmentComponent implements OnInit {
     this._investment = investment;
     if (investment) {
       this.selectedCategory = this.dataStore.getCategories().find(category => category.id == this._investment.categoryId);
+      this.selectedSpecial = this.specialService.getSpecials().find(special => special.id == this._investment.specialId);
     }
     this.calculateReinvestments();
   }
@@ -105,6 +110,7 @@ export class InvestmentComponent implements OnInit {
 
   save(): void {
     this.updateCategory();
+    this.updateSpecial();
     this.dataStore.saveInvestment(this._investment);
     this.dataStore.save();
     this.calculator.calculateBalances();
@@ -132,6 +138,10 @@ export class InvestmentComponent implements OnInit {
 
   getCategories(): Category[] {
     return this.dataStore.getCategories();
+  }
+
+  getSpecials(): Special[] {
+    return this.specialService.getSpecials();
   }
 
   removeInvestmentYear(investmentYear: InvestmentYear): void {
@@ -244,6 +254,12 @@ export class InvestmentComponent implements OnInit {
     if (this.selectedCategory) {
       this._investment.rate = this.selectedCategory.rate;
       this._investment.categoryId = this.selectedCategory.id;
+    }
+  }
+
+  private updateSpecial() {
+    if (this.selectedSpecial) {
+      this._investment.specialId = this.selectedSpecial.id;
     }
   }
 
