@@ -47,11 +47,6 @@ export class MaintableComponent implements OnInit {
         this.showConfirm(value);
       }
     );
-
-    setTimeout(() => {
-      this.setupScroller();
-    }, 2000);
-
   }
 
   tracker(index:number, item:any):number {
@@ -309,24 +304,5 @@ export class MaintableComponent implements OnInit {
     if (this.confirm.callback) {
       this.confirm.callback();
     }
-  }
-
-  private setupScroller() {
-    let leftDiv = document.getElementById('fixedDivTable');
-    let rightDiv = document.getElementById('scrolledDivTable');
-    leftDiv.onscroll = () => {
-      if (!this.syncLeftTableScroll) {
-        this.syncRightTableScroll = true;
-        rightDiv.scrollTop = leftDiv.scrollTop;
-      }
-      this.syncLeftTableScroll = false;
-    };
-    rightDiv.onscroll = () => {
-      if (!this.syncRightTableScroll) {
-        this.syncLeftTableScroll = true;
-        leftDiv.scrollTop = rightDiv.scrollTop;
-      }
-      this.syncRightTableScroll = false;
-    };
   }
 }

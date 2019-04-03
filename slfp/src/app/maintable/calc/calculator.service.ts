@@ -221,7 +221,7 @@ export class CalculatorService {
   }
 
   // Investments
-  private getInvestmentsByRate(rate: number): Investment[] {
+  getInvestmentsByRate(rate: number): Investment[] {
     return this.memoizer.mem('getInvestmentsByRate'+rate, () => {
       let investmnetsByRate: Investment[] = [];
       this.datastore.getInvestmentsWithoutIndexed().forEach(investment => {
@@ -233,7 +233,7 @@ export class CalculatorService {
     });
   }
 
-  private getInvestmentsTotal(): InvestmentGUI[] {
+  getInvestmentsTotal(): InvestmentGUI[] {
     return this.memoizer.mem('investmentTotal', () => {
       let investments: InvestmentGUI[] = new Array(this.datastore.getActualVersion().yearTo - this.datastore.getActualVersion().yearFrom + 1);
       for (let i = 0; i < investments.length; i++) {
@@ -257,7 +257,7 @@ export class CalculatorService {
   }
 
   // Deinvestment
-  private getDeinvestmentsTotal(): InvestmentGUI[] {
+  getDeinvestmentsTotal(): InvestmentGUI[] {
     return this.memoizer.mem('deinvestmentTot', () => {
       let deinvestments: InvestmentGUI[] = new Array(this.datastore.getActualVersion().yearTo - this.datastore.getActualVersion().yearFrom + 1);
       for (let i = 0; i < deinvestments.length; i++) {
@@ -282,7 +282,7 @@ export class CalculatorService {
   }
 
   // Taxoffs
-  private getTaxoffsByYear(investment: Investment): number[] {
+  getTaxoffsByYear(investment: Investment): number[] {
     return this.memoizer.mem('taxoffsByYear'+investment.id, () => {
       let taxoffs: number[] = [];
       let investedEff = this.investment.getTotalInvested(investment);
@@ -334,7 +334,7 @@ export class CalculatorService {
     });
   }
 
-  private getTaxoffsHRM1ByYear() {
+  getTaxoffsHRM1ByYear() {
     return this.memoizer.mem('taxoffhrm1Year', () => {
       let taxoffs: number[] = [];
       let total: number = this.datastore.getInvestmentHRM1Container().value;
@@ -357,7 +357,7 @@ export class CalculatorService {
     });
   }
 
-  private getTaxoffsTotal(): number[] {
+  getTaxoffsTotal(): number[] {
     return this.memoizer.mem('taxoffsTotal', () => {
       let taxoffs: number[] = new Array(this.datastore.getActualVersion().yearTo - this.datastore.getActualVersion().yearFrom + 1);
       let counter: number;
@@ -398,7 +398,7 @@ export class CalculatorService {
   }
 
   // Grants
-  private getGrants(): GrantGUI[] {
+  getGrants(): GrantGUI[] {
     return this.memoizer.mem('grants', () => {
       let grants: GrantGUI[] = new Array(this.datastore.getActualVersion().yearTo - this.datastore.getActualVersion().yearFrom + 1);
       for (let i = 0; i < grants.length; i++) {
