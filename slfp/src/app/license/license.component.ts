@@ -64,7 +64,6 @@ export class LicenseComponent implements OnInit {
   }
 
   keyValid():boolean {
-    console.log('trialequal');
     return this.licenseKey == 'AUX01-8512-5612-7800-XA98';
   }
 

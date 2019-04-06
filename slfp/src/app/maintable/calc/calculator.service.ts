@@ -50,11 +50,9 @@ export class CalculatorService {
   */
   calculateBalances(): void {
     console.log('recalculate balances');
+    console.time('balances');
 
     this.memoizer.reset();
-
-    let yearFrom = this.datastore.getActualVersion().yearFrom;
-    let yearTo = this.datastore.getActualVersion().yearTo;
 
     this.balanceAfterOutcome = [];
     this.balanceBeforeWriteoff = [];
@@ -63,7 +61,6 @@ export class CalculatorService {
     this.balanceAfterInvestments = [];
     this.balanceAfterReserves = [];
     this.dataColumns = [];
-
     this.index.generateIndexedReinvestments();
 
     let taxoffs:number[] = this.getTaxoffsTotal();  // passt ggf yearTo an, deshalb zuoberst
@@ -74,6 +71,9 @@ export class CalculatorService {
     let grants:GrantGUI[] = this.getGrants();
     let reserves:Reserve[] = this.datastore.getReserves();
     let counter:number = 0;
+
+    let yearFrom = this.datastore.getActualVersion().yearFrom;
+    let yearTo = this.datastore.getActualVersion().yearTo;
 
     // calc sums per year
     for(let i:number = yearFrom;i<=yearTo;i++) {
@@ -187,7 +187,11 @@ export class CalculatorService {
         // pro investment alle jahre (taxoffs)
         this.getTaxoffsByYear(investment).forEach(taxoff => {
           yearCount++;
-          this.dataColumns[yearCount].taxoffForRate[categoryCount].taxoffs.push(taxoff);
+          if (this.dataColumns.length > yearCount) {
+            this.dataColumns[yearCount].taxoffForRate[categoryCount].taxoffs.push(taxoff);
+          } else {
+            console.log('something went wrong!: ' + yearCount + ', ' + investment.name);
+          }
         });
       });
     });
@@ -200,6 +204,7 @@ export class CalculatorService {
     });
 
     this.datastore.enableTooltips();  // wegen Subventionen-Tooltips..
+    console.timeEnd('balances');
   }
 
 
@@ -243,12 +248,12 @@ export class CalculatorService {
       this.datastore.getInvestments().forEach(investment => {
         investment.investmentYears.forEach(investmentYear => {
             let index = investmentYear.year - this.datastore.getActualVersion().yearFrom;
-            if (investments[index].investmentTotal < 0) {
+            if (investments.length > index) {
               investments[index].investmentTotal += -investmentYear.invest;
+              investments[index].tooltip += this.getTooltipLine(investment, investmentYear.invest, '');
             } else {
-              investments[index].investmentTotal = -investmentYear.invest;
+              console.log('no good, no index for investment at ' + index + ' for investment: ' + investment.name);
             }
-            investments[index].tooltip += this.getTooltipLine(investment, investmentYear.invest, '');
           }
         );
       });
@@ -269,12 +274,12 @@ export class CalculatorService {
           let taxoffYears = this.investment.getTaxoffYearsCount(investment);
           let taxoffStartYear = investment.investmentYears[investment.investmentYears.length - 1].year;
           let index = taxoffStartYear + taxoffYears - this.datastore.getActualVersion().yearFrom;
-          if (deinvestments[index].investmentTotal > 0) {
+          if (deinvestments.length > index) {
             deinvestments[index].investmentTotal += investment.deinvestment;
+            deinvestments[index].tooltip += this.getTooltipLine(investment, investment.deinvestment, '');
           } else {
-            deinvestments[index].investmentTotal = investment.deinvestment;
+            console.log('deinvestment would overflow x-axis: ' + index + ' for investment: ' + investment.name);
           }
-          deinvestments[index].tooltip += this.getTooltipLine(investment, investment.deinvestment, '');
         }
       });
       return deinvestments;
@@ -317,6 +322,7 @@ export class CalculatorService {
           taxoffTotal += taxoffPerYear;
           this.datastore.getActualVersion().yearTo++;
         }
+        console.log('update year to: ' + this.datastore.getActualVersion().yearTo);
         this.datastore.updateVersionYearFromTo(this.datastore.getActualVersion().yearFrom, this.datastore.getActualVersion().yearTo);
       }
 

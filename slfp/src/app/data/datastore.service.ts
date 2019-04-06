@@ -84,6 +84,10 @@ export class DatastoreService {
         });
       } else {
         this.indexes = [];
+        let index = new Index();
+        index.index = 100;
+        index.year = (new Date()).getFullYear();
+        // this.indexes.push(index);
         this.loadVersions();
       }
     });
@@ -114,6 +118,7 @@ export class DatastoreService {
     version.liquidityStart.liquidity = 0;
     version.additionalTaxoffs = [];
     version.reserves = [];
+    version.version = 2;  // TODO fix if migration is in place!
     return version;
   }
 

@@ -17,6 +17,8 @@ import { RenameComponent } from './versions/rename/rename.component';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {ScrollingModule} from '@angular/cdk/scrolling';
 import { LicenseComponent } from './license/license.component';
+import {ChartsModule} from "ng2-charts";
+import { ChartComponent } from './maintable/chart/chart.component';
 
 @NgModule({
   declarations: [
@@ -31,12 +33,14 @@ import { LicenseComponent } from './license/license.component';
     IndexComponent,
     RenameComponent,
     LicenseComponent,
+    ChartComponent,
   ],
   imports: [
     BrowserModule,
     FormsModule,
     BrowserAnimationsModule,
-    ScrollingModule
+    ScrollingModule,
+    ChartsModule
   ],
   exports: [
     ScrollingModule

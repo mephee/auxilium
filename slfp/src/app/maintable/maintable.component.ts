@@ -24,6 +24,7 @@ export class MaintableComponent implements OnInit {
   confirm:Confirm = {message:"",callback:null};
   actualDynTooltip:string;
   actualDynTooltipYear:string;
+  showChart:boolean = false;
 
   syncLeftTableScroll:boolean = false;
   syncRightTableScroll:boolean = false;
@@ -274,6 +275,17 @@ export class MaintableComponent implements OnInit {
 
   hideDynTooltip() {
     $('.dyntooltip').hide();
+  }
+
+  /*
+  Chart
+   */
+  openChart() {
+    this.showChart = true;
+  }
+
+  onCloseChart() {
+    this.showChart = false;
   }
 
 

@@ -240,7 +240,13 @@
     <!-- Verfügbare Liquidität -->
     <tr class="balance">
       <th class="sticky-col1">Verfügbare Liquidität</th>
-      <td class="sticky-col2">&#xa0;</td>
+      <td class="sticky-col2">
+        <button type="button" class="btn btn-secondary btn-sm edit-button" (click)="openChart()"
+                data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Grafik anzeigen">
+          <img src="assets/img/line-chart.svg" width="15" height="15" >
+
+        </button>
+      </td>
       <th class="text-right" [ngClass]="{'negative-value': balance.value<0, 'positive-value': balance.value>=0}" *ngFor="let balance of calculator.balanceAfterReserves;trackBy:tracker">{{balance.value | money}}</th>
     </tr>
 
@@ -248,6 +254,8 @@
   </table>
 
   <app-investment (closed)="onClosed()" [open]="showInvestment" [investment]="selectedInvestment"></app-investment>
+
+  <app-chart *ngIf="showChart" (closed)="onCloseChart()"></app-chart>
 
 
   <div class="customalert floatalert alert alert-danger">

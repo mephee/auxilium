@@ -220,6 +220,7 @@ export class InvestmentComponent implements OnInit {
 
   selectMoveOption(index:number):void {
     this._investment.investmentYears.forEach(investmentYear => investmentYear.year += index + 1);
+    this.calculateReinvestments();
   }
 
   selectReinvestmentCount(count:number):void {

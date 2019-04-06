@@ -6,4 +6,9 @@ export class Inoutcome {
   outcome: number;
   additionalIncome: number;
   additionalOutcome: number;
+
+  constructor() {
+    this.additionalOutcome = 0;
+    this.additionalIncome = 0;
+  }
 }

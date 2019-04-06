@@ -5,6 +5,7 @@ import {MoneyPipe} from "../../utility/money.pipe";
 import {Version} from "../model/version";
 import {CalculatorService} from "../../maintable/calc/calculator.service";
 import {ColumnGUI} from "../../maintable/calc/model/columnGUI";
+import {SpecialService} from "../../maintable/special/special.service";
 
 declare var XLSX:any;
 declare var storage:any;
@@ -17,7 +18,8 @@ export class ExportToExcelService {
   constructor(private datastore:DatastoreService,
               private investmentCategories:InvestmentCategories,
               private money:MoneyPipe,
-              private calculator:CalculatorService) {}
+              private calculator:CalculatorService,
+              private special:SpecialService) {}
 
   export(fileName:string):void {
     let workbook = {
@@ -34,113 +36,142 @@ export class ExportToExcelService {
 
       // Jahr
       sheet[XLSX.utils.encode_cell({c:0,r:rowCounter})] = this.getTextCell('Jahr');
-      sheet[XLSX.utils.encode_cell({c:1,r:rowCounter})] = this.getTextCell('Bestände Planung');
+      sheet[XLSX.utils.encode_cell({c:1,r:rowCounter})] = this.getTextCell('Bestände Planung / Projektnummer');
+      sheet[XLSX.utils.encode_cell({c:2,r:rowCounter})] = this.getTextCell('Spezialfinanzierung');
       rowCounter++;
 
       // Steuereinnahmen
       sheet[XLSX.utils.encode_cell({c:0,r:rowCounter})] = this.getTextCell('Steuervolumen');
       sheet[XLSX.utils.encode_cell({c:1,r:rowCounter})] = this.getTextCell('');
+      sheet[XLSX.utils.encode_cell({c:2,r:rowCounter})] = this.getTextCell('');
       rowCounter++;
       sheet[XLSX.utils.encode_cell({c:0,r:rowCounter})] = this.getTextCell('Steueranlage');
       sheet[XLSX.utils.encode_cell({c:1,r:rowCounter})] = this.getTextCell('');
+      sheet[XLSX.utils.encode_cell({c:2,r:rowCounter})] = this.getTextCell('');
       rowCounter++;
       sheet[XLSX.utils.encode_cell({c:0,r:rowCounter})] = this.getTextCell('Steuereinkommen');
       sheet[XLSX.utils.encode_cell({c:1,r:rowCounter})] = this.getTextCell('');
+      sheet[XLSX.utils.encode_cell({c:2,r:rowCounter})] = this.getTextCell('');
       rowCounter++;
       sheet[XLSX.utils.encode_cell({c:0,r:rowCounter})] = this.getTextCell('Übrige Erträge');
       sheet[XLSX.utils.encode_cell({c:1,r:rowCounter})] = this.getTextCell('');
+      sheet[XLSX.utils.encode_cell({c:2,r:rowCounter})] = this.getTextCell('');
       rowCounter++;
 
       // Aufwände
       sheet[XLSX.utils.encode_cell({c:0,r:rowCounter})] = this.getTextCell('Betriebsaufände');
       sheet[XLSX.utils.encode_cell({c:1,r:rowCounter})] = this.getTextCell('');
+      sheet[XLSX.utils.encode_cell({c:2,r:rowCounter})] = this.getTextCell('');
       rowCounter++;
       sheet[XLSX.utils.encode_cell({c:0,r:rowCounter})] = this.getTextCell('Übrige Aufwände');
       sheet[XLSX.utils.encode_cell({c:1,r:rowCounter})] = this.getTextCell('');
+      sheet[XLSX.utils.encode_cell({c:2,r:rowCounter})] = this.getTextCell('');
       rowCounter++;
 
       // Summe 1
       sheet[XLSX.utils.encode_cell({c:0,r:rowCounter})] = this.getTextCell('Überschuss/Fehlbetrag aus laufender Rechnung');
       sheet[XLSX.utils.encode_cell({c:1,r:rowCounter})] = this.getTextCell('');
+      sheet[XLSX.utils.encode_cell({c:2,r:rowCounter})] = this.getTextCell('');
       rowCounter++;
 
       // Flüssige Mittel Vorjahr
       sheet[XLSX.utils.encode_cell({c:0,r:rowCounter})] = this.getTextCell('Bestand flüssige Mittel aus ende Vorjahr (31.12.XXXX)');
       sheet[XLSX.utils.encode_cell({c:1,r:rowCounter})] = this.getTextCell('');
+      sheet[XLSX.utils.encode_cell({c:2,r:rowCounter})] = this.getTextCell('');
       rowCounter++;
 
       // Fremdkapital
       sheet[XLSX.utils.encode_cell({c:0,r:rowCounter})] = this.getTextCell('Aufnahme / Rückzahlung Fremdkapital');
       sheet[XLSX.utils.encode_cell({c:1,r:rowCounter})] = this.getNumCell1000(version.foreignContainer.foreignValue);
+      sheet[XLSX.utils.encode_cell({c:2,r:rowCounter})] = this.getNumCell1000(version.foreignContainer.foreignValue);
       rowCounter++;
 
       // Summe 2
       sheet[XLSX.utils.encode_cell({c:0,r:rowCounter})] = this.getTextCell('Total Liquiditätsbestand vor Abschreibungen');
       sheet[XLSX.utils.encode_cell({c:1,r:rowCounter})] = this.getTextCell('');
+      sheet[XLSX.utils.encode_cell({c:2,r:rowCounter})] = this.getTextCell('');
       rowCounter++;
 
       // Investitionen und Abschreibungen
       sheet[XLSX.utils.encode_cell({c:0,r:rowCounter})] = this.getTextCell('Investitionen und Abschreibungen');
       sheet[XLSX.utils.encode_cell({c:1,r:rowCounter})] = this.getTextCell('');
+      sheet[XLSX.utils.encode_cell({c:2,r:rowCounter})] = this.getTextCell('');
       rowCounter++;
       this.investmentCategories.getInvestmentCategories().forEach(category=>{
-        sheet[XLSX.utils.encode_cell({c:0,r:rowCounter})] = this.getTextCell(category.name);
-        sheet[XLSX.utils.encode_cell({c:1,r:rowCounter})] = this.getTextCell(category.rate + '%');
+        sheet[XLSX.utils.encode_cell({c:0,r:rowCounter})] = this.getTextCell(category.name + ' (' + category.rate + '%)');
+        sheet[XLSX.utils.encode_cell({c:1,r:rowCounter})] = this.getTextCell('');
+        sheet[XLSX.utils.encode_cell({c:2,r:rowCounter})] = this.getTextCell('');
         rowCounter++;
+        this.calculator.getInvestmentsByRate(category.rate).forEach(investment=>{
+          sheet[XLSX.utils.encode_cell({c:0,r:rowCounter})] = this.getTextCell('- ' + investment.name);
+          sheet[XLSX.utils.encode_cell({c:1,r:rowCounter})] = this.getTextCell(investment.projectNr);
+          sheet[XLSX.utils.encode_cell({c:2,r:rowCounter})] = this.getTextCell(this.special.getSpecialNameForId(investment.specialId));
+          rowCounter++;
+        });
       });
 
       // Abschreibungen HRM1
       sheet[XLSX.utils.encode_cell({c:0,r:rowCounter})] = this.getTextCell('HRM1 Verwaltungsvermögen per 31.12.2017');
       sheet[XLSX.utils.encode_cell({c:1,r:rowCounter})] = this.getNumCell1000(version.investmentHRM1Container.value);
+      sheet[XLSX.utils.encode_cell({c:2,r:rowCounter})] = this.getTextCell('');
       rowCounter++;
 
       // zusätzliche Abschreibungen nach HRM2 (finanzpolitische Reserve)
       sheet[XLSX.utils.encode_cell({c:0,r:rowCounter})] = this.getTextCell('Wertberichtigung Abschreibungen (auch finanzpolitische Reserve)');
       sheet[XLSX.utils.encode_cell({c:1,r:rowCounter})] = this.getTextCell('');
+      sheet[XLSX.utils.encode_cell({c:2,r:rowCounter})] = this.getTextCell('');
       rowCounter++;
 
       // Total Abschreibungen
       sheet[XLSX.utils.encode_cell({c:0,r:rowCounter})] = this.getTextCell('Total Abschreibungen pro Jahr');
       sheet[XLSX.utils.encode_cell({c:1,r:rowCounter})] = this.getTextCell('');
+      sheet[XLSX.utils.encode_cell({c:2,r:rowCounter})] = this.getTextCell('');
       rowCounter++;
 
       // Total Deinvestitionen
       sheet[XLSX.utils.encode_cell({c:0,r:rowCounter})] = this.getTextCell('Total Deinvestitionen pro Jahr');
       sheet[XLSX.utils.encode_cell({c:1,r:rowCounter})] = this.getTextCell('');
+      sheet[XLSX.utils.encode_cell({c:2,r:rowCounter})] = this.getTextCell('');
       rowCounter++;
 
       // Total Liquiditätszufluss -Abfluss aus Rechnung (Cash flow)
       sheet[XLSX.utils.encode_cell({c:0,r:rowCounter})] = this.getTextCell('Total Liquiditätszufluss -Abfluss aus Rechnung (Cash flow)');
       sheet[XLSX.utils.encode_cell({c:1,r:rowCounter})] = this.getTextCell('');
+      sheet[XLSX.utils.encode_cell({c:2,r:rowCounter})] = this.getTextCell('');
       rowCounter++;
 
       // Total Ausgaben Investitionen (Liquiditätsabfluss)
       sheet[XLSX.utils.encode_cell({c:0,r:rowCounter})] = this.getTextCell('Total Ausgaben Investitionen (Liquiditätsabfluss)');
       sheet[XLSX.utils.encode_cell({c:1,r:rowCounter})] = this.getTextCell('');
+      sheet[XLSX.utils.encode_cell({c:2,r:rowCounter})] = this.getTextCell('');
       rowCounter++;
 
       // Subventionen
       sheet[XLSX.utils.encode_cell({c:0,r:rowCounter})] = this.getTextCell('Subventionen');
       sheet[XLSX.utils.encode_cell({c:1,r:rowCounter})] = this.getTextCell('');
+      sheet[XLSX.utils.encode_cell({c:2,r:rowCounter})] = this.getTextCell('');
       rowCounter++;
 
       // Liquiditätsbestand Total Ende Jahr
       sheet[XLSX.utils.encode_cell({c:0,r:rowCounter})] = this.getTextCell('Liquiditätsbestand Total Ende Jahr');
       sheet[XLSX.utils.encode_cell({c:1,r:rowCounter})] = this.getTextCell('');
+      sheet[XLSX.utils.encode_cell({c:2,r:rowCounter})] = this.getTextCell('');
       rowCounter++;
 
       // Abzüglich zweckgebundene Reserve (finanzpolitische Reserve
       sheet[XLSX.utils.encode_cell({c:0,r:rowCounter})] = this.getTextCell('Abzüglich zweckgebundene Reserve (finanzpolitische Reserve)');
       sheet[XLSX.utils.encode_cell({c:1,r:rowCounter})] = this.getTextCell('');
+      sheet[XLSX.utils.encode_cell({c:2,r:rowCounter})] = this.getTextCell('');
       rowCounter++;
 
       // Verfügbare Liquidität
       sheet[XLSX.utils.encode_cell({c:0,r:rowCounter})] = this.getTextCell('Verfügbare Liquidität');
       sheet[XLSX.utils.encode_cell({c:1,r:rowCounter})] = this.getTextCell('');
+      sheet[XLSX.utils.encode_cell({c:2,r:rowCounter})] = this.getTextCell('');
       rowCounter++;
 
       let columns:ColumnGUI[] = this.calculator.getDataColumns();
-      let colCounter = 2;
+      let colCounter = 3;
       columns.forEach((column) => {
         rowCounter = 0;
 
@@ -185,6 +216,10 @@ export class ExportToExcelService {
         column.taxoffForRate.forEach(taxoffForRate=>{
           sheet[XLSX.utils.encode_cell({c:colCounter,r:rowCounter})] = this.getNumCell1000(taxoffForRate.taxoffTotal);
           rowCounter++;
+          taxoffForRate.taxoffs.forEach(taxoff=>{
+            sheet[XLSX.utils.encode_cell({c:colCounter,r:rowCounter})] = this.getNumCell1000(taxoff);
+            rowCounter++;
+          })
         });
 
         // Abschreibungen HRM1
@@ -232,7 +267,8 @@ export class ExportToExcelService {
       sheet['!ref'] = XLSX.utils.encode_range({c:0,r:0},{c:colCounter-1,r:rowCounter-1});
       let wscols = [
         {wch:65},
-        {wch:20},
+        {wch:30},
+        {wch:30},
       ];
       sheet['!cols'] = wscols;
       workbook.Sheets[version.name] = sheet;
