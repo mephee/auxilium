@@ -1,0 +1,31 @@
+<div id="customspecial" class="modal m-1 p-1 visible" tabindex="-1" role="dialog" aria-labelledby="indexModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="indexModalLabel">Spezialfinanzierungen</h5>
+      </div>
+      <div class="modal-body pb-0">
+        <form>
+          <div class="scrollpane">
+            <div class="row mb-2" *ngFor="let special of getSpecials();trackBy:tracker">
+              <div class="col-12">
+                <p *ngIf="special.id<5">{{special.name}}</p>
+                <input *ngIf="special.id>4" type="text" class="form-control form-control-sm" id="name" [(ngModel)]="special.name" name="name">
+              </div>
+            </div>
+          </div>
+
+          <div class="row mb-2">
+            <div class="col-4">
+              <button type="button" class="btn btn-secondary btn-sm" (click)="addCustomspecial()">+</button>
+            </div>
+          </div>
+
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn auxbutton btn-sm" (click)="save()">Speichern</button>
+      </div>
+    </div>
+  </div>
+</div>

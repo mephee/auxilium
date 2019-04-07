@@ -1,55 +1,216 @@
 import { Injectable } from '@angular/core';
-import {DatastoreService} from "../../data/datastore.service";
-import {Investment} from "../../data/model/investment";
-import {InvestmentCategory} from "../../data/model/investmentCategory";
-import {ForeignPayback} from "../../data/model/foreignPayback";
+import {Balance} from "../../data/model/balance";
+import {InvestmentCategories} from "../investmentcategories/investment-categories.service";
+import {Inoutcome} from "../../data/model/inoutcome";
+import {InvestmentGUI} from "./model/investmentGUI";
 import {ForeignContainer} from "../../data/model/foreignContainer";
 import {GrantGUI} from "./model/grantGUI";
-import {MoneyPipe} from "../../utility/money.pipe";
-import {InvestmentService} from "../investment/investment.service";
-import {InvestmentGUI} from "./model/investmentGUI";
+import {Reserve} from "../../data/model/reserve";
+import {DatastoreService} from "../../data/datastore.service";
+import {IndexService} from "../../index/index.service";
 import {MemoizerService} from "../../utility/memoizer.service";
-
+import {ColumnGUI} from "./model/columnGUI";
+import {TaxoffForRateGUI} from "./model/taxoffsForRateGUI";
+import {InvestmentCategory} from "../investmentcategories/model/investmentCategory";
+import {ForeignPayback} from "../../data/model/foreignPayback";
+import {Investment} from "../../data/model/investment";
+import {InvestmentService} from "../investment/investment.service";
+import {MoneyPipe} from "../../utility/money.pipe";
 
 @Injectable({
   providedIn: 'root'
 })
+export class CalculatorService {
 
-export class AggregationService {
+  // calculated balances
+  balanceAfterOutcome: Balance[];
+  balanceBeforeWriteoff: Balance[];
+  balanceAfterWriteoff: Balance[];
+  cashFlowAfterWriteoff: Balance[];
+  balanceAfterInvestments: Balance[] = [];
+  balanceAfterReserves: Balance[] = [];
+  private dataColumns: ColumnGUI[] = [];
 
-  investmentCategory: InvestmentCategory[];
-
-  constructor(private datastore: DatastoreService,
-              private money:MoneyPipe,
+  constructor(private investmentCategories:InvestmentCategories,
+              private datastore:DatastoreService,
+              private index:IndexService,
               private investment:InvestmentService,
-              private memoizer:MemoizerService) {
-    this.load();
+              private money:MoneyPipe,
+              private memoizer:MemoizerService) { }
+
+  getDataColumns(): ColumnGUI[] {
+    return this.dataColumns;
   }
 
-
   /*
-  Static Getters
-   */
-  getInvestmentCategories(): InvestmentCategory[] {
-    return this.investmentCategory;
-  }
+  Calculations
+  This method calculates all balances column by column and fills a special GUI-Model called "columnGUI" at the same time
+  -> The GUI is rendered Column-wise so that horizontal infinite scrolling can be implemented
+  -> Filling this columnGUI is tricky because we have to layout row-wise Data ibn a column-wise manner -> see code below
+  */
+  calculateBalances(): void {
+    console.log('recalculate balances');
+    console.time('balances');
+
+    this.memoizer.reset();
+
+    this.balanceAfterOutcome = [];
+    this.balanceBeforeWriteoff = [];
+    this.balanceAfterWriteoff = [];
+    this.cashFlowAfterWriteoff = [];
+    this.balanceAfterInvestments = [];
+    this.balanceAfterReserves = [];
+    this.dataColumns = [];
+    this.index.generateIndexedReinvestments();
+
+    let taxoffs:number[] = this.getTaxoffsTotal();  // passt ggf yearTo an, deshalb zuoberst
+    let inoutComes:Inoutcome[] = this.datastore.getInoutcomes();
+    let investments:InvestmentGUI[] = this.getInvestmentsTotal();
+    let deinvestments:InvestmentGUI[] = this.getDeinvestmentsTotal();
+    let foreignContainer: ForeignContainer = this.getForeignContainer();
+    let grants:GrantGUI[] = this.getGrants();
+    let reserves:Reserve[] = this.datastore.getReserves();
+    let counter:number = 0;
+
+    let yearFrom = this.datastore.getActualVersion().yearFrom;
+    let yearTo = this.datastore.getActualVersion().yearTo;
+
+    // calc sums per year
+    for(let i:number = yearFrom;i<=yearTo;i++) {
+
+      // After Outcome
+      let balance = new Balance();
+      balance.year = inoutComes[counter].year;
+      balance.type = 'inoutcome';
+      balance.value = inoutComes[counter].income + inoutComes[counter].additionalIncome + inoutComes[counter].outcome + inoutComes[counter].additionalOutcome;
+      this.balanceAfterOutcome.push(balance);
+
+      // before writeoff
+      balance = new Balance();
+      balance.year = i;
+      balance.type = 'beforewriteoff';
+      if (counter == 0) {
+        balance.value = this.balanceAfterOutcome[counter].value + this.datastore.getLiquidityStart().liquidity;
+      } else {
+        balance.value = this.balanceAfterOutcome[counter].value + this.balanceAfterInvestments[counter-1].value;
+      }
+      if (foreignContainer.foreignPayback[counter].payback) {
+        balance.value += foreignContainer.foreignPayback[counter].payback;
+      }
+      this.balanceBeforeWriteoff.push(balance);
 
 
-  /*
-  Transient Getters
-   */
+      // after writeoff
+      balance = new Balance();
+      balance.year = i;
+      balance.type = 'afterwriteoff';
+      balance.value = this.balanceBeforeWriteoff[counter].value + taxoffs[counter];
+      this.balanceAfterWriteoff.push(balance);
 
-  // year
-  getYears(): number[] {
-    return this.memoizer.mem('years', () => {
-      let years: number[];
-      years = this.datastore.getInoutcomes().map(inoutcome => {
-        return inoutcome.year;
-      });
-      return years;
+      // cashflow writeoff
+      balance = new Balance();
+      balance.year = i;
+      balance.type = 'cashflow';
+      balance.value = this.balanceAfterOutcome[counter].value + taxoffs[counter] + deinvestments[counter].investmentTotal;
+      this.cashFlowAfterWriteoff.push(balance);
+
+
+      // after investment
+      balance = new Balance();
+      balance.year = i;
+      balance.type = 'afterinvestment';
+      balance.value = this.balanceAfterWriteoff[counter].value;
+      if (investments[counter].investmentTotal<0) {
+        balance.value += investments[counter].investmentTotal;
+      }
+      balance.value += grants[counter].grantTotal;
+      this.balanceAfterInvestments.push(balance);
+
+
+      // after Reserve
+      balance = new Balance();
+      balance.year = i;
+      balance.type = 'afterreserve';
+      balance.value = this.balanceAfterInvestments[counter].value + reserves[counter].reserve;
+      this.balanceAfterReserves.push(balance);
+
+
+      // data Column for column-wise GUI (allows horizontal virtual scroll)
+      let dataColumn = new ColumnGUI();
+      dataColumn.year = i;
+      dataColumn.inoutcome = inoutComes[counter];
+      dataColumn.balanceAfterOutcome = this.balanceAfterOutcome[counter].value;
+      dataColumn.foreignPayback = foreignContainer.foreignPayback[counter];
+      dataColumn.balanceBeforeWriteoff = this.balanceBeforeWriteoff[counter].value;
+      dataColumn.taxoffTotal = taxoffs[counter];
+      dataColumn.deinvestment = deinvestments[counter];
+      dataColumn.cashflow = this.cashFlowAfterWriteoff[counter].value;
+      dataColumn.investment = investments[counter];
+      dataColumn.grant = grants[counter];
+      dataColumn.balanceAfterInvestment = this.balanceAfterInvestments[counter].value;
+      if (counter == 0) {
+        dataColumn.liquidityOfLastYear = this.datastore.getLiquidityStart().liquidity;
+      } else {
+        dataColumn.liquidityOfLastYear = this.balanceAfterInvestments[counter-1].value;
+      }
+      dataColumn.reserve = reserves[counter].reserve;
+      dataColumn.balanceAfterReserve = this.balanceAfterReserves[counter].value;
+      this.dataColumns.push(dataColumn);
+
+      counter++;
+    }
+
+    /*
+    fill the rest of dataColumn -> this is where things get tricky because we have to layout row-wise data into column-wise objects
+    */
+    let investmentCategories:InvestmentCategory[] = this.investmentCategories.getInvestmentCategories();
+    let categoryTotal = investmentCategories.length;
+
+    // generate container for each category in each column
+    this.dataColumns.forEach((dataColumn) => {
+      for (let i=0;i<categoryTotal;i++) {
+        dataColumn.taxoffForRate.push(new TaxoffForRateGUI());
+      }
     });
+
+    // loop über alle kategorien
+    let categoryCount = -1;
+    investmentCategories.forEach((investmentCategory) => {
+      investmentCategory.investments = [];
+      categoryCount++;
+      let investmentCount = -1;
+      // pro kategorie alle investments
+      this.getInvestmentsByRate(investmentCategory.rate).forEach((investment) => {
+        investmentCategory.investments.push(investment);
+        investmentCount++;
+        let yearCount = -1;
+        // pro investment alle jahre (taxoffs)
+        this.getTaxoffsByYear(investment).forEach(taxoff => {
+          yearCount++;
+          if (this.dataColumns.length > yearCount) {
+            this.dataColumns[yearCount].taxoffForRate[categoryCount].taxoffs.push(taxoff);
+          } else {
+            console.log('something went wrong!: ' + yearCount + ', ' + investment.name);
+          }
+        });
+      });
+    });
+
+    // total taxoff pro kategorie rechnen
+    this.dataColumns.forEach((dataColumn) => {
+      dataColumn.taxoffForRate.forEach((taxoffForRate) => {
+        taxoffForRate.taxoffTotal = taxoffForRate.taxoffs.reduce((previous, current) => previous+current, 0);
+      });
+    });
+
+    this.datastore.enableTooltips();  // wegen Subventionen-Tooltips..
+    console.timeEnd('balances');
   }
 
+
+  /*
+  Helper
+   */
   // foreign Container
   getForeignContainer(): ForeignContainer {
     return this.memoizer.mem('foreign', () => {
@@ -64,15 +225,7 @@ export class AggregationService {
     });
   }
 
-  // Investment
-  hasInvestmentsByRate(rate: number):boolean {
-    return this.memoizer.mem('hasInvestmentsByRate'+rate, () => {
-      return this.datastore.getInvestmentsWithoutIndexed().find((element) => {
-        return element.rate == rate;
-      }) != undefined;
-    });
-  }
-
+  // Investments
   getInvestmentsByRate(rate: number): Investment[] {
     return this.memoizer.mem('getInvestmentsByRate'+rate, () => {
       let investmnetsByRate: Investment[] = [];
@@ -95,12 +248,12 @@ export class AggregationService {
       this.datastore.getInvestments().forEach(investment => {
         investment.investmentYears.forEach(investmentYear => {
             let index = investmentYear.year - this.datastore.getActualVersion().yearFrom;
-            if (investments[index].investmentTotal < 0) {
+            if (investments.length > index) {
               investments[index].investmentTotal += -investmentYear.invest;
+              investments[index].tooltip += this.getTooltipLine(investment, investmentYear.invest, '');
             } else {
-              investments[index].investmentTotal = -investmentYear.invest;
+              console.log('no good, no index for investment at ' + index + ' for investment: ' + investment.name);
             }
-            investments[index].tooltip += this.getTooltipLine(investment, investmentYear.invest, '');
           }
         );
       });
@@ -121,12 +274,12 @@ export class AggregationService {
           let taxoffYears = this.investment.getTaxoffYearsCount(investment);
           let taxoffStartYear = investment.investmentYears[investment.investmentYears.length - 1].year;
           let index = taxoffStartYear + taxoffYears - this.datastore.getActualVersion().yearFrom;
-          if (deinvestments[index].investmentTotal > 0) {
+          if (deinvestments.length > index) {
             deinvestments[index].investmentTotal += investment.deinvestment;
+            deinvestments[index].tooltip += this.getTooltipLine(investment, investment.deinvestment, '');
           } else {
-            deinvestments[index].investmentTotal = investment.deinvestment;
+            console.log('deinvestment would overflow x-axis: ' + index + ' for investment: ' + investment.name);
           }
-          deinvestments[index].tooltip += this.getTooltipLine(investment, investment.deinvestment, '');
         }
       });
       return deinvestments;
@@ -134,26 +287,6 @@ export class AggregationService {
   }
 
   // Taxoffs
-  getTaxoffsByCategory(investmentCategory: InvestmentCategory): number[] {
-    return this.memoizer.mem('taxoffsByCategory'+investmentCategory.rate, () => {
-      let taxoffs: number[] = new Array(this.datastore.getActualVersion().yearTo - this.datastore.getActualVersion().yearFrom + 1);
-      let counter: number;
-      this.getInvestmentsByRate(investmentCategory.rate).forEach(investment => {
-        counter = -1;
-        this.getTaxoffsByYear(investment).forEach(taxoff => {
-            counter++;
-            if (taxoffs[counter] > 0) {
-              taxoffs[counter] += taxoff;
-            } else {
-              taxoffs[counter] = taxoff;
-            }
-          }
-        );
-      });
-      return taxoffs;
-    });
-  }
-
   getTaxoffsByYear(investment: Investment): number[] {
     return this.memoizer.mem('taxoffsByYear'+investment.id, () => {
       let taxoffs: number[] = [];
@@ -189,6 +322,7 @@ export class AggregationService {
           taxoffTotal += taxoffPerYear;
           this.datastore.getActualVersion().yearTo++;
         }
+        console.log('update year to: ' + this.datastore.getActualVersion().yearTo);
         this.datastore.updateVersionYearFromTo(this.datastore.getActualVersion().yearFrom, this.datastore.getActualVersion().yearTo);
       }
 
@@ -269,7 +403,6 @@ export class AggregationService {
     });
   }
 
-
   // Grants
   getGrants(): GrantGUI[] {
     return this.memoizer.mem('grants', () => {
@@ -317,9 +450,10 @@ export class AggregationService {
     });
   }
 
+
   private getTooltipLine(investment:Investment, amount:number, type:string):string {
     let tooltipline =
-    "<div class='row'>" +
+      "<div class='row'>" +
       "<div class='col-8'>"+investment.name + " ("+investment.projectNr+") ";
     if (type != "") {
       tooltipline += "("+type+")";
@@ -327,21 +461,7 @@ export class AggregationService {
     tooltipline +=
       "</div>"+
       "<div class='col-4 text-right'><b>" + this.money.transform(amount, 1000) + "</b></div>"+
-    "</div>";
+      "</div>";
     return tooltipline;
-  }
-
-  // Private shit
-  private load() {
-    this.investmentCategory = [
-      { name: 'Abschreibungen gemäss Investitionsplaung HRM 2', rate: 1.25, show: false},
-      { name: 'Abschreibungen gemäss Investitionsplaung HRM 2', rate: 2.5, show: false},
-      { name: 'Abschreibungen gemäss Investitionsplaung HRM 2', rate: 3, show: false},
-      { name: 'Abschreibungen gemäss Investitionsplaung HRM 2', rate: 4, show: false},
-      { name: 'Abschreibungen gemäss Investitionsplaung HRM 2', rate: 5, show: false},
-      { name: 'Abschreibungen gemäss Investitionsplaung HRM 2', rate: 6.67, show: false},
-      { name: 'Abschreibungen gemäss Investitionsplaung HRM 2', rate: 10, show: false},
-      { name: 'Abschreibungen gemäss Investitionsplaung HRM 2', rate: 20, show: false}
-    ];
   }
 }

@@ -1,0 +1,24 @@
+<div id="index" class="modal m-1 p-1 visible" tabindex="-1" role="dialog" aria-labelledby="indexModalLabel">
+  <div class="modal-dialog modal-dialog-centered modal-xl" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="indexModalLabel">Verfügbare Liquidität</h5>
+      </div>
+      <div class="modal-body pb-0">
+        <div style="display: block">
+          <canvas baseChart
+                  [datasets]="chartData"
+                  [labels]="chartLabels"
+                  [options]="chartOptions"
+                  [legend]="chartLegend"
+                  [chartType]="lineChartType">
+          </canvas>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn auxbutton btn-sm" (click)="close()">schliessen</button>
+      </div>
+    </div>
+  </div>
+</div>
+

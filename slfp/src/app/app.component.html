@@ -74,8 +74,12 @@
     </div>
   </div>
 
-  <app-maintable></app-maintable>
+  <app-maintable *ngIf="isVersionInitialized()"></app-maintable>
 
-  <app-index (closed)="onClosedIndex()" [open]="showIndex"></app-index>
+  <app-index (closed)="onClosedIndex()" *ngIf="showIndex"></app-index>
+
+  <app-customspecial (closed)="onClosedCustomspecial()" *ngIf="showCustomspecial"></app-customspecial>
+
+  <app-license *ngIf="showLicense" (closed)="onLicenseClose()"></app-license>
 
 </div>

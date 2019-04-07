@@ -16,19 +16,28 @@ export class AppComponent implements OnInit {
 
   actualZoom:string = '100%';
   actualZoomNumber:number = 100;
+  hasLicense:boolean = false;
+  showLicense:boolean = false;
 
   showIndex:boolean;
+  showCustomspecial:boolean;
 
   constructor(private datastore:DatastoreService, private exportToExcel:ExportToExcelService, private ngZone:NgZone) {}
 
   ngOnInit() {
     this.showIndex = false;
+    this.showCustomspecial = false;
 
     // Menubefehle
     ipcRenderer.on('export-excel', (event, arg) => this.exportToExcel.export(arg));
     ipcRenderer.on('indextable', () => {
       this.ngZone.run(() => {
         this.showIndex = true
+      });
+    });
+    ipcRenderer.on('customspecial', () => {
+      this.ngZone.run(() => {
+        this.showCustomspecial = true
       });
     });
 
@@ -48,10 +57,40 @@ export class AppComponent implements OnInit {
       }
     });
     this.datastore.enableTooltips();
+    this.checkLicense();
+  }
+
+  checkLicense():void {
+    storage.has('license', (error, has) => {
+      if (error) throw error;
+      if (has) {
+        storage.get('license', (error, license) => {
+          this.ngZone.run(() => {
+            if (error) throw error;
+            else if (license) {
+              if (license.key === 'AUX01-8512-5612-7800-XA98') {
+                this.hasLicense = true;
+              } else {
+                this.showLicense = true;
+              }
+            } else {
+              this.showLicense = true;
+            }
+          });
+        });
+      } else {
+        this.showLicense = true;
+      }
+    });
+  }
+
+  onLicenseClose():void {
+    this.hasLicense = true;
+    this.showLicense = false;
   }
 
   isVersionInitialized():boolean {
-    return this.datastore.isVersionInitialized();
+    return this.hasLicense && this.datastore.isVersionInitialized();
   }
 
   zoomIn():void {
@@ -78,5 +117,7 @@ export class AppComponent implements OnInit {
     this.showIndex = false;
   }
 
-
+  onClosedCustomspecial() {
+    this.showCustomspecial = false;
+  }
 }

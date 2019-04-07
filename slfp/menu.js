@@ -81,6 +81,12 @@ const {ipcMain, dialog} = require('electron');
           click () {
             mainWindow.webContents.send('indextable');
           }
+        },
+        {
+          label: 'Spezialfinanzierungen',
+          click () {
+            mainWindow.webContents.send('customspecial');
+          }
         }
       ]
     },

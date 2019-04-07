@@ -1,7 +1,7 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {Version} from "../../data/model/version";
 import {DatastoreService} from "../../data/datastore.service";
-import {AggregationService} from "../../maintable/aggregation/aggregation.service";
+import {InvestmentCategories} from "../../maintable/investmentcategories/investment-categories.service";
 declare var $:any;
 
 @Component({
@@ -14,7 +14,7 @@ export class RenameComponent implements OnInit {
   version: Version;
   _open: boolean;
   @Output() closed = new EventEmitter<void>();
-  constructor(private dataStore:DatastoreService, private aggregation:AggregationService) {
+  constructor(private dataStore:DatastoreService) {
     this.version = new Version();
   }
 

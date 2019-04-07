@@ -1,251 +1,261 @@
 <div *ngIf="dataStore.isVersionInitialized()" class="table-wrapper tablecont">
   <table id="maintable" class="table table-sm">
     <thead>
-      <!-- Jahr -->
-      <tr>
-        <th class="sticky-header" style="min-width: 410px">Jahr</th>
-        <th class="sticky-header" style="min-width: 120px">Bestände Planung</th>
-        <th class="text-center" style="min-width: 100px" *ngFor="let year of aggregation.getYears();trackBy:tracker">{{year}}</th>
-      </tr>
+    <!-- Jahr -->
+    <tr>
+      <th class="sticky-header" style="min-width: 410px">Jahr</th>
+      <th class="sticky-header" style="min-width: 120px">Bestände Planung</th>
+      <th class="text-center" style="min-width: 100px" *ngFor="let column of calculator.getDataColumns();trackBy:tracker">{{column.year}}</th>
+    </tr>
     </thead>
     <tbody>
-      <!-- Ordentliche Einnahmen -->
-      <tr>
-        <td class="sticky-col1">Steuervolumen</td>
-        <td class="sticky-col2">&#xa0;</td>
-        <td *ngFor="let inoutcome of dataStore.getInoutcomes();trackBy:tracker">
-          <inlineedit [value]="inoutcome.taxvolume" (valueChange)="changedTaxVolume($event, inoutcome)"></inlineedit>
-        </td>
-      </tr>
-      <tr>
-        <td class="sticky-col1">Steueranlage</td>
-        <td class="sticky-col2">&#xa0;</td>
-        <td *ngFor="let inoutcome of dataStore.getInoutcomes();trackBy:tracker">
-          <inlineedit [value]="inoutcome.taxrate" (valueChange)="changedTaxrate($event, inoutcome)" [inThousand]="false"></inlineedit>
-        </td>
-      </tr>
-      <tr>
-        <td class="sticky-col1">Steuereinkommen</td>
-        <td class="sticky-col2">&#xa0;</td>
-        <td *ngFor="let inoutcome of dataStore.getInoutcomes();trackBy:tracker">
-          <inlineedit [value]="inoutcome.income" (valueChange)="changedIncome($event, inoutcome)"></inlineedit>
-        </td>
-      </tr>
-      <tr>
-        <td class="sticky-col1">Übrige Erträge</td>
-        <td class="sticky-col2">&#xa0;</td>
-        <td *ngFor="let inoutcome of dataStore.getInoutcomes();trackBy:tracker">
-          <inlineedit [value]="inoutcome.additionalIncome" (valueChange)="changedAddIncome($event, inoutcome)"></inlineedit>
-        </td>
-      </tr>
-      <!-- Ordentliche Ausgaben -->
-      <tr>
-        <td class="sticky-col1">Betriebsaufwände</td>
-        <td class="sticky-col2">&#xa0;</td>
-        <td *ngFor="let inoutcome of dataStore.getInoutcomes();trackBy:tracker">
-          <inlineedit [value]="inoutcome.outcome" (valueChange)="changedOutcome($event, inoutcome)"></inlineedit>
-        </td>
-      </tr>
-      <tr>
-        <td class="sticky-col1">Übrige Aufwände</td>
-        <td class="sticky-col2">&#xa0;</td>
-        <td *ngFor="let inoutcome of dataStore.getInoutcomes();trackBy:tracker">
-          <inlineedit [value]="inoutcome.additionalOutcome" (valueChange)="changedAddOutcome($event, inoutcome)"></inlineedit>
-        </td>
-      </tr>
-      <!-- Balance -->
-      <tr class="balance">
-        <th class="sticky-col1">Überschuss/Fehlbetrag aus laufender Rechnung</th>
-        <td class="sticky-col2">&#xa0;</td>
-        <td class="text-right" [ngClass]="{'negative-value': balance.value<0}" *ngFor="let balance of sumcalculator.getBalanceAfterOutcome();trackBy:tracker">{{balance.value | money }}</td>
-      </tr>
-      <!-- Flüssige Mittel aus Vorjahr -->
-      <tr>
-        <td class="sticky-col1">Bestand flüssige Mittel aus ende Vorjahr (31.12.XXXX)</td>
-        <td class="sticky-col2">&#xa0;</td>
-        <td class="text-right table-info" data-toggle="popover" data-trigger="hover" data-placement="top" attr.data-content="Übertragen sie hier ihren Saldo Liquiditätsbestand per 31.12.{{aggregation.yearFrom-1}}">
+    <!-- Ordentliche Einnahmen -->
+    <tr>
+      <td class="sticky-col1">Steuervolumen</td>
+      <td class="sticky-col2">&#xa0;</td>
+      <td *ngFor="let inoutcome of dataStore.getInoutcomes();trackBy:tracker">
+        <inlineedit [value]="inoutcome.taxvolume" (valueChange)="changedTaxVolume($event, inoutcome)"></inlineedit>
+      </td>
+    </tr>
+    <tr>
+      <td class="sticky-col1">Steueranlage</td>
+      <td class="sticky-col2">&#xa0;</td>
+      <td *ngFor="let inoutcome of dataStore.getInoutcomes();trackBy:tracker">
+        <inlineedit [value]="inoutcome.taxrate" (valueChange)="changedTaxrate($event, inoutcome)" [inThousand]="false"></inlineedit>
+      </td>
+    </tr>
+    <tr>
+      <td class="sticky-col1">Steuereinkommen</td>
+      <td class="sticky-col2">&#xa0;</td>
+      <td *ngFor="let inoutcome of dataStore.getInoutcomes();trackBy:tracker">
+        <inlineedit [value]="inoutcome.income" (valueChange)="changedIncome($event, inoutcome)"></inlineedit>
+      </td>
+    </tr>
+    <tr>
+      <td class="sticky-col1">Übrige Erträge</td>
+      <td class="sticky-col2">&#xa0;</td>
+      <td *ngFor="let inoutcome of dataStore.getInoutcomes();trackBy:tracker">
+        <inlineedit [value]="inoutcome.additionalIncome" (valueChange)="changedAddIncome($event, inoutcome)"></inlineedit>
+      </td>
+    </tr>
+    <!-- Ordentliche Ausgaben -->
+    <tr>
+      <td class="sticky-col1">Betriebsaufwände</td>
+      <td class="sticky-col2">&#xa0;</td>
+      <td *ngFor="let inoutcome of dataStore.getInoutcomes();trackBy:tracker">
+        <inlineedit [value]="inoutcome.outcome" (valueChange)="changedOutcome($event, inoutcome)"></inlineedit>
+      </td>
+    </tr>
+    <tr>
+      <td class="sticky-col1">Übrige Aufwände</td>
+      <td class="sticky-col2">&#xa0;</td>
+      <td *ngFor="let inoutcome of dataStore.getInoutcomes();trackBy:tracker">
+        <inlineedit [value]="inoutcome.additionalOutcome" (valueChange)="changedAddOutcome($event, inoutcome)"></inlineedit>
+      </td>
+    </tr>
+    <!-- Balance -->
+    <tr class="balance">
+      <th class="sticky-col1">Überschuss/Fehlbetrag aus laufender Rechnung</th>
+      <td class="sticky-col2">&#xa0;</td>
+      <td class="text-right" [ngClass]="{'negative-value': balance.value<0}" *ngFor="let balance of calculator.balanceAfterOutcome;trackBy:tracker">{{balance.value | money }}</td>
+    </tr>
+    <!-- Flüssige Mittel aus Vorjahr -->
+    <tr>
+      <td class="sticky-col1">Bestand flüssige Mittel aus ende Vorjahr (31.12.XXXX)</td>
+      <td class="sticky-col2">&#xa0;</td>
+      <ng-container *ngFor="let column of calculator.getDataColumns();trackBy:tracker;let idx = index">
+        <td *ngIf="idx == 0" class="text-right table-info" data-toggle="popover" data-trigger="hover" data-placement="top" attr.data-content="Übertragen sie hier ihren Saldo Liquiditätsbestand per 31.12.{{dataStore.getActualVersion().yearFrom-1}}">
           <inlineedit [(value)]="dataStore.getLiquidityStart().liquidity"></inlineedit>
         </td>
-        <td class="text-right" [ngClass]="{'negative-value': liquidity<0}" *ngFor="let liquidity of sumcalculator.getLiquidityOfLastYear();trackBy:tracker">{{liquidity | money}}</td>
-      </tr>
-      <!-- Fremdkapital -->
+        <td *ngIf="idx != 0" class="text-right" [ngClass]="{'negative-value': liquidity<0}">{{column.liquidityOfLastYear | money}}</td>
+      </ng-container>
+    </tr>
+    <!-- Fremdkapital -->
+    <tr>
+      <td class="sticky-col1">Aufnahme / Rückzahlung Fremdkapital<span style="position: absolute;right: 0px; color: red">{{getForeignOK()}}</span></td>
+      <td class="sticky-col2" data-toggle="popover" data-trigger="hover" data-placement="top" attr.data-content="Übertragen sie hier ihr Total an Fremdkapital per 31.12.{{dataStore.getActualVersion().yearFrom-1}}">
+        <inlineedit [(value)]="calculator.getForeignContainer().foreignValue"></inlineedit>
+      </td>
+      <td class="text-right" *ngFor="let payback of calculator.getForeignContainer().foreignPayback">
+        <inlineedit [value]="payback.payback" (valueChange)="editPayback($event, payback)"></inlineedit>
+      </td>
+    </tr>
+
+    <!-- Total Liq vor Abschreibung -->
+    <tr class="balance">
+      <th class="sticky-col1">Total Liquiditätsbestand vor Abschreibungen</th>
+      <td class="sticky-col2">&#xa0;</td>
+      <td class="text-right" [ngClass]="{'negative-value': balance.value<0}" *ngFor="let balance of calculator.balanceBeforeWriteoff;trackBy:tracker">{{balance.value | money}}</td>
+    </tr>
+
+    <!-- Investitionen Abschreibungen -->
+    <tr class="table-secondary">
+      <th class="sticky-col1">Investitionen und Abschreibungen</th>
+      <td class="sticky-col2">
+        <button type="button" class="btn btn-secondary btn-sm new-button" (click)="newInvestment()"
+                data-toggle="popover" data-trigger="hover" data-placement="top" data-content="neue Investition erfassen">+</button>
+      </td>
+      <td class="text-right" *ngFor="let inoutcome of dataStore.getInoutcomes();trackBy:tracker"></td>
+    </tr>
+
+    <ng-container *ngFor="let investmentCategory of investmentCategories.getInvestmentCategories();trackBy:tracker;let idxCat = index">
       <tr>
-        <td class="sticky-col1">Aufnahme / Rückzahlung Fremdkapital<span style="position: absolute;right: 0px; color: red">{{getForeignOK()}}</span></td>
-        <td class="sticky-col2" data-toggle="popover" data-trigger="hover" data-placement="top" attr.data-content="Übertragen sie hier ihr Total an Fremdkapital per 31.12.{{aggregation.yearFrom-1}}">
-          <inlineedit [(value)]="aggregation.getForeignContainer().foreignValue"></inlineedit>
-        </td>
-        <td class="text-right" *ngFor="let payback of aggregation.getForeignContainer().foreignPayback">
-          <inlineedit [value]="payback.payback" (valueChange)="editPayback($event, payback)"></inlineedit>
-        </td>
-      </tr>
-
-      <!-- Total Liq vor Abschreibung -->
-      <tr class="balance">
-        <th class="sticky-col1">Total Liquiditätsbestand vor Abschreibungen</th>
-        <td class="sticky-col2">&#xa0;</td>
-        <td class="text-right" [ngClass]="{'negative-value': balance.value<0}" *ngFor="let balance of sumcalculator.getBalanceBeforeWriteoff();trackBy:tracker">{{balance.value | money}}</td>
-      </tr>
-
-      <!-- Investitionen Abschreibungen -->
-      <tr class="table-secondary">
-        <th class="sticky-col1">Investitionen und Abschreibungen</th>
-        <td class="sticky-col2">
-          <button type="button" class="btn btn-secondary btn-sm new-button" (click)="newInvestment()"
-                  data-toggle="popover" data-trigger="hover" data-placement="top" data-content="neue Investition erfassen">+</button>
-        </td>
-        <td class="text-right" *ngFor="let inoutcome of dataStore.getInoutcomes();trackBy:tracker"></td>
-      </tr>
-
-      <ng-container *ngFor="let investmentCategory of aggregation.getInvestmentCategories();trackBy:tracker">
-        <tr>
-          <td class="sticky-col1" (click)="toggleInvestmentCategory(investmentCategory)">
-            <div class="row">
-              <div class="col-11">
-                <ng-container *ngIf='aggregation.hasInvestmentsByRate(investmentCategory.rate); else elseBlock'>
+        <td class="sticky-col1" (click)="toggleInvestmentCategory(investmentCategory)">
+          <div class="row">
+            <div class="col-11">
+              <ng-container *ngIf='investmentCategory.investments.length > 0; else elseBlock'>
                   <span>
                     <span *ngIf="!investmentCategory.show" style="width: 12px">&#x2BC8;</span>
                     <span *ngIf="investmentCategory.show" style="width: 12px">&#x2BC6;</span>
                   </span>
-                  <span style="margin-left: 10px">{{investmentCategory.name}}
-                    <span class="text-right" style="right: -20px;position: absolute">
+                <span style="margin-left: 10px">{{investmentCategory.name}}
+                  <span class="text-right" style="right: -20px;position: absolute">
                       <b>{{investmentCategory.rate}}%</b>
                     </span>
                   </span>
-                </ng-container>
-                <ng-template #elseBlock>
+              </ng-container>
+              <ng-template #elseBlock>
                   <span class="investment-inactive">
                     <span style="width: 12px">&#x2BC8;</span>
                   </span>
-                  <span class="investment-inactive" style="margin-left: 10px">{{investmentCategory.name}}
-                    <span class="text-right" style="right: -20px;position: absolute">
+                <span class="investment-inactive" style="margin-left: 10px">{{investmentCategory.name}}
+                  <span class="text-right" style="right: -20px;position: absolute">
                       <b>{{investmentCategory.rate}}%</b>
                     </span>
                   </span>
-                </ng-template>
-              </div>
-            </div>
-          </td>
-          <td class="sticky-col2">&#xa0;</td>
-          <td class="text-right" *ngFor="let taxoff of aggregation.getTaxoffsByCategory(investmentCategory)">{{taxoff | money}}</td>
-        </tr>
-        <ng-container *ngIf="investmentCategory.show">
-          <tr *ngFor="let investment of aggregation.getInvestmentsByRate(investmentCategory.rate)">
-            <td class="sticky-col1"><span style="margin-left: 25px">{{investment.name}}    (Projekt-Nr: {{investment.projectNr}})</span></td>
-            <td class="sticky-col2">
-              <button type="button" class="btn btn-secondary btn-sm edit-button" (click)="editInvestment(investment)"
-                      data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Investition bearbeiten">&#x270E;</button>
-            </td>
-            <td class="text-right" *ngFor="let taxoff of aggregation.getTaxoffsByYear(investment)">{{taxoff | money}}</td>
-          </tr>
-        </ng-container>
-      </ng-container>
-
-      <!-- Abschreibungen HRM 1-->
-      <tr>
-        <td class="sticky-col1">
-          <div class="row">
-            <div class="col-8" style="padding-right: 0">
-              <i>HRM1 Verwaltungsvermögen per 31.12.2017</i>
-            </div>
-            <div class="col-1" style="padding: 0;">
-              <inlineedit [value]="dataStore.getInvestmentHRM1Container().yearCount" (valueChange)="changedHRM1Years($event)" [inThousand]="false" class="hrm1years"></inlineedit>
-            </div>
-            <div class="col-3" style="padding-left: 5px">
-              <span class="ml-1">Jahre  =</span>
-              <span class="text-right" style="right: 16px;position: absolute">
-                <b>{{dataStore.getInvestmentHRM1Container().rate | number:'0.0-2'}}%</b>
-              </span>
+              </ng-template>
             </div>
           </div>
         </td>
-        <td class="sticky-col2" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Übertragen sie hier ihr Total an Investitionen nach HRM1 per 31.12.2017">
-          <inlineedit [(value)]="dataStore.getInvestmentHRM1Container().value"></inlineedit>
-        </td>
-        <td class="text-right" *ngFor="let taxoff of aggregation.getTaxoffsHRM1ByYear();trackBy:tracker">{{taxoff | money}}</td>
-      </tr>
-
-
-      <!--zusätzliche Abschreibungen nach HRM2 (finanzpolitische Reserve)-->
-      <tr>
-        <td class="sticky-col1">Wertberichtigung Abschreibungen (auch finanzpolitische Reserve)</td>
         <td class="sticky-col2">&#xa0;</td>
-        <td *ngFor="let addTaxoff of dataStore.getAdditionalTaxoffs();trackBy:tracker">
-          <inlineedit [(value)]="addTaxoff.taxoff"></inlineedit>
-        </td>
+        <td class="text-right" *ngFor="let column of calculator.getDataColumns();trackBy:tracker">{{column.taxoffForRate[idxCat].taxoffTotal | money}}</td>
       </tr>
+      <ng-container *ngIf="investmentCategory.show">
+        <tr *ngFor="let investment of calculator.getInvestmentsByRate(investmentCategory.rate)">
+          <td class="sticky-col1"><span style="margin-left: 25px">{{investment.name}}    (Projekt-Nr: {{investment.projectNr}})</span></td>
+          <td class="sticky-col2">
+            <button type="button" class="btn btn-secondary btn-sm edit-button" (click)="editInvestment(investment)"
+                    data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Investition bearbeiten">&#x270E;</button>
+          </td>
+          <td class="text-right" *ngFor="let taxoff of calculator.getTaxoffsByYear(investment)">{{taxoff | money}}</td>
+        </tr>
+      </ng-container>
+    </ng-container>
 
-      <!-- Total Abschreibung -->
-      <tr class="balance">
-        <th class="sticky-col1">Total Abschreibungen pro Jahr</th>
-        <td class="sticky-col2">&#xa0;</td>
-        <td class="text-right" *ngFor="let taxoff of aggregation.getTaxoffsTotal();trackBy:tracker">{{taxoff | money}}</td>
-      </tr>
-
-      <!-- Total Deinvestitionen -->
-      <tr class="balance">
-        <th class="sticky-col1">Total Deinvestitionen pro Jahr</th>
-        <td class="sticky-col2">&#xa0;</td>
-        <td class="text-right" *ngFor="let deinvestment of aggregation.getDeinvestmentsTotal();trackBy:tracker"
-            (mouseenter)="mouseEnterTT($event, deinvestment.tooltip, 'Deinvestitionen Jahr ' + deinvestment.year)"
-            (mouseleave)="mouseLeaveTT()"
-            (mouseout)="mouseLeaveTT()">{{deinvestment.investmentTotal | money}}</td>
-      </tr>
-
-      <!-- Total Liquiditätszufluss -Abfluss aus Rechnung (Cash flow) -->
-      <tr class="balance">
-        <th class="sticky-col1">Total Liquiditätszufluss -Abfluss aus Rechnung (Cash flow)</th>
-        <td class="sticky-col2">&#xa0;</td>
-        <td class="text-right" [ngClass]="{'negative-value': balance.value<0}" *ngFor="let balance of sumcalculator.getCashflowAfterWriteoff();trackBy:tracker">{{balance.value | money}}</td>
-      </tr>
-
-      <!-- Total Ausgaben Investitionen (Liquiditätsabfluss) -->
-      <tr class="balance">
-        <th class="sticky-col1">Total Ausgaben Investitionen (Liquiditätsabfluss)</th>
-        <td class="sticky-col2">&#xa0;</td>
-        <td class="text-right" [ngClass]="{'negative-value': investment<0}" *ngFor="let investment of aggregation.getInvestmentsTotal();trackBy:tracker"
-            (mouseenter)="mouseEnterTT($event, investment.tooltip, 'Investitionen Jahr ' + investment.year)"
-            (mouseleave)="mouseLeaveTT()"
-            (mouseout)="mouseLeaveTT()">{{investment.investmentTotal | money}}</td>
-      </tr>
-
-      <!-- Subventionen -->
-      <tr class>
-        <th class="sticky-col1">Subventionen</th>
-        <td class="sticky-col2">&#xa0;</td>
-        <td class="text-right" *ngFor="let grant of aggregation.getGrants()"
-            (mouseenter)="mouseEnterTT($event, grant.tooltip, 'Subventionen Jahr ' + grant.year)"
-            (mouseleave)="mouseLeaveTT()"
-            (mouseout)="mouseLeaveTT()">{{grant.grantTotal | money}}</td>
-      </tr>
-
-      <!-- Liquiditätsbestand Total Ende Jahr -->
-      <tr class="balance">
-        <th class="sticky-col1">Liquiditätsbestand Total Ende Jahr</th>
-        <td class="sticky-col2">&#xa0;</td>
-        <th class="text-right" [ngClass]="{'negative-value': balance.value<0, 'positive-value': balance.value>=0}" *ngFor="let balance of sumcalculator.getBalanceAfterInvestments();trackBy:tracker">{{balance.value | money}}</th>
-      </tr>
+    <!-- Abschreibungen HRM 1-->
+    <tr>
+      <td class="sticky-col1">
+        <div class="row">
+          <div class="col-8" style="padding-right: 0">
+            <i>HRM1 Verwaltungsvermögen per 31.12.2017</i>
+          </div>
+          <div class="col-1" style="padding: 0;">
+            <inlineedit [value]="dataStore.getInvestmentHRM1Container().yearCount" (valueChange)="changedHRM1Years($event)" [inThousand]="false" class="hrm1years"></inlineedit>
+          </div>
+          <div class="col-3" style="padding-left: 5px">
+            <span class="ml-1">Jahre  =</span>
+            <span class="text-right" style="right: 16px;position: absolute">
+                <b>{{dataStore.getInvestmentHRM1Container().rate | number:'0.0-2'}}%</b>
+              </span>
+          </div>
+        </div>
+      </td>
+      <td class="sticky-col2" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Übertragen sie hier ihr Total an Investitionen nach HRM1 per 31.12.2017">
+        <inlineedit [(value)]="dataStore.getInvestmentHRM1Container().value"></inlineedit>
+      </td>
+      <td class="text-right" *ngFor="let taxoff of calculator.getTaxoffsHRM1ByYear();trackBy:tracker">{{taxoff | money}}</td>
+    </tr>
 
 
-      <!--Abzüglich zweckgebundene Reserve (finanzpolitische Reserve-->
-      <tr>
-        <td class="sticky-col1">Abzüglich zweckgebundene Reserve (finanzpolitische Reserve)</td>
-        <td class="sticky-col2">&#xa0;</td>
-        <td *ngFor="let reserve of dataStore.getReserves();trackBy:tracker">
-          <inlineedit [(value)]="reserve.reserve"></inlineedit>
-        </td>
-      </tr>
+    <!--zusätzliche Abschreibungen nach HRM2 (finanzpolitische Reserve)-->
+    <tr>
+      <td class="sticky-col1">Wertberichtigung Abschreibungen (auch finanzpolitische Reserve)</td>
+      <td class="sticky-col2">&#xa0;</td>
+      <td *ngFor="let addTaxoff of dataStore.getAdditionalTaxoffs();trackBy:tracker">
+        <inlineedit [(value)]="addTaxoff.taxoff"></inlineedit>
+      </td>
+    </tr>
 
-      <!-- Verfügbare Liquidität -->
-      <tr class="balance">
-        <th class="sticky-col1">Verfügbare Liquidität</th>
-        <td class="sticky-col2">&#xa0;</td>
-        <th class="text-right" [ngClass]="{'negative-value': balance.value<0, 'positive-value': balance.value>=0}" *ngFor="let balance of sumcalculator.getBalanceAfterReserves();trackBy:tracker">{{balance.value | money}}</th>
-      </tr>
+    <!-- Total Abschreibung -->
+    <tr class="balance">
+      <th class="sticky-col1">Total Abschreibungen pro Jahr</th>
+      <td class="sticky-col2">&#xa0;</td>
+      <td class="text-right" *ngFor="let taxoff of calculator.getTaxoffsTotal();trackBy:tracker">{{taxoff | money}}</td>
+    </tr>
+
+    <!-- Total Deinvestitionen -->
+    <tr class="balance">
+      <th class="sticky-col1">Total Deinvestitionen pro Jahr</th>
+      <td class="sticky-col2">&#xa0;</td>
+      <td class="text-right" *ngFor="let deinvestment of calculator.getDeinvestmentsTotal();trackBy:tracker"
+          (mouseenter)="mouseEnterTT($event, deinvestment.tooltip, 'Deinvestitionen Jahr ' + deinvestment.year)"
+          (mouseleave)="mouseLeaveTT()"
+          (mouseout)="mouseLeaveTT()">{{deinvestment.investmentTotal | money}}</td>
+    </tr>
+
+    <!-- Total Liquiditätszufluss -Abfluss aus Rechnung (Cash flow) -->
+    <tr class="balance">
+      <th class="sticky-col1">Total Liquiditätszufluss -Abfluss aus Rechnung (Cash flow)</th>
+      <td class="sticky-col2">&#xa0;</td>
+      <td class="text-right" [ngClass]="{'negative-value': balance.value<0}" *ngFor="let balance of calculator.cashFlowAfterWriteoff;trackBy:tracker">{{balance.value | money}}</td>
+    </tr>
+
+    <!-- Total Ausgaben Investitionen (Liquiditätsabfluss) -->
+    <tr class="balance">
+      <th class="sticky-col1">Total Ausgaben Investitionen (Liquiditätsabfluss)</th>
+      <td class="sticky-col2">&#xa0;</td>
+      <td class="text-right" [ngClass]="{'negative-value': investment<0}" *ngFor="let investment of calculator.getInvestmentsTotal();trackBy:tracker"
+          (mouseenter)="mouseEnterTT($event, investment.tooltip, 'Investitionen Jahr ' + investment.year)"
+          (mouseleave)="mouseLeaveTT()"
+          (mouseout)="mouseLeaveTT()">{{investment.investmentTotal | money}}</td>
+    </tr>
+
+    <!-- Subventionen -->
+    <tr class>
+      <th class="sticky-col1">Subventionen</th>
+      <td class="sticky-col2">&#xa0;</td>
+      <td class="text-right" *ngFor="let grant of calculator.getGrants()"
+          (mouseenter)="mouseEnterTT($event, grant.tooltip, 'Subventionen Jahr ' + grant.year)"
+          (mouseleave)="mouseLeaveTT()"
+          (mouseout)="mouseLeaveTT()">{{grant.grantTotal | money}}</td>
+    </tr>
+
+    <!-- Liquiditätsbestand Total Ende Jahr -->
+    <tr class="balance">
+      <th class="sticky-col1">Liquiditätsbestand Total Ende Jahr</th>
+      <td class="sticky-col2">&#xa0;</td>
+      <th class="text-right" [ngClass]="{'negative-value': balance.value<0, 'positive-value': balance.value>=0}" *ngFor="let balance of calculator.balanceAfterInvestments;trackBy:tracker">{{balance.value | money}}</th>
+    </tr>
+
+
+    <!--Abzüglich zweckgebundene Reserve (finanzpolitische Reserve-->
+    <tr>
+      <td class="sticky-col1">Abzüglich zweckgebundene Reserve (finanzpolitische Reserve)</td>
+      <td class="sticky-col2">&#xa0;</td>
+      <td *ngFor="let reserve of dataStore.getReserves();trackBy:tracker">
+        <inlineedit [(value)]="reserve.reserve"></inlineedit>
+      </td>
+    </tr>
+
+    <!-- Verfügbare Liquidität -->
+    <tr class="balance">
+      <th class="sticky-col1">Verfügbare Liquidität</th>
+      <td class="sticky-col2">
+        <button type="button" class="btn btn-secondary btn-sm edit-button" (click)="openChart()"
+                data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Grafik anzeigen">
+          <img src="assets/img/line-chart.svg" width="15" height="15" >
+
+        </button>
+      </td>
+      <th class="text-right" [ngClass]="{'negative-value': balance.value<0, 'positive-value': balance.value>=0}" *ngFor="let balance of calculator.balanceAfterReserves;trackBy:tracker">{{balance.value | money}}</th>
+    </tr>
 
     </tbody>
   </table>
 
   <app-investment (closed)="onClosed()" [open]="showInvestment" [investment]="selectedInvestment"></app-investment>
+
+  <app-chart *ngIf="showChart" (closed)="onCloseChart()"></app-chart>
 
 
   <div class="customalert floatalert alert alert-danger">

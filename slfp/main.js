@@ -5,36 +5,11 @@ const electron = require('electron');
 
 let win;
 let saveTimeout = null;
+let splash;
 
 function startApp () {
-
-  // create splash-Window
-  splash = new BrowserWindow({
-    width: 640,
-    height: 226,
-    transparent: true,
-    frame: false,
-    alwaysOnTop: true,
-    resizable: false
-  });
-  splash.loadURL(`file://${__dirname}/splash.html`);
-
-  // Load preferences to get coordinates of last session
-  storage.has('preferences', (error, has) => {
-    if (error) console.log(error);
-    if (has) {
-      storage.get('preferences', (error, preferences) => {
-        if (error) {
-          console.log(error);
-        } else if (preferences) {
-          openMainWindow(preferences.width, preferences.height, preferences.x, preferences.y, preferences.maximized);
-        }
-      });
-    } else {
-      let size = electron.screen.getPrimaryDisplay().workAreaSize;
-      openMainWindow(size.width, size.height);
-    }
-  });
+  startupSplash();
+  openMain();
 }
 
 // Create window on electron intialization
@@ -49,12 +24,35 @@ app.on('window-all-closed', function () {
   }
 });
 
-// app.on('activate', function () {
-//   // macOS specific close process
-//   if (win === null) {
-//     startApp()
-//   }
-// });
+function startupSplash() {
+  splash = new BrowserWindow({
+    width: 640,
+    height: 226,
+    transparent: true,
+    frame: false,
+    alwaysOnTop: true,
+    resizable: false
+  });
+  splash.loadURL(`file://${__dirname}/splash.html`);
+}
+
+function openMain() {
+  // Load preferences to get coordinates of last session
+  storage.has('preferences', (error, has) => {
+    if (error) console.log(error);
+    if (has) {
+      storage.get('preferences', (error, preferences) => {
+        if (error) console.log(error);
+        else if (preferences) {
+          openMainWindow(preferences.width, preferences.height, preferences.x, preferences.y, preferences.maximized);
+        }
+      });
+    } else {
+      let size = electron.screen.getPrimaryDisplay().workAreaSize;
+      openMainWindow(size.width, size.height);
+    }
+  });
+}
 
 function openMainWindow(width, height, x, y, maximized) {
 

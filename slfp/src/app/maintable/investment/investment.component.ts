@@ -3,13 +3,14 @@ import {DatastoreService} from "../../data/datastore.service";
 import {Category} from "../../data/model/category";
 import {Investment} from "../../data/model/investment";
 import {InvestmentYear} from "../../data/model/investmentYear";
-import {AggregationService} from "../aggregation/aggregation.service";
 import {GrantYear} from "../../data/model/grantYear";
 import {CommunicationService} from "../../communication/communication.service";
 import {MoneyPipe} from "../../utility/money.pipe";
 import {InvestmentService} from "./investment.service";
 import {IndexService} from "../../index/index.service";
-import {SumcalculatorService} from "../sumcalc/sumcalculator.service";
+import {CalculatorService} from "../calc/calculator.service";
+import {Special} from "../../customspecial/model/special";
+import {SpecialService} from "../../customspecial/special.service";
 declare var $:any;
 
 @Component({
@@ -23,17 +24,18 @@ export class InvestmentComponent implements OnInit {
   @Input()  open: boolean;
   @Output() closed = new EventEmitter<void>();
   selectedCategory: Category;
+  selectedSpecialID: number = 0;
 
   reinvestments:string[] = [];
   reinvestmentsActive:boolean = false;
 
   constructor(private dataStore: DatastoreService,
-              private aggregation:AggregationService,
               private communication:CommunicationService,
               private money:MoneyPipe,
               private investmentService:InvestmentService,
               private indexService:IndexService,
-              private sumcalculator:SumcalculatorService) { }
+              private calculator:CalculatorService,
+              private specialService:SpecialService) { }
 
   ngOnInit() {
     $('#investment').draggable({
@@ -46,6 +48,11 @@ export class InvestmentComponent implements OnInit {
     this._investment = investment;
     if (investment) {
       this.selectedCategory = this.dataStore.getCategories().find(category => category.id == this._investment.categoryId);
+      let selectedSpecial = this.specialService.getSpecials().find(special => special.id == this._investment.specialId);
+      if (selectedSpecial) {
+        this.selectedSpecialID = selectedSpecial.id;
+        console.log('special: ' + this.selectedSpecialID);
+      }
     }
     this.calculateReinvestments();
   }
@@ -107,9 +114,10 @@ export class InvestmentComponent implements OnInit {
 
   save(): void {
     this.updateCategory();
+    this.updateSpecial();
     this.dataStore.saveInvestment(this._investment);
     this.dataStore.save();
-    this.sumcalculator.calculateBalances();
+    this.calculator.calculateBalances();
     this.open = false;
     this.closed.emit();
   }
@@ -125,7 +133,7 @@ export class InvestmentComponent implements OnInit {
       callback: () => {
         this.dataStore.deleteInvestment(this._investment);
         this.dataStore.save();
-        this.sumcalculator.calculateBalances();
+        this.calculator.calculateBalances();
         this.open = false;
         this.closed.emit();
       }
@@ -134,6 +142,10 @@ export class InvestmentComponent implements OnInit {
 
   getCategories(): Category[] {
     return this.dataStore.getCategories();
+  }
+
+  getSpecials(): Special[] {
+    return this.specialService.getSpecials();
   }
 
   removeInvestmentYear(investmentYear: InvestmentYear): void {
@@ -212,6 +224,7 @@ export class InvestmentComponent implements OnInit {
 
   selectMoveOption(index:number):void {
     this._investment.investmentYears.forEach(investmentYear => investmentYear.year += index + 1);
+    this.calculateReinvestments();
   }
 
   selectReinvestmentCount(count:number):void {
@@ -247,6 +260,10 @@ export class InvestmentComponent implements OnInit {
       this._investment.rate = this.selectedCategory.rate;
       this._investment.categoryId = this.selectedCategory.id;
     }
+  }
+
+  private updateSpecial() {
+    this._investment.specialId = this.selectedSpecialID;
   }
 
 }

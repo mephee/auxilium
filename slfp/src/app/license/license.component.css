@@ -1,0 +1,20 @@
+.auxbutton {
+  color: white;
+  background-color: rgba(199,0,42,0.6);
+}
+
+.auxbutton:hover {
+  background-color: rgba(199,0,42,0.75);
+}
+
+.visible {
+  display: block;
+}
+
+.input {
+  min-width: 180px;
+}
+
+.backdrop {
+  background-color: #f5f5f5;
+}

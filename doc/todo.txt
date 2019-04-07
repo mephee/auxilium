@@ -1,9 +1,7 @@
 - enter auf ok-button
-- schützen durch lizenznummer
 - reinvestition sollte erst möglich sein, wenn Rate angegeben (-> Default-Rate?)
 
 - zusätzlicher excel-export -> alle Projekte mit name, investition, kategorie, projektnummer
-- bestehender excel-export erweitern um die jeweiligen projekte
 - Kataloge Updatemechanismus
 - Mehrplatz
 
@@ -11,12 +9,9 @@
     - verhaut mir das Layout manchmal:-(
 
 
-
-
 Neu per 12.02.19:
 - Fehler bei Excel-Generierung -> Daten per Mail
 - Spezialfinanzierung:
-	- Dropdown bei Projektnummer für Zuweisung
 	- Excel: weitere Zeilen für
 	- Ziel: finanzkennzahlen:
 		- selbstfinanzierungsanteil
@@ -25,16 +20,5 @@ Neu per 12.02.19:
 			https://www.jgk.be.ch/jgk/de/index/gemeinden/gemeinden/gemeindefinanzen/projekt_hrm2/Praxishilfen.html
 
 
-
 Konkurrenzanalyse:
 	- Digital Software
-
-
-
-
-Mail an Informatik Thun
-- Citrix-tauglich       xenApp 7.15
-- multi-user			für Testphase nicht vorgesehen
-- anleitung installer	FTP der Stadt Thun, Installer hochladen
-
-hotline@thun.ch  Herr Seher

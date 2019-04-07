@@ -2,8 +2,8 @@ import {Component, NgZone, OnInit} from '@angular/core';
 import {Version} from "../data/model/version";
 import {DatastoreService} from "../data/datastore.service";
 import {CommunicationService} from "../communication/communication.service";
-import {AggregationService} from "../maintable/aggregation/aggregation.service";
-import {SumcalculatorService} from "../maintable/sumcalc/sumcalculator.service";
+import {InvestmentCategories} from "../maintable/investmentcategories/investment-categories.service";
+import {CalculatorService} from "../maintable/calc/calculator.service";
 
 @Component({
   selector: 'app-versions',
@@ -18,14 +18,14 @@ export class VersionsComponent implements OnInit {
   constructor(private dataStore: DatastoreService,
               private communication:CommunicationService,
               private ngZone:NgZone,
-              private sumcalculator:SumcalculatorService) {
+              private calculator:CalculatorService) {
     this.communication.versionReady$.subscribe(
       value => {
         ngZone.run(()=> {
           if (!value) {
             this.addVersion();
           } else {
-            this.sumcalculator.calculateBalances();
+            this.calculator.calculateBalances();
             this.dataStore.setVersionInitialized();
           }
         });
@@ -39,7 +39,7 @@ export class VersionsComponent implements OnInit {
   setActualVersion(version:Version) {
     this.dataStore.setActualVersion(version);
     this.dataStore.save();
-    this.sumcalculator.calculateBalances();
+    this.calculator.calculateBalances();
     this.dataStore.setVersionInitialized();
   }
 

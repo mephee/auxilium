@@ -1,8 +1,8 @@
 import {Component, ElementRef, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {MoneyPipe} from "../../utility/money.pipe";
 import {DatastoreService} from "../../data/datastore.service";
-import {AggregationService} from "../aggregation/aggregation.service";
-import {SumcalculatorService} from "../sumcalc/sumcalculator.service";
+import {InvestmentCategories} from "../investmentcategories/investment-categories.service";
+import {CalculatorService} from "../calc/calculator.service";
 declare var $:any;
 
 @Component({
@@ -24,7 +24,7 @@ export class InlineeditComponent implements OnInit {
   constructor(private moneyPipe: MoneyPipe,
               private elementRef:ElementRef,
               private datastore:DatastoreService,
-              private sumcalculator:SumcalculatorService) {
+              private calculator:CalculatorService) {
   }
 
   @Input()
@@ -57,7 +57,7 @@ export class InlineeditComponent implements OnInit {
     // save on every change
     if (this.tableStyle) {
       this.datastore.save();
-      this.sumcalculator.calculateBalances();
+      this.calculator.calculateBalances();
     }
   }
 

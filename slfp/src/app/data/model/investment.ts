@@ -11,6 +11,7 @@ export class Investment {
   totalCorr: number;
   rate: number;
   categoryId: number;
+  specialId: number;
 
   grantFederal:number;
   grantCanton:number;
@@ -33,12 +34,13 @@ export class Investment {
     this.totalCorr = 0;
     this.rate = 0;
     this.categoryId = 0;
-    this.investmentYears = [new InvestmentYear()];
+    this.investmentYears = [];
     this.grantYearsFederal = [];
     this.grantYearsCanton = [];
     this.grantCanton = 0;
     this.grantFederal = 0;
     this.reinvestCount = 0;
     this.deinvestment = 0;
+    this.specialId = 0;
   }
 }

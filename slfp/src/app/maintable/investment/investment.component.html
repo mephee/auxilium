@@ -23,10 +23,10 @@
               <inlineedit [(value)]="_investment.total" [inThousand]="false" [tableStyle]="false"></inlineedit>
             </div>
             <div class="col-1"></div>
-            <label for="category" class="col-2 col-form-label">Anlagekategorie:</label>
+            <label for="special" class="col-2 col-form-label">Spezialfinanzierung:</label>
             <div class="col-4">
-              <select [(ngModel)]="selectedCategory" name="cat" class="form-control form-control-sm" id="category">
-                <option *ngFor="let category of getCategories()" [ngValue]="category" (click)="changeCategory(category)">{{category.name}} {{category.rate}}%</option>
+              <select [(ngModel)]="selectedSpecialID" name="spec" class="form-control form-control-sm" id="special">
+                <option *ngFor="let special of getSpecials()" [ngValue]="special.id">{{special.name}}</option>
               </select>
             </div>
           </div>
@@ -37,18 +37,24 @@
               <inlineedit [(value)]="_investment.totalCorr" [inThousand]="false" [tableStyle]="false"></inlineedit>
             </div>
             <div class="col-1"></div>
+            <label for="category" class="col-2 col-form-label">Anlagekategorie:</label>
+            <div class="col-4">
+              <select [(ngModel)]="selectedCategory" name="cat" class="form-control form-control-sm" id="category">
+                <option *ngFor="let category of getCategories()" [ngValue]="category">{{category.name}} {{category.rate}}%</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="row mb-2">
+            <label class="col-3 col-form-label">Deinvestition/Verkauf:</label>
+            <div class="col-2">
+              <inlineedit [(value)]="_investment.deinvestment" [inThousand]="false" [tableStyle]="false"></inlineedit>
+            </div>
+            <div class="col-1"></div>
             <label class="col-1 col-form-label">Jahre:</label>
             <label class="col-1 col-form-label">{{calcYears() | number:'0.0-2'}}</label>
             <label class="col-2 col-form-label">Abschr./Jahr:</label>
             <label class="col-1 col-form-label" style="margin-left: -50px">{{calcWriteoffPerYear() | money:1}}</label>
-          </div>
-
-          <div class="row mb-2">
-            <div class="col-6"></div>
-            <label class="col-2 col-form-label">Deinvestition/Verkauf:</label>
-            <div class="col-2">
-              <inlineedit [(value)]="_investment.deinvestment" [inThousand]="false" [tableStyle]="false"></inlineedit>
-            </div>
           </div>
 
           <div class="row mb-2 mt-5 border-top">
