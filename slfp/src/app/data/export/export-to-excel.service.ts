@@ -5,7 +5,7 @@ import {MoneyPipe} from "../../utility/money.pipe";
 import {Version} from "../model/version";
 import {CalculatorService} from "../../maintable/calc/calculator.service";
 import {ColumnGUI} from "../../maintable/calc/model/columnGUI";
-import {SpecialService} from "../../maintable/special/special.service";
+import {SpecialService} from "../../customspecial/special.service";
 
 declare var XLSX:any;
 declare var storage:any;

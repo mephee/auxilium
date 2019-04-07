@@ -19,6 +19,7 @@ import {ScrollingModule} from '@angular/cdk/scrolling';
 import { LicenseComponent } from './license/license.component';
 import {ChartsModule} from "ng2-charts";
 import { ChartComponent } from './maintable/chart/chart.component';
+import { CustomspecialComponent } from './customspecial/customspecial.component';
 
 @NgModule({
   declarations: [
@@ -34,6 +35,7 @@ import { ChartComponent } from './maintable/chart/chart.component';
     RenameComponent,
     LicenseComponent,
     ChartComponent,
+    CustomspecialComponent,
   ],
   imports: [
     BrowserModule,

@@ -14,7 +14,6 @@ export class ChartComponent implements OnInit {
   private data:number[];
   private labels:string[];
 
-
   public lineChartType = 'line';
   public chartLegend = false;
   public chartOptions;
@@ -24,9 +23,10 @@ export class ChartComponent implements OnInit {
   constructor(private calculator:CalculatorService,
               private money:MoneyPipe) {
     this.init();
-    this.chartData = [
-      {data: this.data}
-    ];
+    this.chartData = [{
+      data: this.data,
+      fill: false
+    }];
     this.chartLabels = this.labels;
     this.chartOptions = {
       scaleShowVerticalLines: false,

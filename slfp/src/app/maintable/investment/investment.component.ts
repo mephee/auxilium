@@ -9,8 +9,8 @@ import {MoneyPipe} from "../../utility/money.pipe";
 import {InvestmentService} from "./investment.service";
 import {IndexService} from "../../index/index.service";
 import {CalculatorService} from "../calc/calculator.service";
-import {Special} from "../special/model/special";
-import {SpecialService} from "../special/special.service";
+import {Special} from "../../customspecial/model/special";
+import {SpecialService} from "../../customspecial/special.service";
 declare var $:any;
 
 @Component({
@@ -24,7 +24,7 @@ export class InvestmentComponent implements OnInit {
   @Input()  open: boolean;
   @Output() closed = new EventEmitter<void>();
   selectedCategory: Category;
-  selectedSpecial: Special;
+  selectedSpecialID: number = 0;
 
   reinvestments:string[] = [];
   reinvestmentsActive:boolean = false;
@@ -48,7 +48,11 @@ export class InvestmentComponent implements OnInit {
     this._investment = investment;
     if (investment) {
       this.selectedCategory = this.dataStore.getCategories().find(category => category.id == this._investment.categoryId);
-      this.selectedSpecial = this.specialService.getSpecials().find(special => special.id == this._investment.specialId);
+      let selectedSpecial = this.specialService.getSpecials().find(special => special.id == this._investment.specialId);
+      if (selectedSpecial) {
+        this.selectedSpecialID = selectedSpecial.id;
+        console.log('special: ' + this.selectedSpecialID);
+      }
     }
     this.calculateReinvestments();
   }
@@ -259,9 +263,7 @@ export class InvestmentComponent implements OnInit {
   }
 
   private updateSpecial() {
-    if (this.selectedSpecial) {
-      this._investment.specialId = this.selectedSpecial.id;
-    }
+    this._investment.specialId = this.selectedSpecialID;
   }
 
 }

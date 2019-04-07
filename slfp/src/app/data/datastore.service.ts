@@ -13,6 +13,7 @@ import {AdditionalTaxoff} from "./model/additionalTaxoff";
 import {Reserve} from "./model/reserve";
 import {Index} from "./model";
 import {MigrationService} from "../migration/migration.service";
+import {Special} from "../customspecial/model/special";
 
 declare var storage:any;
 declare var fs:any;
@@ -25,6 +26,7 @@ export class DatastoreService {
 
   private categories: Category[];
   private indexes: Index[];
+  private customspecials: Special[];
   private actualVersion: Version;
   private versions: Version[];
   private versionInitialized:boolean = false;
@@ -33,9 +35,11 @@ export class DatastoreService {
   constructor(private ngZone:NgZone, private communication:CommunicationService, private migration:MigrationService) {
     this.categories = MOCK.categories.sort((a,b)=>a.name.localeCompare(b.name));
     this.versions = [];
+    this.customspecials = [];
 
     if (typeof storage !== 'undefined') {
       this.loadIndexes();
+      this.loadCustomspecials();
     } else {
       this.indexes = [];
       this.loadDefaultVersions();
@@ -89,6 +93,21 @@ export class DatastoreService {
         index.year = (new Date()).getFullYear();
         // this.indexes.push(index);
         this.loadVersions();
+      }
+    });
+  }
+
+  private loadCustomspecials() {
+    storage.has('specials', (error, has) => {
+      if (error) throw error;
+      if (has) {
+        storage.get('specials', (error, specials) => {
+          if (error) {
+            throw error;
+          } else if (specials) {
+            this.customspecials = specials;
+          }
+        });
       }
     });
   }
@@ -265,6 +284,10 @@ export class DatastoreService {
     return this.indexes;
   }
 
+  getCustomspecials(): Special[] {
+    return this.customspecials;
+  }
+
 
   /*
   Edits
@@ -301,6 +324,15 @@ export class DatastoreService {
     }
   }
 
+  saveCustomspecial(special:Special) {
+    let idx = this.customspecials.indexOf(special);
+    if (idx !== -1) {
+      this.customspecials[idx] = special;
+    } else {
+      this.customspecials.push(special);
+    }
+  }
+
   deleteIndex(index: Index) {
     let idx = this.indexes.indexOf(index);
     if (idx > -1) {
@@ -314,6 +346,10 @@ export class DatastoreService {
 
   saveIndexes():void {
     storage.set('indexes', this.indexes);
+  }
+
+  saveCustomspecials():void {
+    storage.set('specials', this.customspecials);
   }
 
   // saveAs(fileName:string):void {

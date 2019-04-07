@@ -20,17 +20,24 @@ export class AppComponent implements OnInit {
   showLicense:boolean = false;
 
   showIndex:boolean;
+  showCustomspecial:boolean;
 
   constructor(private datastore:DatastoreService, private exportToExcel:ExportToExcelService, private ngZone:NgZone) {}
 
   ngOnInit() {
     this.showIndex = false;
+    this.showCustomspecial = false;
 
     // Menubefehle
     ipcRenderer.on('export-excel', (event, arg) => this.exportToExcel.export(arg));
     ipcRenderer.on('indextable', () => {
       this.ngZone.run(() => {
         this.showIndex = true
+      });
+    });
+    ipcRenderer.on('customspecial', () => {
+      this.ngZone.run(() => {
+        this.showCustomspecial = true
       });
     });
 
@@ -108,6 +115,10 @@ export class AppComponent implements OnInit {
 
   onClosedIndex() {
     this.showIndex = false;
+  }
+
+  onClosedCustomspecial() {
+    this.showCustomspecial = false;
   }
 
 

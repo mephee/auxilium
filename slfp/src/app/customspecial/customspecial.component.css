@@ -1,0 +1,18 @@
+.auxbutton {
+  color: white;
+  background-color: rgba(199,0,42,0.6);
+}
+
+.auxbutton:hover {
+  background-color: rgba(199,0,42,0.75);
+}
+
+.visible {
+  display: block;
+}
+
+.scrollpane {
+  height: 250px;
+  overflow-x: hidden;
+  overflow-y: scroll;
+}

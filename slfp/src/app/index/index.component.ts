@@ -1,7 +1,6 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {DatastoreService} from "../data/datastore.service";
 import {Index} from "../data/model";
-import {InvestmentCategories} from "../maintable/investmentcategories/investment-categories.service";
 import {CalculatorService} from "../maintable/calc/calculator.service";
 declare var $:any;
 
