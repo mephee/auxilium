@@ -83,7 +83,7 @@ export class ExportToExcelService {
       // Fremdkapital
       sheet[XLSX.utils.encode_cell({c:0,r:rowCounter})] = this.getTextCell('Aufnahme / Rückzahlung Fremdkapital');
       sheet[XLSX.utils.encode_cell({c:1,r:rowCounter})] = this.getNumCell1000(version.foreignContainer.foreignValue);
-      sheet[XLSX.utils.encode_cell({c:2,r:rowCounter})] = this.getNumCell1000(version.foreignContainer.foreignValue);
+      sheet[XLSX.utils.encode_cell({c:2,r:rowCounter})] = this.getTextCell('');
       rowCounter++;
 
       // Summe 2

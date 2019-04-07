@@ -120,6 +120,4 @@ export class AppComponent implements OnInit {
   onClosedCustomspecial() {
     this.showCustomspecial = false;
   }
-
-
 }

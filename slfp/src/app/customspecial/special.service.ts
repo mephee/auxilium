@@ -18,9 +18,13 @@ export class SpecialService {
   }
 
   getSpecialNameForId(id:number):string {
-      return this.specials.find(special=>{
+      let special = this.specials.find(special=>{
         return special.id == id;
-      }).name;
+      });
+      if (special) {
+        return special.name;
+      }
+      return '';
   }
 
   private init() {

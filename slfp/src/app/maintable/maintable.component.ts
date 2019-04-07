@@ -1,4 +1,4 @@
-import {Component, ElementRef, OnInit, ViewEncapsulation} from '@angular/core';
+import {ChangeDetectionStrategy, Component, ElementRef, OnInit, ViewEncapsulation} from '@angular/core';
 import {Inoutcome} from "../data/model/inoutcome";
 import {DatastoreService} from "../data/datastore.service";
 import {Investment} from "../data/model/investment";
@@ -15,6 +15,7 @@ declare var $:any;
   templateUrl: './maintable.component.html',
   styleUrls: ['./maintable.component.css'],
   encapsulation: ViewEncapsulation.None,
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class MaintableComponent implements OnInit {
 
@@ -25,9 +26,6 @@ export class MaintableComponent implements OnInit {
   actualDynTooltip:string;
   actualDynTooltipYear:string;
   showChart:boolean = false;
-
-  syncLeftTableScroll:boolean = false;
-  syncRightTableScroll:boolean = false;
 
   constructor(public dataStore: DatastoreService,
               public investmentCategories: InvestmentCategories,
