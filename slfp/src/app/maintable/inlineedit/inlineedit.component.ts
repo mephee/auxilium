@@ -1,7 +1,6 @@
 import {Component, ElementRef, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {MoneyPipe} from "../../utility/money.pipe";
 import {DatastoreService} from "../../data/datastore.service";
-import {InvestmentCategories} from "../investmentcategories/investment-categories.service";
 import {CalculatorService} from "../calc/calculator.service";
 declare var $:any;
 

@@ -15,7 +15,6 @@ declare var $:any;
   templateUrl: './maintable.component.html',
   styleUrls: ['./maintable.component.css'],
   encapsulation: ViewEncapsulation.None,
-  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class MaintableComponent implements OnInit {
 
