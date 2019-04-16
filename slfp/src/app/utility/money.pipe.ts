@@ -12,7 +12,12 @@ export class MoneyPipe implements PipeTransform {
     }
     if (value) {
       if (divider != 1) {
-        value = ~~(value/divider);
+
+        if (~~(value/divider) == 0) {
+          value = Math.floor((value/divider)*100)/100;
+        } else {
+          value = ~~(value/divider);
+        }
       }
       transformed = value.toLocaleString('de-CH');
     }

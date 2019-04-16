@@ -7,10 +7,10 @@
       <div class="modal-body pb-0">
         <form>
           <div class="scrollpane">
-            <div class="row mb-2" *ngFor="let special of getSpecials();trackBy:tracker">
+            <div class="row mb-2" *ngFor="let special of getSpecials()">
               <div class="col-12">
                 <p *ngIf="special.id<5">{{special.name}}</p>
-                <input *ngIf="special.id>4" type="text" class="form-control form-control-sm" id="name" [(ngModel)]="special.name" name="name">
+                <input *ngIf="special.id>4" type="text" class="form-control form-control-sm" [(ngModel)]="special.name" [ngModelOptions]="{standalone: true}">
               </div>
             </div>
           </div>

@@ -80,6 +80,7 @@ const {ipcMain, dialog} = require('electron');
           label: 'Indextabelle',
           click () {
             mainWindow.webContents.send('indextable');
+            console.log('send open index');
           }
         },
         {

@@ -31,8 +31,9 @@ export class WizardComponent implements OnInit {
 
   getYearsForFrom():number[] {
     let years:number[] = [];
-    let yearFrom = (new Date()).getFullYear()+1;
-    for (let i = yearFrom;i<yearFrom+20;i++) {
+    // let yearFrom = (new Date()).getFullYear()+1;
+    let yearFrom = 2018;
+    for (let i = yearFrom;i<yearFrom+30;i++) {
       years.push(i);
     }
     return years;

@@ -29,7 +29,12 @@ export class MigrationService {
         migrated = true;
       }
       if (versions[i].version == 2) {  // etc
-
+        console.log('migrate data from 2 to 3');
+        for (let j=0;j<versions[i].investments.length;j++) {
+          versions[i].investmentHRM1Container.year = 2018;
+        }
+        versions[i].version = 3;
+        migrated = true;
       }
 
     }

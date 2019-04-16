@@ -25,10 +25,6 @@ export class CustomspecialComponent implements OnInit {
     });
   }
 
-  tracker(index:number, item:any):number {
-    return index;
-  }
-
   save(): void {
     this.datastore.saveCustomspecials();
     this.open = false;

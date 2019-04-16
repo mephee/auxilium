@@ -132,12 +132,13 @@ export class DatastoreService {
     version.investmentHRM1Container.value = 0;
     version.investmentHRM1Container.rate = 10;
     version.investmentHRM1Container.yearCount = 10;
+    version.investmentHRM1Container.year = 2017;
     version.investments = [];
     version.liquidityStart = new LiquidityStart();
     version.liquidityStart.liquidity = 0;
     version.additionalTaxoffs = [];
     version.reserves = [];
-    version.version = 2;  // TODO fix if migration is in place!
+    version.version = 3;  // TODO fix if migration is in place!
     return version;
   }
 

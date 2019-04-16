@@ -95,6 +95,10 @@ export class MaintableComponent implements OnInit {
     this.dataStore.getInvestmentHRM1Container().rate = 100/event;
   }
 
+  changedHRM1StartYear() {
+    this.calculator.calculateBalances();
+  }
+
   copyTaxvolume(year:number): void {
     let inoutcomes:Inoutcome[] = this.dataStore.getInoutcomes();
     let taxvolumeToCopy:number;

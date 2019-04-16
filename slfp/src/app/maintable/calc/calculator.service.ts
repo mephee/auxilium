@@ -248,11 +248,11 @@ export class CalculatorService {
       this.datastore.getInvestments().forEach(investment => {
         investment.investmentYears.forEach(investmentYear => {
             let index = investmentYear.year - this.datastore.getActualVersion().yearFrom;
-            if (investments.length > index) {
+            if (investments.length > index && index >- 1) {
               investments[index].investmentTotal += -investmentYear.invest;
               investments[index].tooltip += this.getTooltipLine(investment, investmentYear.invest, '');
             } else {
-              console.log('no good, no index for investment at ' + index + ' for investment: ' + investment.name);
+              console.log('no index for investment at ' + index + ' for investment: ' + investment.name);
             }
           }
         );
@@ -347,7 +347,8 @@ export class CalculatorService {
       let rate: number = Math.ceil(this.datastore.getInvestmentHRM1Container().rate * 100) / 100;  // Aufrunden nötig, sonst wird bei ungerader Menge Jahren ein Jahr zu viel abgeschrieben
       let taxoffPerYear: number = total / (100 / rate);
       let taxoffTotal: number = 0;
-      for (let i: number = 2018; i <= this.datastore.getActualVersion().yearTo; i++) {
+      let from:number = this.datastore.getInvestmentHRM1Container().year+1;
+      for (let i = from; i <= this.datastore.getActualVersion().yearTo; i++) {
         if (taxoffTotal < total) {
           if (i >= this.datastore.getActualVersion().yearFrom) {
             taxoffs.push(taxoffPerYear);
