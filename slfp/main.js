@@ -55,6 +55,18 @@ function openMain() {
 }
 
 function openMainWindow(width, height, x, y, maximized) {
+  let displays = electron.screen.getAllDisplays();
+  let isOnDisplay = true;
+  displays.forEach(display => {
+    isOnDisplay = isOnDisplay && isOn(display, x, y);
+  });
+  if (!isOnDisplay) {
+    width = electron.screen.getPrimaryDisplay().workAreaSize.width;
+    height = electron.screen.getPrimaryDisplay().workAreaSize.height;
+    x = 0;
+    y = 0;
+    maximized = true;
+  }
 
   // Create the browser window.
   win = new BrowserWindow({
@@ -128,4 +140,9 @@ function savePreferences() {
       saveTimeout = null;
     }
   },2000);
+}
+
+function isOn(display, x, y) {
+  return display.bounds.x <= x && x <= display.bounds.x + display.bounds.width &&
+    display.bounds.y <= y && y <= display.bounds.y + display.bounds.height;
 }
