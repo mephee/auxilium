@@ -1,0 +1,33 @@
+<div id="index" class="modal m-1 p-1 visible" tabindex="-1" role="dialog" aria-labelledby="indexModalLabel">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="indexModalLabel">Lizenz</h5>
+      </div>
+      <div class="modal-body pb-0">
+        <form>
+          <div class="row">
+            <div class="col">
+              <p *ngIf="enableTest">Das Produkt kann noch während {{daysLeft}} Tagen getestet werden.</p>
+              <p *ngIf="!enableTest">Die Tesphase ist abgelaufen, bitte geben sie ihren Lizenzschlüssel ein:</p>
+            </div>
+          </div>
+          <div class="row mt-4">
+            <div class="col">
+              <p>Lizenzschlüssel eingeben:</p>
+            </div>
+          </div>
+          <div class="row mb-5">
+            <div class="col">
+              <input class="input" type="text" [(ngModel)]="licenseKey" name="licenseKey">
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button [disabled]="!enableTest" type="button" class="btn auxbutton btn-sm" (click)="save()">weiter testen</button>
+        <button [disabled]="!keyValid()" type="button" class="btn auxbutton btn-sm" (click)="activate()">Lizenz aktivieren</button>
+      </div>
+    </div>
+  </div>
+</div>

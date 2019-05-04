@@ -16,6 +16,7 @@ import { RenameComponent } from './versions/rename/rename.component';
 
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {ScrollingModule} from '@angular/cdk/scrolling';
+import { LicenseComponent } from './license/license.component';
 
 @NgModule({
   declarations: [
@@ -29,6 +30,7 @@ import {ScrollingModule} from '@angular/cdk/scrolling';
     SafeHtmlPipe,
     IndexComponent,
     RenameComponent,
+    LicenseComponent,
   ],
   imports: [
     BrowserModule,
